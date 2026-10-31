@@ -1,63 +1,164 @@
-{
+config_data = {
   "app_config": {
     "title": "Plataforma de Estudio INCAR",
-    "version": "2.0.0",
-    "default_subject": "TIA"
+    "version": "2.1.0",
+    "default_subject": "TIA",
+    "master_key": "ADMIN-TIA-2026"
   },
   "admin_users": [
     {
       "username": "iker",
-      "password": "tu_password_segura",
+      "email": "iteso002@ikasle.ehu.eus",
+      "password": "ADMIN-2026",
       "role": "admin"
+    },
+    {
+      "username": "Lobini",
+      "email": "ibarron007@ikasle.ehu.eus",
+      "password": "LobiniBizcochini",
+      "role": "admin"
+    },
+    {
+      "username": "Isamena",
+      "email": "jdelrio015@ikasle.ehu.eus",
+      "password": "ExjefaDelBisky",
+      "role": "student"
     }
   ],
   "subjects": [
     {
       "id": "TIA",
+      "code": "TIA",
       "name": "Técnicas Inteligentes de Aprendizaje",
-      "description": "Máster en Ingeniería de Control, Automatización y Robótica",
+      "description": "Máster en Ingeniería de Control, Automatización y Robótica (PSO, DE, Redes Neuronales, CNN, Deep Learning y Transformers)",
+      "icon": "fa-brain",
+      "color": "blue",
       "blocks": [
         {
           "id": 1,
+          "code": "B1",
           "title": "Bloque 1: Particle Swarm Optimization (PSO)",
           "flashcards": [
             {
-              "question": "¿Cuál es la ecuación cinemática de velocidad en PSO?",
-              "answer": "vi(t+1) = w·vi(t) + c1·r1·(pbest,i - xi(t)) + c2·r2·(gbest - xi(t))"
+              "question": "¿Cuáles son los 5 pasos secuenciales del algoritmo PSO?",
+              "answer": "1. Inicialización aleatoria (posición $x_i(0)$ y velocidad $v_i(0)$).<br>2. Evaluación de aptitud en $f(x)$.<br>3. Actualización de memorias ($p_{best,i}$ y $g_{best}$).<br>4. Actualización cinemática de velocidad y posición.<br>5. Criterio de parada (iteraciones o tolerancia $\\epsilon$)."
             },
             {
-              "question": "¿Qué función cumple el parámetro de inercia (w) alto?",
-              "answer": "Facilita la exploración global (aprox. 0.8 - 1.2), evitando la convergencia prematura."
+              "question": "¿Cuál es la ecuación cinemática de velocidad y posición en PSO?",
+              "answer": "$$v_i(t+1) = w \\cdot v_i(t) + c_1 \\cdot r_1 \\cdot (p_{best,i} - x_i(t)) + c_2 \\cdot r_2 \\cdot (g_{best} - x_i(t))$$<br>$$x_i(t+1) = x_i(t) + v_i(t+1)$$"
+            },
+            {
+              "question": "¿Qué función cumple el parámetro de inercia ($w$) alto vs. bajo en PSO?",
+              "answer": "• <b>$w$ alto ($\\approx 0.8 - 1.2$):</b> Facilita la exploración global, evitando la convergencia prematura.<br>• <b>$w$ bajo ($\\approx 0.2 - 0.4$):</b> Favorece la explotación local y el refinamiento fino en torno al óptimo."
+            },
+            {
+              "question": "¿Qué representan los parámetros $c_1$, $c_2$ y $(r_1, r_2)$ en PSO?",
+              "answer": "• <b>$c_1$ (Cognitivo/Personal):</b> Atracción hacia su propia memoria de éxito ($p_{best,i}$).<br>• <b>$c_2$ (Social/Global):</b> Atracción colectiva hacia el líder del enjambre ($g_{best}$).<br>• <b>$r_1, r_2 \\sim \\mathcal{U}(0,1)$:</b> Factores estocásticos uniformes para escapar de óptimos locales."
+            },
+            {
+              "question": "¿Cómo se manejan las restricciones de ecuación ($g_k(x) = 0$) en PSO?",
+              "answer": "Mediante una función de penalización exterior exponencial sobre el coste original:<br>$$C_{Nuevo}(x) = C_{Original}(x) + \\lambda_1 \\cdot e^{|g_k(x)|^2}$$"
+            },
+            {
+              "question": "¿Cómo se manejan las restricciones de inecuación ($g_k(x) \\le 0$) en PSO?",
+              "answer": "Restringe áreas (el más usado en ingeniería) mediante barrera estricta:<br>• Si cumple $g_k(x) \\le 0 \\rightarrow C_{Nuevo}(x) = C_{Original}(x)$<br>• Si infringe $g_k(x) > 0 \\rightarrow C_{Nuevo}(x) = \\infty$"
+            },
+            {
+              "question": "¿Cuáles son los aspectos positivos (+) y negativos (-) de PSO?",
+              "answer": "<b>Positivos (+):</b> Independiente de derivadas (no exige función diferenciable ni convexa), evade óptimos locales y tiene mejora monótona ($g_{best}$ nunca empeora).<br><b>Negativos (-):</b> Voracidad computacional, mala escalabilidad en alta dimensión y sin garantía matemática de óptimo global."
+            },
+            {
+              "question": "¿En qué se diferencia el ámbito de uso de PSO frente a los Algoritmos Genéticos (GA)?",
+              "answer": "• <b>PSO:</b> Diseñado de forma nativa para espacios de variables continuas ($\\mathbb{R}^D$), como sintonización PID ($K_p, K_i, K_d$), trayectorias B-splines o despacho económico.<br>• <b>GA:</b> Superior en problemas con variables discretas, binarias o combinatorias puras."
             }
           ]
         },
         {
           "id": 2,
+          "code": "B2",
           "title": "Bloque 2: Differential Evolution (DE)",
           "flashcards": [
             {
-              "question": "¿Cómo se define la mutación básica en DE (DE/rand/1)?",
-              "answer": "vi,G = xr1,G + F · (xr2,G - xr3,G), donde F es el factor de escala."
+              "question": "¿Cómo se define la mutación básica en Evolución Diferencial ($DE/rand/1$)?",
+              "answer": "Para cada individuo $x_{i,G}$ se eligen 3 vectores aleatorios distintos ($r_1 \\neq r_2 \\neq r_3 \\neq i$):<br>$$v_{i,G} = x_{r_1,G} + F \\cdot (x_{r_2,G} - x_{r_3,G})$$<br>Donde $F \\in (0,2)$ es el factor de escala del paso de mutación."
+            },
+            {
+              "question": "¿Cómo funciona el Cruce Binomial (Crossover) en DE?",
+              "answer": "Genera el vector de prueba (trial vector) $u_{i,G}$ coordenada a coordenada ($j=1,\\dots,D$):<br>$$u_{j,i,G} = \\begin{cases} v_{j,i,G} & \\text{si } rand_j(0,1) \\le CR \\text{ o } j = j_{rand} \\\\ x_{j,i,G} & \\text{en caso contrario} \\end{cases}$$"
+            },
+            {
+              "question": "¿Por qué se incluye el índice aleatorio $j_{rand} \\in \\{1,\\dots,D\\}$ en el cruce de DE?",
+              "answer": "Para garantizar matemáticamente que el vector de prueba $u_{i,G}$ herede al menos una coordenada del vector mutante $v_{i,G}$, incluso si la constante de cruce $CR = 0$."
+            },
+            {
+              "question": "¿Cómo opera la Selección Elitista Uno a Uno en DE?",
+              "answer": "Compara directamente el vector de prueba $u_{i,G}$ con el vector actual $x_{i,G}$:<br>$$x_{i,G+1} = \\begin{cases} u_{i,G} & \\text{si } f(u_{i,G}) \\le f(x_{i,G}) \\\\ x_{i,G} & \\text{si } f(u_{i,G}) > f(x_{i,G}) \\end{cases}$$"
+            },
+            {
+              "question": "¿Cuáles son las ventajas y desventajas principales de Differential Evolution (DE)?",
+              "answer": "<b>Ventajas (+):</b> Muy robusto para óptimo global, implementación sencilla y pocos parámetros a ajustar.<br><b>Desventajas (-):</b> Voracidad computacional (cientos o miles de evaluaciones de $f(x)$) y riesgo de convergencia prematura."
             }
           ]
         },
         {
           "id": 3,
+          "code": "B3",
           "title": "Bloque 3: Redes Neuronales y Deep Learning",
           "flashcards": [
             {
-              "question": "¿Qué función realiza la capa SoftMax en la salida de una red de clasificación?",
-              "answer": "Convierte los valores numéricos brutos en una distribución de probabilidades normalizadas entre 0 y 1."
+              "question": "¿Cómo funciona el algoritmo Backpropagation y la Regla Delta?",
+              "answer": "1. <b>Forward pass:</b> Los datos cruzan la red hasta generar una predicción.<br>2. <b>Cálculo del error:</b> Se compara la salida con el valor real.<br>3. <b>Backward pass (Regla Delta):</b> Si la pendiente (gradiente) del error es positiva, el peso se ajusta en sentido negativo modulado por el Factor de Aprendizaje. Exige funciones de activación derivables (ej. Sigmoide)."
+            },
+            {
+              "question": "¿Por qué las redes multicapa clásicas (MLP) fallan con imágenes HD y se usan CNN?",
+              "answer": "Porque una foto HD requeriría millones de neuronas de entrada y la red memorizaría píxeles en posiciones exactas (si el objeto se desplaza 1 cm, falla). Las CNN detectan patrones espaciales jerárquicos invariantes a la traslación."
+            },
+            {
+              "question": "¿Cuál es la jerarquía de aprendizaje visual de una Red Convolucional (CNN)?",
+              "answer": "• <b>Primeras capas:</b> Líneas simples (verticales, horizontales, diagonales).<br>• <b>Capas intermedias:</b> Formas compuestas (ojos, narices, ruedas).<br>• <b>Últimas capas:</b> Objetos completos (una cara, un coche)."
+            },
+            {
+              "question": "¿Qué son Kernel, Padding y Stride en una CNN?",
+              "answer": "• <b>Kernel:</b> Matriz pequeña (ej. 3x3) que filtra la imagen buscando un patrón.<br>• <b>Padding:</b> Borde de ceros añadido alrededor de la imagen para evitar que pierda tamaño tras la convolución.<br>• <b>Stride:</b> Paso o número de píxeles que salta el kernel al desplazarse."
+            },
+            {
+              "question": "¿Qué hacen las etapas ReLU, Max Pooling, Flattening y SoftMax en una CNN?",
+              "answer": "• <b>ReLU:</b> Convierte valores negativos en 0 y mantiene los positivos ($\\max(0,x)$).<br>• <b>Max Pooling:</b> Submuestreo por bloques (ej. 2x2) quedándose con el valor máximo.<br>• <b>Flattening:</b> Aplana los mapas 2D en un único vector 1D.<br>• <b>SoftMax:</b> Convierte números brutos en probabilidades porcentuales entre 0 y 1 que suman 100%."
+            },
+            {
+              "question": "¿Qué es una capa Dropout y cómo evita el sobreajuste (Overfitting)?",
+              "answer": "Es una técnica de regularización que apaga (pone a cero) aleatoriamente un porcentaje de neuronas en cada iteración de entrenamiento, obligando a la red a repartir el aprendizaje y no depender de una sola neurona."
+            },
+            {
+              "question": "¿Cómo se divide el conjunto de datos (Dataset) en Deep Learning y para qué sirve cada bloque?",
+              "answer": "• <b>Entrenamiento (Train, 70-80%):</b> Ajuste real de los pesos sinápticos.<br>• <b>Validación (Validation, 10-15%):</b> Afinar hiperparámetros y detener el entrenamiento si el error sube (Early Stopping).<br>• <b>Testeo (Test, 10-15%):</b> Guardado hasta el final para evaluar la generalización real."
             }
           ]
         },
         {
           "id": 4,
+          "code": "B4",
           "title": "Bloque 4: Transformers y Funciones de Pérdida",
           "flashcards": [
             {
-              "question": "¿Cuál es la fórmula del Error Cuadrático Medio (MSE)?",
-              "answer": "MSE = (1/N) * Σ (yi - ŷi)^2"
+              "question": "¿Qué diferencia a un Transformer de las antiguas redes recurrentes (RNN)?",
+              "answer": "A diferencia de las RNN que leían palabras secuencialmente una por una, el Transformer lee toda la secuencia de golpe en paralelo gracias al mecanismo de Auto-Atención (Self-Attention)."
+            },
+            {
+              "question": "¿Qué son los Embeddings, el Positional Encoding y el Self-Attention en un Transformer?",
+              "answer": "• <b>Embeddings:</b> Conversión de palabras a vectores numéricos.<br>• <b>Positional Encoding:</b> Señal matemática inyectada para indicar el orden de las palabras al leerse de golpe.<br>• <b>Self-Attention:</b> Cálculo matemático de cuánta atención debe prestar cada palabra a las demás para entender el contexto (ej. 'banco' presta atención a 'parque')."
+            },
+            {
+              "question": "¿Cuál es la diferencia entre Variable Categórica (Nominal) y Variable Ordinal al elegir función de pérdida?",
+              "answer": "• <b>Categórica (Nominal):</b> Sin orden lógico (ej. colores, letras). Usa <b>Entropía Cruzada</b> porque cualquier fallo es igual de grave.<br>• <b>Ordinal:</b> Con orden inherente (ej. tallas S=1, M=2, L=3). Puede usar <b>MSE</b> porque confundir S con L debe penalizarse más que confundir S con M."
+            },
+            {
+              "question": "¿Cuál es la fórmula exacta del Error Cuadrático Medio (MSE)?",
+              "answer": "$$MSE = \\frac{1}{N} \\sum_{i=1}^{N} (y_i - \\hat{y}_i)^2$$<br>Donde $N$ es el total de muestras, $y_i$ el valor real y $\\hat{y}_i$ el valor predicho."
+            },
+            {
+              "question": "¿Cuál es la fórmula exacta de la Entropía Cruzada Categórica (Cross-Entropy)?",
+              "answer": "$$L_{CE} = -\\sum_{i=1}^{C} y_i \\log(\\hat{y}_i)$$<br>Como $y_i$ es un vector One-Hot (1 para la clase correcta y 0 para el resto), en la práctica se resume a $-\\log(\\hat{y}_{correcta})$."
             }
           ]
         }
@@ -67,7 +168,7 @@
           "id": 1,
           "block": 1,
           "difficulty": "facil",
-          "question": "En el algoritmo PSO, ¿qué representa el componente gbest?",
+          "question": "En el algoritmo PSO, ¿qué representa el componente $g_{best}$?",
           "options": [
             "La mejor posición histórica alcanzada por una partícula individual.",
             "La mejor posición encontrada por el enjambre completo.",
@@ -75,24 +176,206 @@
             "El factor de ponderación estocástico."
           ],
           "answer": 1,
-          "explanation": "gbest (global best) es la mejor posición global encontrada por cualquier partícula de todo el enjambre."
+          "hint": "Fíjate en la letra 'g' de global frente a la 'p' de personal.",
+          "explanation": "$g_{best}$ (global best) es la mejor posición histórica encontrada por cualquier partícula de todo el enjambre."
         },
         {
           "id": 2,
           "block": 1,
           "difficulty": "medio",
-          "question": "¿Qué valor aproximado de inercia (w) favorece la explotación local y el refinamiento fino?",
+          "question": "¿Qué valor aproximado del parámetro de inercia ($w$) en PSO favorece la explotación local y el refinamiento fino?",
           "options": [
             "w alto (0.8 - 1.2)",
             "w bajo (0.2 - 0.4)",
-            "w nulo (0.0)",
-            "w negativo (-0.5)"
+            "w negativo (-1.0)",
+            "w superior a 2.0"
           ],
           "answer": 1,
-          "explanation": "Un valor bajo de inercia reduce la influencia de la velocidad previa, centrando la búsqueda en el entorno local."
+          "hint": "Un valor pequeño frena la inercia previa para buscar con precisión en la zona actual.",
+          "explanation": "Un valor bajo de inercia ($w \\approx 0.2 - 0.4$) reduce la influencia de la velocidad previa, favoreciendo la explotación local en torno al óptimo."
         },
         {
           "id": 3,
+          "block": 1,
+          "difficulty": "facil",
+          "question": "¿Qué distribución siguen los factores estocásticos $r_1$ y $r_2$ en las ecuaciones cinemáticas de PSO?",
+          "options": [
+            "Distribución uniforme en el intervalo [0, 1].",
+            "Distribución normal estándar de media 0 y varianza 1.",
+            "Son constantes fijas iguales a 2.",
+            "Distribución exponencial creciente."
+          ],
+          "answer": 0,
+          "hint": "Revisa la definición de $r_1, r_2 \\sim \\mathcal{U}(0,1)$ en la sección 1.1.3.",
+          "explanation": "$r_1, r_2 \\sim \\mathcal{U}(0,1)$ son números aleatorios uniformemente distribuidos entre 0 y 1 que dotan al algoritmo de capacidad estocástica para escapar de óptimos locales."
+        },
+        {
+          "id": 4,
+          "block": 1,
+          "difficulty": "medio",
+          "question": "Según los apuntes de TIA, ¿cómo penaliza PSO una restricción de igualdad $g_k(x) = 0$ sobre la función de coste?",
+          "options": [
+            "Descartando el enjambre completo y reiniciando la iteración.",
+            "Sumando un término exponencial: $C_{Nuevo}(x) = C_{Original}(x) + \\lambda_1 \\cdot e^{|g_k(x)|^2}$.",
+            "Multiplicando el coste original por cero.",
+            "Asignando directamente coste menos infinito."
+          ],
+          "answer": 1,
+          "hint": "Busca la Ecuación (4) de la sección 1.1.4.",
+          "explanation": "Como $g_k(x)=0$ busca soluciones exactas y no se despeja fácilmente, se aplica una penalización exterior exponencial $\\lambda_1 \\cdot e^{|g_k(x)|^2}$."
+        },
+        {
+          "id": 5,
+          "block": 1,
+          "difficulty": "facil",
+          "question": "¿En qué tipo de espacios de búsqueda es nativo y especialmente superior PSO frente a los Algoritmos Genéticos (GA)?",
+          "options": [
+            "En espacios de variables continuas ($\\mathbb{R}^D$), como la sintonización de parámetros PID.",
+            "En problemas puramente binarios o de grafos discretos.",
+            "En ordenación alfabética de cadenas de texto.",
+            "Únicamente en funciones lineales y convexas."
+          ],
+          "answer": 0,
+          "hint": "Piensa en las constantes continuas $K_p, K_i, K_d$ de un regulador.",
+          "explanation": "PSO está diseñado de forma nativa para espacios continuos ($\\mathbb{R}^D$), mientras que los Algoritmos Genéticos destacan en problemas discretos, binarios o combinatorios."
+        },
+        {
+          "id": 6,
+          "block": 1,
+          "difficulty": "dificil",
+          "question": "¿Qué significa que el algoritmo PSO posee la 'propiedad de mejora monótona'?",
+          "options": [
+            "Que todas las partículas reducen su velocidad a cero en la primera iteración.",
+            "Que la mejor solución histórica global ($g_{best}$) se preserva siempre en memoria, impidiendo que la mejor estimación del algoritmo empeore.",
+            "Que garantiza matemáticamente encontrar el óptimo global en tiempo finito.",
+            "Que el coste computacional disminuye exponencialmente con la dimensión."
+          ],
+          "answer": 1,
+          "hint": "Revisa la tabla de Aspectos Positivos (+) de la sección 1.3.",
+          "explanation": "Al conservar siempre en memoria $g_{best}$ y actualizarlo solo si aparece una solución mejor, la calidad de la mejor solución global encontrada nunca empeora con las iteraciones."
+        },
+        {
+          "id": 7,
+          "block": 2,
+          "difficulty": "facil",
+          "question": "En el esquema de mutación $DE/rand/1$ de Evolución Diferencial, ¿cuántos vectores distintos del individuo activo $i$ se eligen al azar para crear el vector mutante $v_{i,G}$?",
+          "options": [
+            "Tres vectores distintos entre sí ($r_1 \\neq r_2 \\neq r_3 \\neq i$).",
+            "Un único vector líder.",
+            "Todos los vectores de la población simultáneamente.",
+            "Dos vectores idénticos."
+          ],
+          "answer": 0,
+          "hint": "Mira los subíndices de la ecuación $v_{i,G} = x_{r_1,G} + F \\cdot (x_{r_2,G} - x_{r_3,G})$.",
+          "explanation": "Se seleccionan aleatoriamente tres individuos distintos ($r_1, r_2, r_3$) para calcular la diferencia vectorial escalada por $F$ y sumarla al vector base $x_{r_1,G}$."
+        },
+        {
+          "id": 8,
+          "block": 2,
+          "difficulty": "medio",
+          "question": "En el Cruce Binomial de Evolución Diferencial (DE), ¿para qué sirve la condición $j = j_{rand}$?",
+          "options": [
+            "Para reiniciar la población si hay convergencia prematura.",
+            "Para asegurar que el vector de prueba $u_{i,G}$ herede al menos una coordenada del vector mutante $v_{i,G}$.",
+            "Para eliminar la constante de escala $F$.",
+            "Para ordenar los individuos de menor a mayor coste."
+          ],
+          "answer": 1,
+          "hint": "¿Qué ocurriría si por azar todos los números aleatorios fueran mayores que $CR$?",
+          "explanation": "Si $rand_j(0,1) > CR$ en todas las dimensiones, el vector de prueba sería un clon exacto de $x_{i,G}$. Forzar $j = j_{rand}$ garantiza que al menos una componente provenga del mutante."
+        },
+        {
+          "id": 9,
+          "block": 2,
+          "difficulty": "medio",
+          "question": "¿En qué rango de valores se define habitualmente el factor de escala $F$ en la mutación de Evolución Diferencial?",
+          "options": [
+            "$F \\in (0, 2)$",
+            "$F \\in [-100, -10]$",
+            "$F = 0$ constante",
+            "$F \\in [10, 100]$"
+          ],
+          "answer": 0,
+          "hint": "Consulta la Ecuación (8) en la sección 2.1.2.",
+          "explanation": "En DE, $F \\in (0, 2)$ es el factor de escala que modula el paso de mutación a partir del gradiente intrínseco de la población."
+        },
+        {
+          "id": 10,
+          "block": 2,
+          "difficulty": "dificil",
+          "question": "En la Selección Elitista Uno a Uno de DE (minimizando $f$), si el vector candidato $u_{i,G}$ obtiene $f(u_{i,G}) = 4.2$ y el vector actual $x_{i,G}$ tiene $f(x_{i,G}) = 4.5$, ¿qué ocurre en la generación $G+1$?",
+          "options": [
+            "$u_{i,G}$ reemplaza a $x_{i,G}$ como nuevo individuo $x_{i,G+1}$ porque $f(u_{i,G}) \\le f(x_{i,G})$.",
+            "Se conserva $x_{i,G}$ porque tiene un valor mayor.",
+            "Se promedian ambos vectores.",
+            "Se compara $u_{i,G}$ contra el peor individuo de toda la población."
+          ],
+          "answer": 0,
+          "hint": "Revisa la Ecuación (10) de selección estricta.",
+          "explanation": "La selección en DE es uno a uno y elitista: como $f(u_{i,G}) \\le f(x_{i,G})$ ($4.2 \\le 4.5$), el vector de prueba $u_{i,G}$ pasa a la siguiente generación."
+        },
+        {
+          "id": 11,
+          "block": 3,
+          "difficulty": "facil",
+          "question": "En el algoritmo Backpropagation, según la Regla Delta, si la pendiente (derivada) del error respecto a un peso es positiva, ¿hacia dónde se ajusta dicho peso?",
+          "options": [
+            "Hacia el sentido negativo, modulado por el Factor de Aprendizaje.",
+            "Hacia el sentido positivo, duplicando su valor.",
+            "Se mantiene constante en cero.",
+            "Se multiplica por infinito."
+          ],
+          "answer": 0,
+          "hint": "Queremos descender por la curva de error (descenso del gradiente).",
+          "explanation": "Si la pendiente del error sube (positiva), el peso debe ajustarse en sentido contrario (negativo) para reducir el error, usando el Factor de Aprendizaje para moderar el paso."
+        },
+        {
+          "id": 12,
+          "block": 3,
+          "difficulty": "medio",
+          "question": "¿Por qué las neuronas de una red entrenada con Backpropagation necesitan funciones de activación como la Sigmoide o ReLU?",
+          "options": [
+            "Porque se requiere calcular la derivada (gradiente) del error para propagarlo hacia atrás.",
+            "Porque convierten automáticamente las imágenes en texto.",
+            "Para que todos los pesos valgan exactamente 1.",
+            "Para evitar dividir los datos en Train y Test."
+          ],
+          "answer": 0,
+          "hint": "La regla de la cadena en Backpropagation necesita derivar la función de activación.",
+          "explanation": "Para calcular las derivadas que indican cómo cambiar los pesos capa por capa, las neuronas deben emplear funciones de activación derivables."
+        },
+        {
+          "id": 13,
+          "block": 3,
+          "difficulty": "facil",
+          "question": "En una Red Convolucional (CNN), ¿qué elemento se añade alrededor de la imagen original (borde de ceros) para evitar que la imagen resultante se reduzca de tamaño al pasar el Kernel?",
+          "options": [
+            "Padding",
+            "Stride",
+            "Flattening",
+            "Dropout"
+          ],
+          "answer": 0,
+          "hint": "Es el paso 2 de la Anatomía de una Red Convolucional (sección 3.3).",
+          "explanation": "El Padding añade un borde de ceros alrededor de la imagen de entrada para conservar las dimensiones espaciales tras aplicar el filtro (Kernel)."
+        },
+        {
+          "id": 14,
+          "block": 3,
+          "difficulty": "medio",
+          "question": "En una CNN, ¿qué operación recorre la imagen en pequeños bloques (por ejemplo, de 2x2) y se queda únicamente con el píxel de mayor valor para comprimir la información?",
+          "options": [
+            "Max Pooling (Submuestreo)",
+            "SoftMax",
+            "Positional Encoding",
+            "Backpropagation"
+          ],
+          "answer": 0,
+          "hint": "Revisa el punto 5 de la sección 3.3 (Pooling).",
+          "explanation": "El Max Pooling reduce la resolución espacial de los mapas de características quedándose solo con el valor máximo de cada ventana (ej. 2x2), reteniendo el patrón más relevante."
+        },
+        {
+          "id": 15,
           "block": 3,
           "difficulty": "dificil",
           "question": "En una red convolucional, ¿cuál es el propósito principal de la función de activación ReLU tras la convolución?",
@@ -103,7 +386,113 @@
             "Aplanar la matriz bidimensional en un vector unidimensional."
           ],
           "answer": 1,
-          "explanation": "ReLU introduce no linealidad limpiando los valores negativos a cero, resaltando las zonas con mayor activación de patrones."
+          "hint": "Recuerda la expresión $f(x) = \\max(0, x)$.",
+          "explanation": "ReLU introduce no linealidad limpiando los valores negativos a cero y dejando intactos los positivos, resaltando las zonas donde se ha detectado el patrón claramente."
+        },
+        {
+          "id": 16,
+          "block": 3,
+          "difficulty": "medio",
+          "question": "¿Qué técnica de regularización apaga (pone a cero) aleatoriamente un porcentaje de neuronas en cada iteración de entrenamiento para evitar el sobreajuste (Overfitting)?",
+          "options": [
+            "Capa Dropout",
+            "Flattening",
+            "Stride",
+            "Cruce Binomial"
+          ],
+          "answer": 0,
+          "hint": "Obliga a la red a no depender de una única neurona para detectar un patrón.",
+          "explanation": "La capa Dropout desactiva aleatoriamente neuronas durante el entrenamiento, forzando a la red a distribuir el aprendizaje y ser más robusta."
+        },
+        {
+          "id": 17,
+          "block": 3,
+          "difficulty": "medio",
+          "question": "En la división clásica de datos en Deep Learning, ¿para qué se utiliza el bloque de Validación (10-15% de los datos)?",
+          "options": [
+            "Para medir el error durante el entrenamiento con datos no usados en el ajuste de pesos, afinar hiperparámetros y detener el entrenamiento si empieza el sobreajuste.",
+            "Para ajustar directamente los pesos sinápticos mediante Backpropagation en cada época.",
+            "Se guarda sin tocar hasta el final del proyecto para la demostración al cliente.",
+            "Para sustituir la función SoftMax."
+          ],
+          "answer": 0,
+          "hint": "Revisa la sección 3.4.1 (División de los Datos).",
+          "explanation": "Los datos de Validación permiten monitorizar la generalización durante el entrenamiento, ajustar hiperparámetros y aplicar parada temprana si el error de validación sube."
+        },
+        {
+          "id": 18,
+          "block": 4,
+          "difficulty": "facil",
+          "question": "¿Qué función se coloca en la última capa de una red de clasificación de caracteres ('A', 'B', 'C') para convertir los números brutos en una distribución de probabilidades porcentuales entre 0 y 1?",
+          "options": [
+            "SoftMax",
+            "ReLU",
+            "Max Pooling",
+            "MSE"
+          ],
+          "answer": 0,
+          "hint": "Convierte los logits en probabilidades que suman el 100%.",
+          "explanation": "La función SoftMax transforma las salidas brutas de la última capa en probabilidades normalizadas entre 0 y 1 (ej. 90% 'A', 8% 'B', 2% 'C')."
+        },
+        {
+          "id": 19,
+          "block": 4,
+          "difficulty": "medio",
+          "question": "Si queremos predecir una Variable Ordinal como la talla de una camiseta ($S=1, M=2, L=3$), ¿por qué los apuntes recomiendan que puede tratarse con el Error Cuadrático Medio (MSE)?",
+          "options": [
+            "Porque existe un orden inherente y equivocarse prediciendo 'S' cuando era 'L' ($|1-3|^2=4$) debe penalizarse más que predecir 'M' ($|2-3|^2=1$).",
+            "Porque las tallas no tienen ningún orden lógico ni jerarquía entre sí.",
+            "Porque MSE solo funciona con vectores One-Hot de probabilidad.",
+            "Porque la Entropía Cruzada está prohibida en redes neuronales."
+          ],
+          "answer": 0,
+          "hint": "Compara la distancia entre S y L frente a la distancia entre M y L.",
+          "explanation": "Al existir un orden natural en las variables ordinales, el MSE penaliza cuadráticamente la lejanía del fallo, castigando mucho más confundir extremos (S con L) que categorías adyacentes."
+        },
+        {
+          "id": 20,
+          "block": 4,
+          "difficulty": "facil",
+          "question": "¿Cuál es la innovación principal de la arquitectura Transformer que le permite entender el contexto entre palabras leyendo toda la secuencia de golpe?",
+          "options": [
+            "El Mecanismo de Auto-Atención (Self-Attention).",
+            "El filtro Max Pooling de 2x2.",
+            "La lectura secuencial palabra por palabra de izquierda a derecha sin paralelismo.",
+            "El operador de mutación $DE/rand/1$."
+          ],
+          "answer": 0,
+          "hint": "Recuerda el ejemplo de la palabra 'banco' prestando atención a 'parque'.",
+          "explanation": "El mecanismo de Auto-Atención (Self-Attention) calcula matemáticamente cuánta relevancia o atención debe prestar cada palabra a todas las demás de la frase simultáneamente."
+        },
+        {
+          "id": 21,
+          "block": 4,
+          "difficulty": "medio",
+          "question": "Como el Transformer lee todas las palabras de la secuencia a la vez, ¿qué elemento se inyecta a los Embeddings para que la red sepa en qué orden estaban las palabras?",
+          "options": [
+            "Positional Encoding (Codificación Posicional).",
+            "Capa Dropout.",
+            "Padding de ceros 2D.",
+            "Factor de inercia $w$."
+          ],
+          "answer": 0,
+          "hint": "Revisa el punto 1 de la sección 4.1.",
+          "explanation": "El Positional Encoding inyecta una señal matemática de posición a cada vector de palabra (embedding) para conservar la información del orden secuencial."
+        },
+        {
+          "id": 22,
+          "block": 4,
+          "difficulty": "dificil",
+          "question": "En un problema de clasificación multiclase con vector real One-Hot ($y_c = 1$ para la clase correcta y $0$ para las demás), ¿a qué expresión se reduce la pérdida de Entropía Cruzada $L_{CE} = -\\sum_{i=1}^C y_i \\log(\\hat{y}_i)$?",
+          "options": [
+            "Al logaritmo negativo de la probabilidad predicha para la clase correcta: $L_{CE} = -\\log(\\hat{y}_{correcta})$.",
+            "Al promedio de las diferencias al cuadrado dividido por $N$.",
+            "A cero siempre que la red use SoftMax.",
+            "A la suma directa de todas las probabilidades incorrectas."
+          ],
+          "answer": 0,
+          "hint": "Todos los términos de la suma donde $y_i = 0$ se anulan.",
+          "explanation": "Como $y_i = 0$ para todas las clases incorrectas, todos esos sumandos valen 0 y la fórmula se reduce a calcular $-\\log(\\hat{y}_{correcta})$, penalizando fuertemente si $\\hat{y}_{correcta} \\to 0$."
         }
       ]
     }
