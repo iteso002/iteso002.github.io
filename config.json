@@ -1,0 +1,111 @@
+{
+  "app_config": {
+    "title": "Plataforma de Estudio INCAR",
+    "version": "2.0.0",
+    "default_subject": "TIA"
+  },
+  "admin_users": [
+    {
+      "username": "iker",
+      "password": "tu_password_segura",
+      "role": "admin"
+    }
+  ],
+  "subjects": [
+    {
+      "id": "TIA",
+      "name": "Técnicas Inteligentes de Aprendizaje",
+      "description": "Máster en Ingeniería de Control, Automatización y Robótica",
+      "blocks": [
+        {
+          "id": 1,
+          "title": "Bloque 1: Particle Swarm Optimization (PSO)",
+          "flashcards": [
+            {
+              "question": "¿Cuál es la ecuación cinemática de velocidad en PSO?",
+              "answer": "vi(t+1) = w·vi(t) + c1·r1·(pbest,i - xi(t)) + c2·r2·(gbest - xi(t))"
+            },
+            {
+              "question": "¿Qué función cumple el parámetro de inercia (w) alto?",
+              "answer": "Facilita la exploración global (aprox. 0.8 - 1.2), evitando la convergencia prematura."
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "title": "Bloque 2: Differential Evolution (DE)",
+          "flashcards": [
+            {
+              "question": "¿Cómo se define la mutación básica en DE (DE/rand/1)?",
+              "answer": "vi,G = xr1,G + F · (xr2,G - xr3,G), donde F es el factor de escala."
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "title": "Bloque 3: Redes Neuronales y Deep Learning",
+          "flashcards": [
+            {
+              "question": "¿Qué función realiza la capa SoftMax en la salida de una red de clasificación?",
+              "answer": "Convierte los valores numéricos brutos en una distribución de probabilidades normalizadas entre 0 y 1."
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "title": "Bloque 4: Transformers y Funciones de Pérdida",
+          "flashcards": [
+            {
+              "question": "¿Cuál es la fórmula del Error Cuadrático Medio (MSE)?",
+              "answer": "MSE = (1/N) * Σ (yi - ŷi)^2"
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": 1,
+          "block": 1,
+          "difficulty": "facil",
+          "question": "En el algoritmo PSO, ¿qué representa el componente gbest?",
+          "options": [
+            "La mejor posición histórica alcanzada por una partícula individual.",
+            "La mejor posición encontrada por el enjambre completo.",
+            "La velocidad máxima permitida del enjambre.",
+            "El factor de ponderación estocástico."
+          ],
+          "answer": 1,
+          "explanation": "gbest (global best) es la mejor posición global encontrada por cualquier partícula de todo el enjambre."
+        },
+        {
+          "id": 2,
+          "block": 1,
+          "difficulty": "medio",
+          "question": "¿Qué valor aproximado de inercia (w) favorece la explotación local y el refinamiento fino?",
+          "options": [
+            "w alto (0.8 - 1.2)",
+            "w bajo (0.2 - 0.4)",
+            "w nulo (0.0)",
+            "w negativo (-0.5)"
+          ],
+          "answer": 1,
+          "explanation": "Un valor bajo de inercia reduce la influencia de la velocidad previa, centrando la búsqueda en el entorno local."
+        },
+        {
+          "id": 3,
+          "block": 3,
+          "difficulty": "dificil",
+          "question": "En una red convolucional, ¿cuál es el propósito principal de la función de activación ReLU tras la convolución?",
+          "options": [
+            "Normalizar los canales de color de la imagen de entrada.",
+            "Convertir todos los valores negativos a 0 y dejar los positivos intactos.",
+            "Reducir las dimensiones espaciales mediante submuestreo.",
+            "Aplanar la matriz bidimensional en un vector unidimensional."
+          ],
+          "answer": 1,
+          "explanation": "ReLU introduce no linealidad limpiando los valores negativos a cero, resaltando las zonas con mayor activación de patrones."
+        }
+      ]
+    }
+  ]
+}
