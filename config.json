@@ -1,4 +1,5 @@
-  "app_config": {
+{
+"app_config": {
     "title": "Plataforma de Estudio INCAR",
     "version": "2.1.0",
     "default_subject": "TIA",
@@ -496,3 +497,4 @@
       ]
     }
   ]
+}
