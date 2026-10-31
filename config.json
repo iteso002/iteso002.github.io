@@ -1,4 +1,3 @@
-config_data = {
   "app_config": {
     "title": "Plataforma de Estudio INCAR",
     "version": "2.1.0",
@@ -497,4 +496,3 @@ config_data = {
       ]
     }
   ]
-}
