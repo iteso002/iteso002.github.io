@@ -370,22 +370,26 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 pt-4">
+                <div class="grid grid-cols-2 lg:grid-cols-5 gap-2.5 pt-4">
                     <button onclick="switchTiaTab('quiz')" id="tab-btn-quiz" class="tia-tab-btn px-4 py-3 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2.5 transition bg-blue-600 text-white shadow-md shadow-blue-600/20">
                         <i class="fa-solid fa-list-check text-base"></i>
-                        <span>1. Test Configurable (10/25/50)</span>
+                        <span>1. Test Configurable</span>
                     </button>
                     <button onclick="switchTiaTab('extra')" id="tab-btn-extra" class="tia-tab-btn px-4 py-3 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2.5 transition bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">
                         <i class="fa-solid fa-wand-magic-sparkles text-base text-purple-500"></i>
-                        <span>2. Retos Extra IA (Ingeniería)</span>
+                        <span>2. Retos Extra IA</span>
                     </button>
                     <button onclick="switchTiaTab('flashcards')" id="tab-btn-flashcards" class="tia-tab-btn px-4 py-3 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2.5 transition bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">
                         <i class="fa-solid fa-clone text-base text-emerald-500"></i>
-                        <span>3. Flashcards 3D (Memoria)</span>
+                        <span>3. Flashcards 3D</span>
                     </button>
                     <button onclick="switchTiaTab('lab')" id="tab-btn-lab" class="tia-tab-btn px-4 py-3 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2.5 transition bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">
                         <i class="fa-solid fa-square-root-variable text-base text-amber-500"></i>
-                        <span>4. Fórmulas y Laboratorio</span>
+                        <span>4. Fórmulas y Lab</span>
+                    </button>
+                    <button onclick="switchTiaTab('ai-dev')" id="tab-btn-ai-dev" class="tia-tab-btn px-4 py-3 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2.5 transition bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">
+                        <i class="fa-solid fa-brain-circuit text-base text-cyan-500"></i>
+                        <span>5. Corrector IA</span>
                     </button>
                 </div>
             </div>
@@ -857,6 +861,77 @@ floor + 1$$
                     </div>
                 </div>
             </section>
+
+            <!-- MODULE 5: PREGUNTAS DE DESARROLLO CON CORRECCIÓN IA -->
+<section id="module-ai-dev" class="hidden space-y-6">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+            <h2 class="text-lg font-bold flex items-center gap-2">
+                <i class="fa-solid fa-robot text-cyan-500"></i> Corrector Técnico con RAG
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Responde con tus palabras y el modelo evaluará tu precisión conceptual comparando con los apuntes.</p>
+        </div>
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+            <input type="password" id="groq-api-key" placeholder="Pega tu API Key de Groq (gsk_...)" class="w-full sm:w-64 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs font-mono outline-none focus:ring-2 focus:ring-cyan-500">
+            <button onclick="guardarClaveGroq()" class="px-3.5 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 rounded-xl text-xs font-bold transition">Guardar</button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Columna Izquierda: Pregunta actual -->
+        <div class="lg:col-span-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between space-y-4">
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <span id="dev-block-badge" class="px-2.5 py-1 rounded-md bg-cyan-500/15 text-cyan-500 font-bold text-xs uppercase">Bloque</span>
+                    <button onclick="cargarSiguientePreguntaDev()" class="text-xs text-blue-500 hover:underline flex items-center gap-1">
+                        <i class="fa-solid fa-shuffle"></i> Otra pregunta
+                    </button>
+                </div>
+                <h3 id="dev-question-title" class="text-lg font-extrabold text-slate-800 dark:text-slate-100">Cargando...</h3>
+                <div id="dev-question-text" class="text-sm leading-relaxed text-slate-600 dark:text-slate-300 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700/60"></div>
+                
+                <div>
+                    <span class="text-xs font-bold uppercase text-slate-400 tracking-wider">Conceptos indispensables a tratar:</span>
+                    <ul id="dev-keypoints-list" class="mt-2 text-xs text-slate-500 dark:text-slate-400 space-y-1 list-disc list-inside"></ul>
+                </div>
+            </div>
+
+            <div class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-[11px] text-amber-700 dark:text-amber-300">
+                <i class="fa-solid fa-circle-info mr-1"></i> El evaluador verificará rigor matemático, terminología técnica y omisiones.
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Redacción y Resultados -->
+        <div class="lg:col-span-7 space-y-4">
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Tu Desarrollo Técnico:</label>
+                <textarea id="dev-user-answer" rows="7" placeholder="Desarrolla aquí el concepto, justificando fórmulas o comportamientos..." class="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 text-sm focus:ring-2 focus:ring-cyan-500 outline-none leading-relaxed"></textarea>
+
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-400" id="dev-word-counter">0 palabras</span>
+                    <button id="dev-eval-btn" onclick="evaluarRespuestaDev()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>Enviar a Corrección</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="dev-result-box" class="hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
+                <div class="flex items-center gap-3 pb-3 border-b border-slate-200 dark:border-slate-800">
+                    <div id="dev-score-display" class="w-14 h-12 rounded-xl bg-blue-500/15 text-blue-500 flex items-center justify-center font-extrabold text-lg">
+                        --
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm">Dictamen de Evaluación</h4>
+                        <p class="text-xs text-slate-400">Verificado frente a los criterios del temario</p>
+                    </div>
+                </div>
+
+                <div id="dev-feedback-body" class="text-xs sm:text-sm space-y-3 leading-relaxed"></div>
+            </div>
+        </div>
+    </div>
+</section>
         </div>
 
         <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 py-5 px-4 text-center text-xs text-slate-500 dark:text-slate-400">
@@ -1631,14 +1706,18 @@ floor + 1$$
         }
 
         function switchTiaTab(tab) {
-            const tabs = ['quiz', 'extra', 'flashcards', 'lab'];
+            const tabs = ['quiz', 'extra', 'flashcards', 'lab', 'ai-dev'];
             tabs.forEach(t => {
                 const section = document.getElementById(`module-${t}`);
                 const btn = document.getElementById(`tab-btn-${t}`);
+                if (!section || !btn) return;
                 if (t === tab) {
                     section.classList.remove('hidden');
                     btn.className = 'tia-tab-btn px-4 py-3 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2.5 transition bg-blue-600 text-white shadow-md shadow-blue-600/20';
                     renderMath(section);
+                    if (t === 'ai-dev' && !preguntaDevActiva) {
+                        iniciarModuloDev();
+                    }
                 } else {
                     section.classList.add('hidden');
                     btn.className = 'tia-tab-btn px-4 py-3 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2.5 transition bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700';
@@ -2165,6 +2244,171 @@ floor + 1$$
             `;
             renderMath(document.getElementById('calc-loss-output'));
         }
+
+        let preguntaDevActiva = null;
+
+function iniciarModuloDev() {
+    const savedKey = localStorage.getItem('incar_groq_key');
+    if (savedKey) {
+        document.getElementById('groq-api-key').value = savedKey;
+    }
+
+    document.getElementById('dev-user-answer').addEventListener('input', (e) => {
+        const words = e.target.value.trim().split(/\s+/).filter(Boolean).length;
+        document.getElementById('dev-word-counter').textContent = `${words} palabras`;
+    });
+
+    cargarSiguientePreguntaDev();
+}
+
+function guardarClaveGroq() {
+    const key = document.getElementById('groq-api-key').value.trim();
+    if (!key) return showToast('Pega tu API Key de Groq', 'error');
+    localStorage.setItem('incar_groq_key', key);
+    showToast('API Key guardada localmente', 'success');
+}
+
+function cargarSiguientePreguntaDev() {
+    // Si tu config.json ya tiene open_questions las toma; si no, usa el banco base de respaldo
+    const questions = activeSubject?.open_questions || [
+        {
+            id: 'DEV-1',
+            title: 'Manejo de Restricciones en PSO',
+            block: 'B1',
+            question: 'Explica detalladamente cómo gestiona el algoritmo PSO las restricciones de ecuación ($g_k(x) = 0$) frente a las restricciones de inecuación ($g_k(x) \\le 0$). ¿Por qué no se tratan de la misma forma matemáticamente?',
+            key_points: [
+                'Penalización exterior exponencial para igualdades (lambda * e^{|g_k(x)|^2})',
+                'Barrera estricta infinita para inecuaciones si se infringe la región factible',
+                'Justificación: la probabilidad de alcanzar g_k(x)=0 exactamente en espacios continuos es casi nula'
+            ],
+            reference_context: 'Para restricciones de igualdad g_k(x)=0 se aplica penalización exponencial C_Nuevo = C_Original + lambda * exp(|g_k(x)|^2). Para inecuaciones g_k(x)<=0 se asigna infinito si no cumple y C_Original si cumple.'
+        },
+        {
+            id: 'DEV-2',
+            title: 'Mecanismo de Mutación y Crossover en DE',
+            block: 'B2',
+            question: 'Analiza el papel del parámetro $j_{rand}$ durante el cruce binomial en Evolución Diferencial y explica por qué es necesario junto con la constante de cruce $CR$.',
+            key_points: [
+                'Garantizar que al menos un gen proceda del vector mutante',
+                'Evitar que el vector de prueba sea idéntico al vector padre cuando CR es pequeño o cero',
+                'Preservación de la diversidad genética y exploración'
+            ],
+            reference_context: 'El índice j_rand asegura que el vector de prueba herede al menos una coordenada del vector mutante incluso si CR = 0, evitando clones sin mutación.'
+        }
+    ];
+
+    preguntaDevActiva = questions[Math.floor(Math.random() * questions.length)];
+
+    document.getElementById('dev-question-title').textContent = preguntaDevActiva.title;
+    document.getElementById('dev-block-badge').textContent = `Bloque ${preguntaDevActiva.block}`;
+    document.getElementById('dev-question-text').innerHTML = preguntaDevActiva.question;
+
+    const kpList = document.getElementById('dev-keypoints-list');
+    kpList.innerHTML = (preguntaDevActiva.key_points || []).map(p => `<li>${p}</li>`).join('');
+
+    document.getElementById('dev-user-answer').value = '';
+    document.getElementById('dev-word-counter').textContent = '0 palabras';
+    document.getElementById('dev-result-box').classList.add('hidden');
+    renderMath(document.getElementById('module-ai-dev'));
+}
+
+async function evaluarRespuestaDev() {
+    const respuesta = document.getElementById('dev-user-answer').value.trim();
+    const apiKey = document.getElementById('groq-api-key').value.trim();
+
+    if (!respuesta) return showToast('Escribe una respuesta para evaluar.', 'error');
+    if (!apiKey) return showToast('Introduce tu API Key de Groq en la parte superior.', 'error');
+
+    const btn = document.getElementById('dev-eval-btn');
+    const resultBox = document.getElementById('dev-result-box');
+    const scoreBadge = document.getElementById('dev-score-display');
+    const feedbackBody = document.getElementById('dev-feedback-body');
+
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Evaluando...`;
+    resultBox.classList.remove('hidden');
+    feedbackBody.innerHTML = `<p class="text-slate-400 italic">Evaluando contra los apuntes del máster...</p>`;
+
+    const promptEvaluacion = `
+Eres un evaluador académico universitario riguroso del Máster en Control y Robótica.
+Evalúa la respuesta de un estudiante comparándola con el texto fuente oficial y los puntos clave requeridos.
+
+Texto oficial de referencia:
+"""${preguntaDevActiva.reference_context}"""
+
+Pregunta:
+"""${preguntaDevActiva.question}"""
+
+Puntos clave esperados:
+${JSON.stringify(preguntaDevActiva.key_points)}
+
+Respuesta del estudiante:
+"""${respuesta}"""
+
+Responde EXCLUSIVAMENTE con un JSON válido con este formato:
+{
+  "nota": (número decimal de 0.0 a 10.0),
+  "aciertos": ["concepto correcto 1", "concepto correcto 2"],
+  "omisiones": ["concepto faltante o erróneo 1"],
+  "comentario": "Explicación constructiva y concisa sobre qué le faltó o cómo mejorar técnicamente"
+}
+`;
+
+    try {
+        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${apiKey}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                model: "llama-3.3-70b-versatile",
+                messages: [{ role: "user", content: promptEvaluacion }],
+                temperature: 0.1,
+                response_format: { type: "json_object" }
+            })
+        });
+
+        const data = await response.json();
+        if (data.error) throw new Error(data.error.message);
+
+        const evaluacion = JSON.parse(data.choices[0].message.content);
+        const nota = Number(evaluacion.nota || 0).toFixed(1);
+
+        scoreBadge.textContent = `${nota}/10`;
+        scoreBadge.className = nota >= 7.0 
+            ? 'w-14 h-12 rounded-xl bg-emerald-500/15 text-emerald-500 flex items-center justify-center font-extrabold text-lg'
+            : (nota >= 5.0 
+                ? 'w-14 h-12 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center font-extrabold text-lg'
+                : 'w-14 h-12 rounded-xl bg-rose-500/15 text-rose-500 flex items-center justify-center font-extrabold text-lg');
+
+        feedbackBody.innerHTML = `
+            <div class="space-y-3">
+                <div>
+                    <strong class="text-emerald-500 block mb-1">✔ Aciertos:</strong>
+                    <ul class="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-0.5">
+                        ${(evaluacion.aciertos || []).map(a => `<li>${a}</li>`).join('')}
+                    </ul>
+                </div>
+                <div>
+                    <strong class="text-rose-500 block mb-1">✘ Omisiones o Errores:</strong>
+                    <ul class="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-0.5">
+                        ${(evaluacion.omisiones || []).map(o => `<li>${o}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="p-3.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300">
+                    <strong>Comentario Docente:</strong> ${evaluacion.comentario}
+                </div>
+            </div>
+        `;
+        renderMath(feedbackBody);
+    } catch (err) {
+        feedbackBody.innerHTML = `<div class="p-3 text-rose-500 text-xs">Error en la llamada: ${err.message}</div>`;
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> <span>Enviar a Corrección</span>`;
+    }
+}
     </script>
 </body>
 </html>
