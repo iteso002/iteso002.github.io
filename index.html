@@ -1474,6 +1474,9 @@
 
         let fullTiaBank = []; // Variable global accesible desde startConfiguredQuiz
 
+let fullTiaBank = [];
+let fullDevBank = []; // <-- Asegúrate de declarar ambas arriba del script
+
 async function initAppData() {
     let loadedData = null;
     try {
@@ -1490,9 +1493,9 @@ async function initAppData() {
 
     // 1. PRIMERO inicializamos las variables base y la lista de asignaturas
     const source = loadedData || DEFAULT_CONFIG;
-    appConfig = source.app_config || DEFAULT_CONFIG.app_config;
-    authorizedUsers = source.admin_users || DEFAULT_CONFIG.admin_users;
-    subjectsList = source.subjects || DEFAULT_CONFIG.subjects;
+    appConfig = source.app_config || DEFAULT_CONFIG.app_config; //[cite: 3]
+    authorizedUsers = source.admin_users || DEFAULT_CONFIG.admin_users; //[cite: 3]
+    subjectsList = source.subjects || DEFAULT_CONFIG.subjects; //[cite: 3]
 
     // 2. SEGUNDO: Cargar las 150 preguntas tipo test (questions_tia.json)
     try {
@@ -1500,7 +1503,7 @@ async function initAppData() {
         if (qRes.ok) {
             const externalQuestions = await qRes.json();
             if (Array.isArray(externalQuestions) && externalQuestions.length > 0) {
-                fullTiaBank = externalQuestions;
+                fullTiaBank = externalQuestions; // Asigna a la variable global
 
                 const tiaSubj = subjectsList.find(s => (s.code || s.id) === 'TIA');
                 if (tiaSubj) {
@@ -1520,12 +1523,16 @@ async function initAppData() {
         const devRes = await fetch('./preguntas_desarrollo_tia.json', { cache: 'no-store' });
         if (devRes.ok) {
             const devData = await devRes.json();
-            const tiaSubj = subjectsList.find(s => (s.code || s.id) === 'TIA');
-            if (tiaSubj && Array.isArray(devData)) {
-                tiaSubj.open_questions = devData;
-            }
-            if (activeSubject && (activeSubject.code === 'TIA' || activeSubject.id === 'TIA')) {
-                activeSubject.open_questions = devData;
+            if (Array.isArray(devData) && devData.length > 0) {
+                fullDevBank = devData; // <-- ESTA LÍNEA ES CLAVE: guarda en memoria global
+
+                const tiaSubj = subjectsList.find(s => (s.code || s.id) === 'TIA');
+                if (tiaSubj) {
+                    tiaSubj.open_questions = devData;
+                }
+                if (activeSubject && (activeSubject.code === 'TIA' || activeSubject.id === 'TIA')) {
+                    activeSubject.open_questions = devData;
+                }
             }
         }
     } catch (e) {
@@ -1672,24 +1679,25 @@ async function initAppData() {
             }).join('');
         }
 
-        function openSubject(code) {
-    const subj = subjectsList.find(s => (s.code || s.id) === code) || subjectsList[0];
-    activeSubject = subj;
+    function openSubject(code) {
+    const subj = subjectsList.find(s => (s.code || s.id) === code) || subjectsList[0]; //[cite: 3]
+    activeSubject = subj; //[cite: 3]
 
-    // Si abres TIA y fullTiaBank ya se cargó, enlaza el banco completo
-    if ((subj.code === 'TIA' || subj.id === 'TIA') && fullTiaBank.length > 0) {
-        activeSubject.questions = fullTiaBank;
+    // Sincroniza ambos bancos si se cargaron externamente
+    if (subj.code === 'TIA' || subj.id === 'TIA') {
+        if (fullTiaBank.length > 0) activeSubject.questions = fullTiaBank;
+        if (fullDevBank.length > 0) activeSubject.open_questions = fullDevBank;
     }
 
-    document.getElementById('subject-hub-view').classList.add('hidden');
-    document.getElementById('tia-workspace-view').classList.remove('hidden');
-    document.getElementById('back-to-hub-btn').classList.remove('hidden');
-    document.getElementById('active-subject-title').textContent = subj.name;
-    document.getElementById('header-subtitle').textContent = `${subj.code || subj.id} · ${subj.name}`;
+    document.getElementById('subject-hub-view').classList.add('hidden'); //[cite: 3]
+    document.getElementById('tia-workspace-view').classList.remove('hidden'); //[cite: 3]
+    document.getElementById('back-to-hub-btn').classList.remove('hidden'); //[cite: 3]
+    document.getElementById('active-subject-title').textContent = subj.name; //[cite: 3]
+    document.getElementById('header-subtitle').textContent = `${subj.code || subj.id} · ${subj.name}`; //[cite: 3]
 
-    prepareSubjectFlashcards(subj);
-    updateGlobalStatsUI();
-    renderMath(document.getElementById('tia-workspace-view'));
+    prepareSubjectFlashcards(subj); //[cite: 3]
+    updateGlobalStatsUI(); //[cite: 3]
+    renderMath(document.getElementById('tia-workspace-view')); //[cite: 3]
 }
 
         function openSubjectModal() {
@@ -2364,36 +2372,155 @@ function guardarClaveGroq() {
     showToast('API Key guardada localmente', 'success');
 }
 
-function cargarSiguientePreguntaDev() {
-    // Si tu config.json ya tiene open_questions las toma; si no, usa el banco base de respaldo
-    const questions = activeSubject?.open_questions || [
-        {
-            id: 'DEV-1',
-            title: 'Manejo de Restricciones en PSO',
-            block: 'B1',
-            question: 'Explica detalladamente cómo gestiona el algoritmo PSO las restricciones de ecuación ($g_k(x) = 0$) frente a las restricciones de inecuación ($g_k(x) \\le 0$). ¿Por qué no se tratan de la misma forma matemáticamente?',
-            key_points: [
-                'Penalización exterior exponencial para igualdades (lambda * e^{|g_k(x)|^2})',
-                'Barrera estricta infinita para inecuaciones si se infringe la región factible',
-                'Justificación: la probabilidad de alcanzar g_k(x)=0 exactamente en espacios continuos es casi nula'
-            ],
-            reference_context: 'Para restricciones de igualdad g_k(x)=0 se aplica penalización exponencial C_Nuevo = C_Original + lambda * exp(|g_k(x)|^2). Para inecuaciones g_k(x)<=0 se asigna infinito si no cumple y C_Original si cumple.'
-        },
-        {
-            id: 'DEV-2',
-            title: 'Mecanismo de Mutación y Crossover en DE',
-            block: 'B2',
-            question: 'Analiza el papel del parámetro $j_{rand}$ durante el cruce binomial en Evolución Diferencial y explica por qué es necesario junto con la constante de cruce $CR$.',
-            key_points: [
-                'Garantizar que al menos un gen proceda del vector mutante',
-                'Evitar que el vector de prueba sea idéntico al vector padre cuando CR es pequeño o cero',
-                'Preservación de la diversidad genética y exploración'
-            ],
-            reference_context: 'El índice j_rand asegura que el vector de prueba herede al menos una coordenada del vector mutante incluso si CR = 0, evitando clones sin mutación.'
-        }
-    ];
+let fullDevBank = []; // Variable global de respaldo
 
-    preguntaDevActiva = questions[Math.floor(Math.random() * questions.length)];
+function cargarSiguientePreguntaDev() {
+    // 1. Prioriza el banco cargado en la variable global o en activeSubject
+    const questions = (fullDevBank && fullDevBank.length > 0)
+        ? fullDevBank
+        : ((activeSubject && activeSubject.open_questions && activeSubject.open_questions.length > 0)
+            ? activeSubject.open_questions
+            : [
+                {
+                    id: 'DEV-PSO-01',
+                    block: 'B1',
+                    title: 'Fundamentos y Cinemática de PSO',
+                    question: 'Explica en detalle el algoritmo Particle Swarm Optimization (PSO). Describe sus 5 pasos secuenciales, escribe y explica su formulación cinemática (velocidad y posición) y define el papel de cada uno de sus parámetros ($w, c_1, c_2, r_1, r_2$).',
+                    key_points: [
+                        '5 pasos: Inicialización aleatoria, evaluación de aptitud f(x), actualización de memorias (pbest y gbest), actualización cinemática, criterio de parada.',
+                        'Ecuaciones: v_i(t+1) = w*v_i(t) + c1*r1*(pbest - x_i(t)) + c2*r2*(gbest - x_i(t)) y x_i(t+1) = x_i(t) + v_i(t+1).',
+                        'Inercia w: alto (~0.8-1.2) exploración; bajo (~0.2-0.4) explotación local.',
+                        'c1 personal/cognitivo, c2 global/social, r1 y r2 uniformes U(0,1).'
+                    ],
+                    reference_context: 'Pasos de PSO: inicialización, evaluación, memorias, cinemática y parada. Inercia w regula exploración/explotación. c1 atrae a pbest, c2 a gbest.'
+                },
+                {
+                    id: 'DEV-PSO-02',
+                    block: 'B1',
+                    title: 'Restricciones y Análisis Crítico de PSO',
+                    question: '¿Cómo gestiona el algoritmo PSO las restricciones de ecuación ($g_k(x) = 0$) frente a las restricciones de inecuación ($g_k(x) \\le 0$)? Explica además sus aspectos positivos (+) y negativos (-).',
+                    key_points: [
+                        'Ecuación g_k(x) = 0: penalización exponencial exterior C_nuevo = C_original + lambda * exp(|g_k(x)|^2).',
+                        'Inecuación g_k(x) <= 0: barrera estricta infinita (infinito si infringe, C_original si cumple).',
+                        'Positivos: independiente de derivadas, evade mínimos locales, mejora monótona (gbest nunca empeora).',
+                        'Negativos: voracidad computacional, mala escalabilidad en alta dimensión, sin garantía de óptimo global.'
+                    ],
+                    reference_context: 'Ecuación con término exponencial lambda*exp(|gk|^2). Inecuación con barrera infinita. Positivos: sin derivadas, mejora monótona. Negativos: voraz computacionalmente.'
+                },
+                {
+                    id: 'DEV-DE-01',
+                    block: 'B2',
+                    title: 'Mecanismo y Etapas de Evolución Diferencial (DE)',
+                    question: 'Explica los pasos secuenciales de Evolución Diferencial (DE) bajo el esquema $DE/rand/1$: mutación, cruce binomial con la importancia de $j_{rand}$ y selección elitista uno a uno.',
+                    key_points: [
+                        'Mutación: v_i,G = x_r1,G + F*(x_r2,G - x_r3,G) con r1!=r2!=r3!=i y F en (0,2).',
+                        'Cruce binomial: hereda del mutante si rand <= CR o j = j_rand; sino del padre x.',
+                        'j_rand garantiza matemáticamente que al menos un gen proceda del mutante incluso con CR = 0.',
+                        'Selección elitista uno a uno: sustitución si f(u) <= f(x).'
+                    ],
+                    reference_context: 'Mutación DE/rand/1 con diferencia escalada F. Cruce binomial con j_rand obligatorio. Selección uno a uno elitista.'
+                },
+                {
+                    id: 'DEV-CASOS-01',
+                    block: 'B1/B2',
+                    title: 'Casos de Uso: PSO vs. DE vs. Algoritmos Genéticos (GA)',
+                    question: 'Compara el ámbito de aplicación de PSO, DE y GA. ¿En qué tipo de problemas de ingeniería destaca cada uno?',
+                    key_points: [
+                        'PSO: Espacios continuos R^D (sintonización PID, trayectorias continuas B-Splines, despacho económico).',
+                        'DE: Espacios continuos no lineales, no convexos y con valles complejos donde se requiere gran robustez global.',
+                        'GA: Espacios discretos, combinatorios o puramente binarios (rutas TSP, secuenciación de tareas/scheduling).'
+                    ],
+                    reference_context: 'PSO continuo (PID). DE continuo multimodal complejo. GA combinatorio y discreto.'
+                },
+                {
+                    id: 'DEV-DL-01',
+                    block: 'B3',
+                    title: 'Ecosistema IA: IA, Machine Learning, Big Data y Redes Neuronales',
+                    question: 'Establece la relación jerárquica y define Inteligencia Artificial (IA), Machine Learning (ML), Big Data y Redes Neuronales Artificiales.',
+                    key_points: [
+                        'IA: Campo general que engloba sistemas capaces de tareas cognitivas humanas.',
+                        'Machine Learning: Subconjunto de la IA centrado en aprender de datos sin programación explícita.',
+                        'Redes Neuronales / Deep Learning: Subconjunto del ML con arquitecturas multicapa conexionistas.',
+                        'Big Data: Ecosistema y volumen masivo de datos necesario para alimentar el entrenamiento profundo.'
+                    ],
+                    reference_context: 'IA paraguas global -> Machine Learning subcampo -> Redes Neuronales / Deep Learning subconjunto. Big Data infraestructura de soporte.'
+                },
+                {
+                    id: 'DEV-DL-02',
+                    block: 'B3',
+                    title: 'Anatomía de una Neurona y Backpropagation',
+                    question: 'Explica en qué consiste una neurona artificial (entradas, pesos, bias, activación) y el funcionamiento de Backpropagation y la Regla Delta.',
+                    key_points: [
+                        'Estructura: entradas x_i, pesos w_ij, sesgo b, combinación z = sum(w*x)+b y activación f(z).',
+                        'Forward pass: propagación hacia adelante hasta la salida.',
+                        'Cálculo del error con respecto a la etiqueta real.',
+                        'Backward pass: ajuste de pesos en sentido contrario al gradiente (Delta w = -eta * dE/dw) requiriendo funciones derivables.'
+                    ],
+                    reference_context: 'Neurona con suma ponderada + bias y función de activación. Backpropagation aplica la regla de la cadena para descender por el gradiente del error.'
+                },
+                {
+                    id: 'DEV-DL-03',
+                    block: 'B3',
+                    title: 'Las 5 Funciones de Activación del Temario Oficial',
+                    question: 'Enumera y explica las 5 funciones de activación del temario: Signo/Escalón, Lineal, Sigmoidea, Sigmoidea bipolar (centrada en cero) y ReLU.',
+                    key_points: [
+                        'Signo/Escalón: binaria, derivada nula (no apta para Backpropagation).',
+                        'Lineal: f(x)=x, derivada constante, múltiples capas colapsan a una sola.',
+                        'Sigmoidea: 1/(1+e^-x), rango (0,1), continua y derivable para Backpropagation.',
+                        'Sigmoidea bipolar: rango (-1,1), simétrica y centrada en cero.',
+                        'ReLU: max(0,x), limpia negativos a 0, computacionalmente eficiente y estándar en capas ocultas.'
+                    ],
+                    reference_context: 'Funciones de activación: Signo, Lineal, Sigmoidea, Sigmoidea bipolar y ReLU.'
+                },
+                {
+                    id: 'DEV-CNN-01',
+                    block: 'B3',
+                    title: 'Redes Convolucionales (CNN) y Regularización',
+                    question: '¿Por qué fallan las MLP clásicas con imágenes y se usan CNN? Explica Kernel, Padding, Stride, Max Pooling, Flattening y Dropout.',
+                    key_points: [
+                        'Fallo MLP: Explosión de parámetros y falta de invariancia espacial traslacional.',
+                        'Kernel: matriz filtro que extrae mapas de características.',
+                        'Padding (borde de ceros para no perder resolución) y Stride (paso del filtro).',
+                        'Max Pooling: submuestreo por bloques tomando el valor máximo; Flattening: pasa 2D a vector 1D.',
+                        'Dropout: apaga neuronas aleatoriamente para evitar sobreajuste (overfitting).'
+                    ],
+                    reference_context: 'CNN preserva relaciones espaciales 2D. Kernel, Padding, Stride, Pooling reductor, Flattening a vector y Dropout regularizador.'
+                },
+                {
+                    id: 'DEV-DATA-01',
+                    block: 'B3',
+                    title: 'División de Datasets y Tipos de Variables',
+                    question: 'Explica los porcentajes y objetivo de Train, Validation y Test. Distingue variables nominales (Entropía Cruzada) vs. ordinales/continuas (MSE).',
+                    key_points: [
+                        'Train (70-80%): Ajuste directo de pesos.',
+                        'Validation (10-15%): Ajuste de hiperparámetros y parada temprana (Early Stopping).',
+                        'Test (10-15%): Medición de generalización real final.',
+                        'Variables continuas y ordinales: poseen orden/magnitud, usan MSE para penalizar distancia.',
+                        'Variables nominales: sin orden, usan Entropía Cruzada Categórica con SoftMax.'
+                    ],
+                    reference_context: 'Train 70-80%, Validation 10-15%, Test 10-15%. Nominales con Entropía Cruzada. Ordinales y continuas con MSE.'
+                },
+                {
+                    id: 'DEV-TRANS-01',
+                    block: 'B4',
+                    title: 'Arquitectura Transformer y Auto-Atención',
+                    question: '¿Qué ventaja tiene el Transformer frente a las RNN? Explica Embeddings, Codificación Posicional (Positional Encoding) y Auto-Atención (Self-Attention).',
+                    key_points: [
+                        'Ventaja: Paralelismo total de la secuencia frente a la lectura secuencial token a token de las RNN.',
+                        'Embeddings: Representación vectorial densa y continua de palabras.',
+                        'Positional Encoding: Señal inyectada para dotar al modelo de orden posicional.',
+                        'Self-Attention: Matrices Q, K, V para ponderar relaciones entre todas las palabras de golpe.'
+                    ],
+                    reference_context: 'Transformer procesa en paralelo. Usa Embeddings + Positional Encoding + matrices de Auto-Atención (Q, K, V).'
+                }
+            ]);
+
+    // Seleccionar pregunta aleatoria asegurando que no repita la misma inmediata
+    let siguiente = questions[Math.floor(Math.random() * questions.length)];
+    if (questions.length > 1 && preguntaDevActiva && siguiente.id === preguntaDevActiva.id) {
+        siguiente = questions[(questions.indexOf(siguiente) + 1) % questions.length];
+    }
+    preguntaDevActiva = siguiente;
 
     document.getElementById('dev-question-title').textContent = preguntaDevActiva.title;
     document.getElementById('dev-block-badge').textContent = `Bloque ${preguntaDevActiva.block}`;
@@ -2407,7 +2534,6 @@ function cargarSiguientePreguntaDev() {
     document.getElementById('dev-result-box').classList.add('hidden');
     renderMath(document.getElementById('module-ai-dev'));
 }
-
 async function evaluarRespuestaDev() {
     const respuesta = document.getElementById('dev-user-answer').value.trim();
     const apiKey = document.getElementById('groq-api-key').value.trim();
