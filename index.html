@@ -314,7 +314,7 @@
                 </div>
             </div>
 
-            <!-- Right Login Form Column -->
+           <!-- Right Login Form Column -->
             <div class="lg:col-span-6 p-8 sm:p-10 flex flex-col justify-center">
                 <div class="mb-6">
                     <h2 class="text-xl font-bold text-white">Iniciar Sesión</h2>
@@ -343,7 +343,7 @@
 
                     <div id="login-error-box" class="hidden p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
                         <i class="fa-solid fa-triangle-exclamation text-rose-400"></i>
-                        <span id="login-error-text">Credenciales no autorizadas.</span>
+                        <span id="login-error-text">Credenciales incorrectas o usuario no autorizado.</span>
                     </div>
 
                     <button type="submit" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-sm shadow-lg shadow-blue-600/25 transition flex items-center justify-center gap-2">
@@ -352,31 +352,13 @@
                     </button>
                 </form>
 
-                <!-- Quick Access / Owner Demo Section -->
-                <div class="mt-6 pt-6 border-t border-slate-800">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-[11px] font-semibold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
-                            <i class="fa-solid fa-bolt"></i> Acceso Rápido Propietario / Demo
-                        </span>
-                        <button onclick="promptMasterAdminKey()" class="text-[11px] text-blue-400 hover:underline">
-                            ¿Gestionar Whitelist?
-                        </button>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-2">
-                        <button onclick="quickAdminLogin()" class="py-2.5 px-3 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-xs font-semibold transition flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-user-shield"></i> Entrar como Admin
-                        </button>
-                        <button onclick="quickStudentLogin()" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-medium transition flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-user-graduate"></i> Demo Compañero
-                        </button>
-                    </div>
-                    <p class="text-[11px] text-slate-500 mt-3 text-center">
-                        Admin por defecto: <code class="text-slate-300">admin@ehu.eus</code> / Contraseña: <code class="text-slate-300">ADMIN-TIA-2026</code>
-                    </p>
+                <div class="mt-6 pt-4 border-t border-slate-800 text-center">
+                    <button onclick="promptMasterAdminKey()" class="text-xs text-blue-400 hover:text-blue-300 transition flex items-center justify-center gap-1.5 mx-auto">
+                        <i class="fa-solid fa-lock text-[10px]"></i>
+                        <span>Panel de administración</span>
+                    </button>
                 </div>
             </div>
-        </div>
-    </div>
 
     <!-- ==================== MAIN AUTHENTICATED APP WRAPPER ==================== -->
     <div id="app-wrapper" class="hidden flex-1 flex flex-col min-h-screen">
