@@ -84,14 +84,14 @@
     "title": "Las 5 Funciones de Activación Principales",
     "question": "Enumera y explica en detalle 5 funciones de activación fundamentales en Deep Learning: fórmula matemática, rango de salida y ámbito de uso de cada una.",
     "key_points": [
-      "1. Sigmoide (Logística): sigma(x) = 1 / (1 + exp(-x)). Rango (0, 1). Uso: Clasificación binaria en la capa final o puertas en RNN/LSTM. Inconveniente: desvanecimiento de gradiente.",
-      "2. ReLU (Rectified Linear Unit): f(x) = max(0, x). Rango [0, +inf). Uso estándar en capas ocultas de CNN y MLP por ser computacionalmente rápida y reducir el desvanecimiento de gradiente.",
-      "3. Leaky ReLU: f(x) = max(alpha*x, x) con alpha ~ 0.01. Rango (-inf, +inf). Evita el problema de la 'neurona muerta' (Dying ReLU) permitiendo un pequeño gradiente en negativos.",
-      "4. Tangente Hiperbólica (Tanh): tanh(x) = (exp(x) - exp(-x)) / (exp(x) + exp(-x)). Rango (-1, 1). Centrada en cero, superior a sigmoide en capas intermedias.",
-      "5. SoftMax: sigma(z_i) = exp(z_i) / sum(exp(z_j)). Rango (0, 1) sumando 100%. Uso indispensable en la capa de salida de problemas de clasificación multiclase."
+      "1. Escalón / Signo: f(x) = 1 si x >= 0 (o x > 0) y -1 (o 0) si x < 0. Rango binario. No es derivable en 0 y su derivada es nula en el resto; no sirve para Backpropagation (solo para el Perceptrón simple).",
+      "2. Lineal (Identidad): f(x) = x (o f(x) = a*x). Rango (-inf, +inf). Su derivada es constante (f'(x) = 1). Inconveniente: componer múltiples capas lineales equivale matemáticamente a una única capa lineal, perdiendo la capacidad de resolver problemas no lineales.",
+      "3. Sigmoidea (Logística): f(x) = 1 / (1 + exp(-x)). Rango (0, 1). No lineal y derivable, lo que permite aplicar la regla de la cadena en Backpropagation. Mapea la salida a un valor interpretativo entre 0 y 1.",
+      "4. Sigmoidea centrada en cero (Bipolar / simétrica): f(x) = (2 / (1 + exp(-x))) - 1 (o tangente hiperbólica). Rango (-1, 1). Mantiene la derivabilidad pero está centrada en 0, evitando que las actualizaciones de los gradientes se sesguen siempre hacia un único signo.",
+      "5. ReLU (Rectified Linear Unit): f(x) = max(0, x). Rango [0, +inf). Pone a 0 cualquier valor negativo y mantiene la identidad para positivos. Derivada simple (0 para x < 0, 1 para x > 0), gran eficiencia computacional y estándar en capas ocultas de redes profundas."
     ],
-    "reference_context": "Funciones de activación: Sigmoide (1/(1+e^-x), rango 0 a 1, probabilidad binaria). Tanh ((e^x-e^-x)/(e^x+e^-x), rango -1 a 1, centrada en cero). ReLU (max(0,x), limpia negativos a cero, capa oculta estándar). Leaky ReLU (max(alpha*x, x), previene neuronas muertas). SoftMax (e^z_i / sum(e^z), convierte logits brutos en probabilidades normalizadas que suman 1 para clasificación multiclase)."
-  },
+    "reference_context": "Funciones de activación del temario: 1. Signo / Escalón (salida discreta/binaria, derivada nula que impide Backpropagation). 2. Lineal f(x)=x (derivada constante, capas múltiples colapsan en una sola). 3. Sigmoidea f(x) = 1/(1+e^-x) (rango 0 a 1, continua y derivable, adecuada para propagación de gradiente). 4. Sigmoidea bipolar centrada en cero (rango -1 a 1, simétrica respecto al origen). 5. ReLU f(x) = max(0, x) (limpia valores negativos a 0 y preserva los positivos, computacionalmente eficiente)."
+  }
   {
     "id": "DEV-CNN-01",
     "block": "B3",
