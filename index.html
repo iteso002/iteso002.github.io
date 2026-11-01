@@ -1488,18 +1488,19 @@ async function initAppData() {
         console.warn('Cargando configuración interna de respaldo.');
     }
 
+    // 1. PRIMERO inicializamos las variables base y la lista de asignaturas
     const source = loadedData || DEFAULT_CONFIG;
     appConfig = source.app_config || DEFAULT_CONFIG.app_config;
     authorizedUsers = source.admin_users || DEFAULT_CONFIG.admin_users;
     subjectsList = source.subjects || DEFAULT_CONFIG.subjects;
 
-    // --- Carga del banco ampliado de preguntas ---
+    // 2. SEGUNDO: Cargar las 150 preguntas tipo test (questions_tia.json)
     try {
         const qRes = await fetch('./questions_tia.json', { cache: 'no-store' });
         if (qRes.ok) {
             const externalQuestions = await qRes.json();
             if (Array.isArray(externalQuestions) && externalQuestions.length > 0) {
-                fullTiaBank = externalQuestions; // Asigna a la variable global
+                fullTiaBank = externalQuestions;
 
                 const tiaSubj = subjectsList.find(s => (s.code || s.id) === 'TIA');
                 if (tiaSubj) {
@@ -1512,6 +1513,23 @@ async function initAppData() {
         }
     } catch (e) {
         console.warn('No se pudo cargar questions_tia.json; usando preguntas por defecto.');
+    }
+
+    // 3. TERCERO: Cargar las preguntas de desarrollo (preguntas_desarrollo_tia.json)
+    try {
+        const devRes = await fetch('./preguntas_desarrollo_tia.json', { cache: 'no-store' });
+        if (devRes.ok) {
+            const devData = await devRes.json();
+            const tiaSubj = subjectsList.find(s => (s.code || s.id) === 'TIA');
+            if (tiaSubj && Array.isArray(devData)) {
+                tiaSubj.open_questions = devData;
+            }
+            if (activeSubject && (activeSubject.code === 'TIA' || activeSubject.id === 'TIA')) {
+                activeSubject.open_questions = devData;
+            }
+        }
+    } catch (e) {
+        console.warn('No se pudo cargar preguntas_desarrollo_tia.json');
     }
 }
 
