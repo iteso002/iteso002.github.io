@@ -13,6 +13,12 @@
       "role": "admin"
     },
     {
+      "username": "Panchito",
+      "email": "joacho005@ikasle.ehu.eus",
+      "password": "ElColetas",
+      "role": "student"
+    },
+    {
       "username": "Lobini",
       "email": "ibarron007@ikasle.ehu.eus",
       "password": "LobiniBizcochini",
