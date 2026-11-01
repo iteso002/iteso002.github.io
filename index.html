@@ -42,7 +42,6 @@
     </script>
 
     <style>
-        /* Custom Styles for 3D Flashcards & Smooth UI */
         body {
             font-family: 'Inter', sans-serif;
         }
@@ -63,7 +62,6 @@
         .flipped {
             transform: rotateY(180deg);
         }
-        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -82,113 +80,14 @@
             overflow-x: auto;
             padding: 0.5rem 0;
         }
-        @keyframes pulse-subtle {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.75; }
-        }
-        .animate-pulse-subtle {
-            animation: pulse-subtle 2.5s infinite ease-in-out;
-        }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200 selection:bg-blue-600 selection:text-white">
 
-    <!-- ==================== TOAST NOTIFICATION CONTAINER ==================== -->
+    <!-- TOAST NOTIFICATION CONTAINER -->
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
 
-    <!-- ==================== MODAL: ADMIN ACCESS & WHITELIST MANAGER ==================== -->
-    <div id="admin-modal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
-            <div class="px-6 py-4 bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center">
-                        <i class="fa-solid fa-user-shield text-blue-300 text-lg"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-lg">Panel de Control de Accesos (Whitelist)</h3>
-                        <p class="text-xs text-blue-200">Decide qué compañeros pueden entrar con su correo y contraseña</p>
-                    </div>
-                </div>
-                <button onclick="closeAdminModal()" class="text-slate-300 hover:text-white p-2 rounded-lg hover:bg-white/10 transition">
-                    <i class="fa-solid fa-xmark text-xl"></i>
-                </button>
-            </div>
-
-            <div class="p-6 overflow-y-auto space-y-6 flex-1">
-                <!-- Master Key Status -->
-                <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                        <span class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Clave Maestra de Propietario</span>
-                        <p class="text-sm text-slate-600 dark:text-slate-300 mt-0.5">Usa esta clave para desbloquear este panel desde cualquier dispositivo: <code class="font-mono font-bold bg-amber-500/20 px-2 py-0.5 rounded text-amber-700 dark:text-amber-300" id="display-master-key">ADMIN-TIA-2026</code></p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span id="cloud-sync-badge" class="px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> Sincronización Activa
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Add New Authorized Classmate Form -->
-                <div class="bg-slate-100 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700/70">
-                    <h4 class="font-semibold text-sm mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-user-plus text-blue-500"></i> Autorizar Nuevo Compañero / Usuario
-                    </h4>
-                    <form onsubmit="handleAddAuthorizedUser(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-3">
-                        <div class="sm:col-span-3">
-                            <input type="text" id="new-user-name" required placeholder="Nombre (ej. Jon)" class="w-full px-3 py-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                        </div>
-                        <div class="sm:col-span-4">
-                            <input type="email" id="new-user-email" required placeholder="correo@ikasle.ehu.eus" class="w-full px-3 py-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                        </div>
-                        <div class="sm:col-span-3">
-                            <input type="text" id="new-user-pass" required placeholder="Contraseña asignada" class="w-full px-3 py-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sm font-mono focus:ring-2 focus:ring-blue-500 outline-none">
-                        </div>
-                        <div class="sm:col-span-2">
-                            <button type="submit" class="w-full h-full px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm rounded-lg transition flex items-center justify-center gap-1.5 shadow">
-                                <i class="fa-solid fa-plus"></i> Añadir
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Whitelist Table -->
-                <div>
-                    <div class="flex items-center justify-between mb-3">
-                        <h4 class="font-semibold text-sm flex items-center gap-2">
-                            <i class="fa-solid fa-users text-emerald-500"></i> Usuarios con Acceso Autorizado (<span id="whitelist-count">0</span>)
-                        </h4>
-                        <button onclick="exportWhitelistJSON()" class="text-xs px-3 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition flex items-center gap-1.5">
-                            <i class="fa-solid fa-download"></i> Exportar Lista JSON
-                        </button>
-                    </div>
-                    <div class="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden">
-                        <table class="w-full text-left border-collapse text-sm">
-                            <thead>
-                                <tr class="bg-slate-100 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 text-xs uppercase">
-                                    <th class="py-3 px-4">Compañero</th>
-                                    <th class="py-3 px-4">Correo Electrónico</th>
-                                    <th class="py-3 px-4">Contraseña</th>
-                                    <th class="py-3 px-4">Estado</th>
-                                    <th class="py-3 px-4 text-right">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="whitelist-table-body" class="divide-y divide-slate-200 dark:divide-slate-800">
-                                <!-- Populated via JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div class="px-6 py-3 bg-slate-100 dark:bg-slate-900/90 border-t border-slate-200 dark:border-slate-800 flex justify-end">
-                <button onclick="closeAdminModal()" class="px-5 py-2 rounded-xl bg-slate-800 dark:bg-slate-700 text-white text-sm font-medium hover:bg-slate-700 transition">
-                    Cerrar Panel
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== MODAL: ADD NEW SUBJECT (ESCALABILIDAD) ==================== -->
+    <!-- MODAL: AÑADIR ASIGNATURA -->
     <div id="subject-modal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
             <div class="px-6 py-4 bg-gradient-to-r from-indigo-900 to-slate-900 text-white flex items-center justify-between">
@@ -196,7 +95,7 @@
                     <i class="fa-solid fa-folder-plus text-indigo-400 text-xl"></i>
                     <div>
                         <h3 class="font-bold text-lg">Añadir o Ampliar Asignatura</h3>
-                        <p class="text-xs text-indigo-200">Crea una nueva asignatura para el Máster o importa preguntas JSON</p>
+                        <p class="text-xs text-indigo-200">Crea una nueva asignatura para el Máster</p>
                     </div>
                 </div>
                 <button onclick="closeSubjectModal()" class="text-slate-300 hover:text-white p-2 rounded-lg">
@@ -243,9 +142,8 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 mb-1">Banco de Preguntas Inicial (Opcional - Formato JSON)</label>
-                    <textarea id="subj-json" rows="4" placeholder='[{"q":"¿Qué matriz relaciona velocidades articulares y cartesianas?","options":["Matriz Jacobiana","Matriz de Rotación","Hessiano","Inercia"],"ans":0,"hint":"Piensa en derivadas parciales cinemáticas","exp":"El Jacobiano relaciona velocidades articulares con velocidades del efector final."}]' class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs font-mono"></textarea>
-                    <p class="text-[11px] text-slate-500 mt-1">Si lo dejas vacío, se creará con una plantilla de ejemplo editable para que puedas añadir preguntas después.</p>
+                    <label class="block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 mb-1">Banco de Preguntas Inicial (Opcional - JSON)</label>
+                    <textarea id="subj-json" rows="4" placeholder='[{"question":"¿Pregunta?","options":["A","B","C","D"],"answer":0,"hint":"Pista","explanation":"Explicación"}]' class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs font-mono"></textarea>
                 </div>
 
                 <div class="pt-3 flex justify-end gap-3 border-t border-slate-200 dark:border-slate-800">
@@ -256,9 +154,8 @@
         </div>
     </div>
 
-    <!-- ==================== VIEW 1: LOGIN GATEWAY (CONTROL DE ACCESO) ==================== -->
+    <!-- VIEW 1: LOGIN GATEWAY (ACCESO ESTRICTO) -->
     <div id="login-view" class="min-h-screen flex flex-col justify-center items-center p-4 relative overflow-hidden bg-slate-950 text-white">
-        <!-- Decorative Engineering Grid Background -->
         <div class="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] opacity-60"></div>
         <div class="absolute -top-32 -left-32 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
         <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
@@ -284,7 +181,7 @@
                             </div>
                             <div>
                                 <strong class="text-white block">Simulador de Exámenes 10 / 25 / 50 Preguntas</strong>
-                                Niveles Fácil, Medio y Difícil con problemas numéricos generados dinámicamente sin repetición.
+                                Niveles Fácil, Medio y Difícil con problemas numéricos parametrizados en tiempo real.
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
@@ -293,7 +190,7 @@
                             </div>
                             <div>
                                 <strong class="text-white block">Retos Extra IA + Laboratorio en Vivo</strong>
-                                Casos prácticos de ingeniería, calculadoras de PSO, Evolución Diferencial, CNN y Funciones de Pérdida.
+                                Casos prácticos de ingeniería, calculadoras cinemáticas y fórmulas de coste.
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
@@ -301,8 +198,8 @@
                                 <i class="fa-solid fa-lock"></i>
                             </div>
                             <div>
-                                <strong class="text-white block">Acceso Privado para Compañeros</strong>
-                                Sistema Whitelist gestionado por el administrador para controlar quién entra a estudiar.
+                                <strong class="text-white block">Acceso Privado Protegido</strong>
+                                Entrada mediante autenticación segura con credenciales autorizadas.
                             </div>
                         </div>
                     </div>
@@ -314,19 +211,19 @@
                 </div>
             </div>
 
-           <!-- Right Login Form Column -->
+            <!-- Right Login Form Column -->
             <div class="lg:col-span-6 p-8 sm:p-10 flex flex-col justify-center">
                 <div class="mb-6">
                     <h2 class="text-xl font-bold text-white">Iniciar Sesión</h2>
-                    <p class="text-xs text-slate-400 mt-1">Introduce tu correo autorizado y contraseña para acceder al Hub.</p>
+                    <p class="text-xs text-slate-400 mt-1">Introduce tu correo o usuario y tu contraseña para acceder.</p>
                 </div>
 
                 <form onsubmit="handleLogin(event)" class="space-y-4">
                     <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Correo Electrónico</label>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Usuario o Correo Electrónico</label>
                         <div class="relative">
-                            <i class="fa-solid fa-envelope absolute left-3.5 top-3 text-slate-500 text-sm"></i>
-                            <input type="email" id="login-email" required placeholder="tu.correo@ikasle.ehu.eus" class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800/90 border border-slate-700 text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                            <i class="fa-solid fa-user absolute left-3.5 top-3 text-slate-500 text-sm"></i>
+                            <input type="text" id="login-email" required placeholder="correo@ikasle.ehu.eus o usuario" class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800/90 border border-slate-700 text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
                         </div>
                     </div>
 
@@ -351,22 +248,16 @@
                         <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </form>
-
-                <div class="mt-6 pt-4 border-t border-slate-800 text-center">
-                    <button onclick="promptMasterAdminKey()" class="text-xs text-blue-400 hover:text-blue-300 transition flex items-center justify-center gap-1.5 mx-auto">
-                        <i class="fa-solid fa-lock text-[10px]"></i>
-                        <span>Panel de administración</span>
-                    </button>
-                </div>
             </div>
+        </div>
+    </div>
 
-    <!-- ==================== MAIN AUTHENTICATED APP WRAPPER ==================== -->
+    <!-- MAIN AUTHENTICATED APP WRAPPER -->
     <div id="app-wrapper" class="hidden flex-1 flex flex-col min-h-screen">
 
         <!-- TOP NAVBAR -->
         <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
-                <!-- Left: Brand & Back to Subject Hub Button -->
                 <div class="flex items-center gap-3">
                     <div onclick="showSubjectHub()" class="cursor-pointer flex items-center gap-2.5 group">
                         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-extrabold text-lg shadow-md group-hover:scale-105 transition">
@@ -381,21 +272,14 @@
                         </div>
                     </div>
 
-                    <!-- Back to Subjects Menu Button (Visible when inside a subject) -->
                     <button id="back-to-hub-btn" onclick="showSubjectHub()" class="hidden ml-2 px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/50 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 border border-slate-200 dark:border-slate-700 text-xs font-semibold transition flex items-center gap-2 shadow-sm">
                         <i class="fa-solid fa-arrow-left"></i>
                         <span>Volver al Menú de Asignaturas</span>
                     </button>
                 </div>
 
-                <!-- Right: User Info, Admin Access, Theme Toggle, Logout -->
                 <div class="flex items-center gap-2 sm:gap-3">
-                    <button id="nav-admin-btn" onclick="openAdminModal()" class="hidden px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-600 dark:text-amber-400 border border-amber-500/30 text-xs font-semibold transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-user-shield"></i>
-                        <span class="hidden md:inline">Gestionar Accesos</span>
-                    </button>
-
-                    <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/70 text-xs">
+                    <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/70 text-xs">
                         <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                         <span id="current-user-badge" class="font-medium text-slate-700 dark:text-slate-300">Usuario</span>
                     </div>
@@ -412,9 +296,8 @@
             </div>
         </header>
 
-        <!-- ==================== VIEW 2: SUBJECT SELECTION HUB (MENÚ PRINCIPAL) ==================== -->
+        <!-- VIEW 2: SUBJECT SELECTION HUB -->
         <main id="subject-hub-view" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 space-y-8">
-            <!-- Hero Banner -->
             <div class="relative rounded-3xl bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 p-6 sm:p-10 text-white shadow-xl overflow-hidden border border-blue-500/20">
                 <div class="relative z-10 max-w-2xl">
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-200 text-xs font-semibold mb-3">
@@ -434,13 +317,9 @@
                     <button onclick="openSubjectModal()" class="px-4 py-2.5 rounded-xl bg-blue-800/50 hover:bg-blue-800/80 border border-blue-400/30 text-white font-semibold text-sm transition flex items-center gap-2">
                         <i class="fa-solid fa-plus"></i> Añadir Nueva Asignatura
                     </button>
-                    <button onclick="openAdminModal()" class="px-4 py-2.5 rounded-xl bg-slate-900/60 hover:bg-slate-900/90 border border-slate-700 text-amber-300 font-semibold text-sm transition flex items-center gap-2">
-                        <i class="fa-solid fa-user-lock"></i> Gestionar Compañeros Autorizados
-                    </button>
                 </div>
             </div>
 
-            <!-- Subject Cards Grid -->
             <div>
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-lg font-bold flex items-center gap-2">
@@ -449,16 +328,13 @@
                     <span class="text-xs text-slate-500 dark:text-slate-400">Haz clic en una asignatura activa para abrir sus módulos</span>
                 </div>
 
-                <div id="subjects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Populated dynamically via JS (TIA + expandable subjects) -->
-                </div>
+                <div id="subjects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
         </main>
 
-        <!-- ==================== VIEW 3: TIA SUBJECT WORKSPACE ==================== -->
+        <!-- VIEW 3: TIA SUBJECT WORKSPACE -->
         <div id="tia-workspace-view" class="hidden flex-1 flex flex-col max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
             
-            <!-- Subject Title & Navigation Tabs -->
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm">
                 <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-slate-200 dark:border-slate-800">
                     <div>
@@ -469,7 +345,6 @@
                         <h1 class="text-xl sm:text-2xl font-extrabold mt-1" id="active-subject-title">Técnicas Inteligentes de Aprendizaje</h1>
                     </div>
 
-                    <!-- Global Quick Stats -->
                     <div class="flex flex-wrap items-center gap-3">
                         <div class="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 flex items-center gap-2.5">
                             <i class="fa-solid fa-check-double text-emerald-500"></i>
@@ -489,13 +364,12 @@
                             <i class="fa-solid fa-layer-group text-purple-500"></i>
                             <div>
                                 <div class="text-[10px] uppercase text-slate-400 font-semibold">Flashcards Dominadas</div>
-                                <div class="text-sm font-bold" id="stat-cards-mastered">0 / 32</div>
+                                <div class="text-sm font-bold" id="stat-cards-mastered">0 / 25</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 4 Interactive Module Tabs -->
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 pt-4">
                     <button onclick="switchTiaTab('quiz')" id="tab-btn-quiz" class="tia-tab-btn px-4 py-3 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2.5 transition bg-blue-600 text-white shadow-md shadow-blue-600/20">
                         <i class="fa-solid fa-list-check text-base"></i>
@@ -516,21 +390,19 @@
                 </div>
             </div>
 
-            <!-- ==================== MODULE 1: CONFIGURABLE QUIZ (FÁCIL/MEDIO/DIFÍCIL & 10/25/50) ==================== -->
+            <!-- MODULE 1: CONFIGURABLE QUIZ -->
             <section id="module-quiz" class="space-y-6">
-                <!-- Quiz Setup Screen -->
                 <div id="quiz-setup-panel" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm">
                     <div class="max-w-3xl mx-auto space-y-6">
                         <div class="text-center space-y-2">
                             <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider">Simulador Oficial + Motor Algorítmico</span>
                             <h2 class="text-2xl font-extrabold">Configura tu Test de TIA</h2>
                             <p class="text-sm text-slate-500 dark:text-slate-400">
-                                Combina preguntas teóricas de todos los bloques del PDF con problemas numéricos parametrizados en tiempo real. ¡Incluso en el modo de 50 preguntas, cada ejercicio es único!
+                                Combina preguntas teóricas del temario oficial con ejercicios numéricos parametrizados en tiempo real.
                             </p>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                            <!-- Difficulty Selector -->
                             <div class="space-y-3">
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                                     1. Nivel de Dificultad
@@ -554,7 +426,6 @@
                                 </div>
                             </div>
 
-                            <!-- Question Count Selector (10 / 25 / 50) -->
                             <div class="space-y-3">
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                                     2. Cantidad de Preguntas
@@ -579,7 +450,6 @@
                             </div>
                         </div>
 
-                        <!-- Block Filter & Feedback Mode -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
@@ -613,9 +483,7 @@
                     </div>
                 </div>
 
-                <!-- Active Quiz Runner Panel -->
                 <div id="quiz-active-panel" class="hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
-                    <!-- Top Quiz Bar -->
                     <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
                         <div class="flex items-center gap-3">
                             <span id="active-quiz-badge-diff" class="px-3 py-1 rounded-full text-xs font-bold uppercase bg-blue-500/15 text-blue-500">Medio</span>
@@ -634,40 +502,27 @@
                         </div>
                     </div>
 
-                    <!-- Progress Bar -->
                     <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                         <div id="quiz-progress-bar" class="h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-300" style="width: 10%"></div>
                     </div>
 
-                    <!-- Question Statement -->
                     <div class="space-y-4">
                         <div id="quiz-question-text" class="text-base sm:text-lg font-bold leading-relaxed text-slate-800 dark:text-slate-100">
                             Cargando pregunta...
                         </div>
 
-                        <!-- Hint Button & Box -->
                         <div>
                             <button onclick="toggleQuizHint()" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 text-xs font-semibold transition">
                                 <i class="fa-regular fa-lightbulb"></i>
                                 <span>Necesito una Pista / Ayuda</span>
                             </button>
-                            <div id="quiz-hint-box" class="hidden mt-3 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-200 text-xs sm:text-sm leading-relaxed">
-                                <!-- Hint content -->
-                            </div>
+                            <div id="quiz-hint-box" class="hidden mt-3 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-200 text-xs sm:text-sm leading-relaxed"></div>
                         </div>
                     </div>
 
-                    <!-- Options List -->
-                    <div id="quiz-options-container" class="space-y-3 pt-2">
-                        <!-- Populated via JS -->
-                    </div>
+                    <div id="quiz-options-container" class="space-y-3 pt-2"></div>
+                    <div id="quiz-explanation-box" class="hidden p-5 rounded-2xl border text-sm leading-relaxed space-y-2"></div>
 
-                    <!-- Explanation Feedback Box -->
-                    <div id="quiz-explanation-box" class="hidden p-5 rounded-2xl border text-sm leading-relaxed space-y-2">
-                        <!-- Populated via JS -->
-                    </div>
-
-                    <!-- Navigation Footer -->
                     <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
                         <button id="quiz-prev-btn" onclick="navigateQuiz(-1)" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-sm font-semibold transition flex items-center gap-2 disabled:opacity-40">
                             <i class="fa-solid fa-chevron-left"></i> Anterior
@@ -678,7 +533,6 @@
                     </div>
                 </div>
 
-                <!-- Quiz Results Summary Panel -->
                 <div id="quiz-results-panel" class="hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
                     <div class="text-center max-w-xl mx-auto space-y-3">
                         <div id="results-icon-badge" class="w-16 h-16 rounded-2xl bg-emerald-500/20 text-emerald-500 flex items-center justify-center text-3xl mx-auto">
@@ -712,27 +566,24 @@
                         </div>
                     </div>
 
-                    <!-- Detailed Review List -->
                     <div class="pt-6 border-t border-slate-200 dark:border-slate-800">
                         <h3 class="font-bold text-base mb-4 flex items-center gap-2">
                             <i class="fa-solid fa-clipboard-check text-blue-500"></i> Revisión Detallada Pregunta por Pregunta
                         </h3>
-                        <div id="results-review-list" class="space-y-4">
-                            <!-- Populated via JS -->
-                        </div>
+                        <div id="results-review-list" class="space-y-4"></div>
                     </div>
                 </div>
             </section>
 
-            <!-- ==================== MODULE 2: RETOS EXTRA IA (PREGUNTAS INVENTADAS & INGENIERÍA) ==================== -->
+            <!-- MODULE 2: RETOS EXTRA IA -->
             <section id="module-extra" class="hidden space-y-6">
                 <div class="bg-gradient-to-r from-purple-900/90 via-indigo-900/90 to-slate-900 rounded-2xl p-6 text-white border border-purple-500/30 shadow-lg">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
-                            <span class="px-3 py-1 rounded-full bg-purple-500/20 border border-purple-400/30 text-purple-200 text-xs font-bold uppercase">Más allá de los apuntes · Casos de Examen Avanzados</span>
+                            <span class="px-3 py-1 rounded-full bg-purple-500/20 border border-purple-400/30 text-purple-200 text-xs font-bold uppercase">Casos de Examen Avanzados</span>
                             <h2 class="text-xl sm:text-2xl font-extrabold mt-2">Retos Extra de Ingeniería e Inteligencia Artificial</h2>
                             <p class="text-xs sm:text-sm text-purple-100/80 mt-1 max-w-3xl">
-                                Preguntas inéditas diseñadas específicamente para conectar la teoría de TIA con problemas reales de Control Automático, Robótica, Visión por Computador y Arquitecturas Profundas.
+                                Problemas técnicos aplicados a control industrial, robótica, visión artificial y arquitecturas profundas.
                             </p>
                         </div>
                         <div class="flex items-center gap-2 shrink-0">
@@ -747,23 +598,20 @@
                     </div>
                 </div>
 
-                <div id="extra-challenges-grid" class="grid grid-cols-1 gap-5">
-                    <!-- Populated via JS -->
-                </div>
+                <div id="extra-challenges-grid" class="grid grid-cols-1 gap-5"></div>
             </section>
 
-            <!-- ==================== MODULE 3: FLASHCARDS INTERACTIVAS 3D ==================== -->
+            <!-- MODULE 3: FLASHCARDS 3D -->
             <section id="module-flashcards" class="hidden space-y-6">
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-6">
-                    <!-- Controls Bar -->
                     <div class="flex flex-wrap items-center justify-between gap-4">
                         <div class="flex flex-wrap items-center gap-2">
-                            <button onclick="filterFlashcards('all')" class="fc-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-blue-600 text-white" data-block="all">Todas (32)</button>
+                            <button onclick="filterFlashcards('all')" class="fc-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-blue-600 text-white" data-block="all">Todas</button>
                             <button onclick="filterFlashcards('B1')" class="fc-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" data-block="B1">Bloque 1: PSO</button>
                             <button onclick="filterFlashcards('B2')" class="fc-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" data-block="B2">Bloque 2: DE</button>
                             <button onclick="filterFlashcards('B3')" class="fc-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" data-block="B3">Bloque 3: Redes y CNN</button>
                             <button onclick="filterFlashcards('B4')" class="fc-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" data-block="B4">Bloque 4: Transformers & Loss</button>
-                            <button onclick="filterFlashcards('pending')" class="fc-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30" data-block="pending">🔄 Pendientes de Repaso</button>
+                            <button onclick="filterFlashcards('pending')" class="fc-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30" data-block="pending">🔄 Pendientes</button>
                         </div>
 
                         <button onclick="shuffleFlashcards()" class="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold flex items-center gap-1.5 transition">
@@ -771,49 +619,39 @@
                         </button>
                     </div>
 
-                    <!-- 3D Flashcard Stage -->
                     <div class="max-w-2xl mx-auto py-2">
                         <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-2 px-1">
-                            <span id="fc-counter-label">Tarjeta 1 de 32</span>
+                            <span id="fc-counter-label">Tarjeta 1 de 25</span>
                             <span id="fc-status-badge" class="font-semibold text-slate-400">Sin evaluar</span>
                         </div>
 
                         <div onclick="flipCurrentFlashcard()" class="perspective-1000 w-full h-80 sm:h-96 cursor-pointer select-none">
                             <div id="flashcard-3d-inner" class="transform-style-3d relative w-full h-full rounded-3xl shadow-xl">
-                                <!-- Front Side -->
                                 <div class="backface-hidden absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950 border-2 border-slate-700/80 rounded-3xl p-6 sm:p-10 flex flex-col justify-between text-white">
                                     <div class="flex items-center justify-between">
                                         <span id="fc-front-tag" class="px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-mono font-semibold">Bloque 1 · PSO</span>
                                         <span class="text-xs text-slate-400 flex items-center gap-1"><i class="fa-solid fa-rotate"></i> Clic para girar</span>
                                     </div>
                                     <div class="my-auto text-center space-y-4">
-                                        <h3 id="fc-front-question" class="text-lg sm:text-2xl font-bold leading-snug">
-                                            ¿Pregunta de la tarjeta?
-                                        </h3>
+                                        <h3 id="fc-front-question" class="text-lg sm:text-2xl font-bold leading-snug">¿Pregunta?</h3>
                                         <p id="fc-front-hint" class="text-xs text-amber-300/90 italic"></p>
                                     </div>
                                     <div class="text-center text-[11px] text-slate-400">
-                                        Pulsa <kbd class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 font-mono">Espacio</kbd> o haz clic en la tarjeta para ver la respuesta
+                                        Pulsa <kbd class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 font-mono">Espacio</kbd> o haz clic para ver la respuesta
                                     </div>
                                 </div>
 
-                                <!-- Back Side -->
                                 <div class="backface-hidden rotate-y-180 absolute inset-0 bg-gradient-to-br from-indigo-950 via-slate-900 to-emerald-950 border-2 border-emerald-500/40 rounded-3xl p-6 sm:p-10 flex flex-col justify-between text-white overflow-y-auto">
                                     <div class="flex items-center justify-between">
-                                        <span class="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-semibold">Respuesta Oficial Apuntes TIA</span>
+                                        <span class="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-semibold">Respuesta Oficial</span>
                                         <span class="text-xs text-slate-400"><i class="fa-solid fa-rotate"></i> Volver al frente</span>
                                     </div>
-                                    <div id="fc-back-answer" class="my-auto text-sm sm:text-base leading-relaxed space-y-2 text-slate-100">
-                                        <!-- Answer content -->
-                                    </div>
-                                    <div class="text-center text-xs text-emerald-300/80 font-medium">
-                                        Evalúa abajo si ya dominas esta tarjeta
-                                    </div>
+                                    <div id="fc-back-answer" class="my-auto text-sm sm:text-base leading-relaxed space-y-2 text-slate-100"></div>
+                                    <div class="text-center text-xs text-emerald-300/80 font-medium">Evalúa tu dominio abajo</div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Flashcard Navigation & Self-Assessment Controls -->
                         <div class="mt-6 flex flex-wrap items-center justify-between gap-3">
                             <button onclick="moveFlashcard(-1)" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs sm:text-sm font-semibold transition flex items-center gap-2">
                                 <i class="fa-solid fa-arrow-left"></i> Anterior
@@ -836,12 +674,9 @@
                 </div>
             </section>
 
-            <!-- ==================== MODULE 4: FORMULARIO & LABORATORIO INTERACTIVO ==================== -->
+            <!-- MODULE 4: FORMULARIO Y CALCULADORAS -->
             <section id="module-lab" class="hidden space-y-6">
-                <!-- Interactive Calculators Grid -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    
-                    <!-- Calculator 1: PSO Kinematic & Constraint Penalty Simulator -->
                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
                         <div class="flex items-center justify-between">
                             <h3 class="font-bold text-base flex items-center gap-2">
@@ -851,7 +686,7 @@
                             <span class="text-xs font-mono text-slate-400">Ec. (1), (2) y (4)</span>
                         </div>
                         <p class="text-xs text-slate-500 dark:text-slate-400">
-                            Modifica los parámetros para comprobar cómo cambia la velocidad $v_i(t+1)$ y posición $x_i(t+1)$ de una partícula:
+                            Ajusta los parámetros para observar el cálculo dinámico de velocidad $v_i(t+1)$ y posición $x_i(t+1)$:
                         </p>
 
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
@@ -889,12 +724,9 @@
                             </div>
                         </div>
 
-                        <div id="calc-pso-output" class="p-4 rounded-xl bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 font-mono text-xs space-y-1.5">
-                            <!-- Filled via JS -->
-                        </div>
+                        <div id="calc-pso-output" class="p-4 rounded-xl bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 font-mono text-xs space-y-1.5"></div>
                     </div>
 
-                    <!-- Calculator 2: Differential Evolution Mutation & Loss Function Lab -->
                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
                         <div class="flex items-center justify-between">
                             <h3 class="font-bold text-base flex items-center gap-2">
@@ -904,13 +736,13 @@
                             <span class="text-xs font-mono text-slate-400">Sección 4.2 PDF</span>
                         </div>
                         <p class="text-xs text-slate-500 dark:text-slate-400">
-                            Comprueba cómo la Entropía Cruzada ($L_{CE} = -\log(\hat{y}_c)$) penaliza exponencialmente cuando la red se equivoca con alta confianza:
+                            Comprueba cómo la Entropía Cruzada ($L_{CE} = -\log(\hat{y}_c)$) penaliza fuertemente los errores con alta confianza:
                         </p>
 
                         <div class="space-y-3 text-xs">
                             <div>
                                 <div class="flex justify-between mb-1">
-                                    <span class="font-semibold">Probabilidad predicha para la clase correcta ($\hat{y}_{correcta}$):</span>
+                                    <span class="font-semibold">Probabilidad para la clase correcta ($\hat{y}_{correcta}$):</span>
                                     <span id="ce-prob-label" class="font-mono font-bold text-blue-500">0.85 (85%)</span>
                                 </div>
                                 <input type="range" id="calc-ce-prob" min="0.01" max="0.99" step="0.01" value="0.85" oninput="runLossCalculator()" class="w-full accent-blue-600">
@@ -918,7 +750,7 @@
 
                             <div class="grid grid-cols-2 gap-3 pt-1">
                                 <div>
-                                    <label class="text-slate-400 block mb-1">Valor Real $y_i$ (Regresión/Ordinal)</label>
+                                    <label class="text-slate-400 block mb-1">Valor Real $y_i$</label>
                                     <input type="number" step="0.5" id="calc-mse-y" value="3.0" oninput="runLossCalculator()" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono">
                                 </div>
                                 <div>
@@ -928,19 +760,16 @@
                             </div>
                         </div>
 
-                        <div id="calc-loss-output" class="p-4 rounded-xl bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 font-mono text-xs space-y-1.5">
-                            <!-- Filled via JS -->
-                        </div>
+                        <div id="calc-loss-output" class="p-4 rounded-xl bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 font-mono text-xs space-y-1.5"></div>
                     </div>
                 </div>
 
-                <!-- Complete Visual Formula Reference (Cheat Sheet of all 4 Blocks) -->
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
                     <div class="border-b border-slate-200 dark:border-slate-800 pb-4">
                         <h2 class="text-xl font-extrabold flex items-center gap-2">
                             <i class="fa-solid fa-book-bookmark text-blue-500"></i> Formulario Oficial Completo - Apuntes TIA
                         </h2>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Todas las ecuaciones exactas y parámetros clave que debes dominar para el examen</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Ecuaciones y formulación matemática de los cuatro bloques oficiales</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -954,9 +783,13 @@
                                     $$x_i(t+1) = x_i(t) + v_i(t+1)$$
                                 </div>
                                 <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1">
-                                    <li><strong>Inercia ($w$):</strong> $w$ alto ($\approx 0.8 - 1.2$) $\rightarrow$ exploración global. $w$ bajo ($\approx 0.2 - 0.4$) $\rightarrow$ explotación local fina.</li>
+                                    <li><strong>Inercia ($w$):</strong> $w$ alto ($ pprox 0.8 - 1.2$) $
+ightarrow$ exploración global. $w$ bajo ($ pprox 0.2 - 0.4$) $
+ightarrow$ explotación local fina.</li>
                                     <li><strong>Restricción de Ecuación ($g_k(x) = 0$):</strong> $$C_{Nuevo}(x) = C_{Original}(x) + \lambda_1 \cdot e^{|g_k(x)|^2}$$</li>
-                                    <li><strong>Restricción de Inecuación ($g_k(x) \le 0$):</strong> Si cumple $\rightarrow C_{Original}(x)$; si infringe $\rightarrow \infty$.</li>
+                                    <li><strong>Restricción de Inecuación ($g_k(x) \le 0$):</strong> Si cumple $
+ightarrow C_{Original}(x)$; si infringe $
+ightarrow \infty$.</li>
                                 </ul>
                             </div>
                         </div>
@@ -965,17 +798,20 @@
                         <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-3">
                             <span class="px-2.5 py-1 rounded-md bg-indigo-500/15 text-indigo-500 font-bold text-xs">Bloque 2 · Evolución Diferencial (DE)</span>
                             <div class="text-xs sm:text-sm space-y-2">
-                                <p class="font-semibold">Mutación ($DE/rand/1$) con $r_1 \neq r_2 \neq r_3 \neq i$:</p>
+                                <p class="font-semibold">Mutación ($DE/rand/1$) con $r_1 
+eq r_2 
+eq r_3 
+eq i$:</p>
                                 <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 math-box">
                                     $$v_{i,G} = x_{r_1,G} + F \cdot (x_{r_2,G} - x_{r_3,G}), \quad F \in (0, 2)$$
                                 </div>
                                 <p class="font-semibold">Cruce Binomial ($CR \in [0,1], j_{rand} \in \{1,\dots,D\}$):</p>
                                 <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 math-box">
-                                    $$u_{j,i,G} = \begin{cases} v_{j,i,G} & \text{si } rand_j(0,1) \le CR \text{ o } j = j_{rand} \\ x_{j,i,G} & \text{en caso contrario} \end{cases}$$
+                                    $$u_{j,i,G} = egin{cases} v_{j,i,G} & 	ext{si } rand_j(0,1) \le CR 	ext{ o } j = j_{rand} \ x_{j,i,G} & 	ext{en caso contrario} \end{cases}$$
                                 </div>
                                 <p class="font-semibold">Selección Elitista Uno a Uno:</p>
                                 <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 math-box">
-                                    $$x_{i,G+1} = u_{i,G} \text{ si } f(u_{i,G}) \le f(x_{i,G}), \text{ sino } x_{i,G}$$
+                                    $$x_{i,G+1} = u_{i,G} 	ext{ si } f(u_{i,G}) \le f(x_{i,G}), 	ext{ sino } x_{i,G}$$
                                 </div>
                             </div>
                         </div>
@@ -986,14 +822,16 @@
                             <div class="text-xs sm:text-sm space-y-2">
                                 <p class="font-semibold">Backpropagation y Regla Delta:</p>
                                 <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 math-box">
-                                    $$\Delta w_{ij} = -\eta \cdot \frac{\partial E}{\partial w_{ij}}, \quad \text{ReLU}(x) = \max(0, x)$$
+                                    $$\Delta w_{ij} = -\eta \cdot rac{\partial E}{\partial w_{ij}}, \quad 	ext{ReLU}(x) = \max(0, x)$$
                                 </div>
                                 <p class="font-semibold">Dimensión de Salida en Convolución / Pooling:</p>
                                 <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 math-box">
-                                    $$O = \left\lfloor \frac{W - K + 2P}{S} \right\rfloor + 1$$
+                                    $$O = \left\lfloor rac{W - K + 2P}{S} 
+ight
+floor + 1$$
                                 </div>
                                 <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1">
-                                    <li><strong>División Dataset:</strong> Train ($70\text{-}80\%$), Validation ($10\text{-}15\%$), Test ($10\text{-}15\%$).</li>
+                                    <li><strong>División Dataset:</strong> Train ($70	ext{-}80\%$), Validation ($10	ext{-}15\%$), Test ($10	ext{-}15\%$).</li>
                                     <li><strong>Dropout:</strong> Apaga aleatoriamente neuronas en cada iteración para evitar <em>Overfitting</em>.</li>
                                 </ul>
                             </div>
@@ -1005,7 +843,7 @@
                             <div class="text-xs sm:text-sm space-y-2">
                                 <p class="font-semibold">Error Cuadrático Medio (MSE - Regresión y Ordinales):</p>
                                 <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 math-box">
-                                    $$MSE = \frac{1}{N}\sum_{i=1}^{N}(y_i - \hat{y}_i)^2$$
+                                    $$MSE = rac{1}{N}\sum_{i=1}^{N}(y_i - \hat{y}_i)^2$$
                                 </div>
                                 <p class="font-semibold">Entropía Cruzada Categórica (Clasificación Nominal + SoftMax):</p>
                                 <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 math-box">
@@ -1021,7 +859,6 @@
             </section>
         </div>
 
-        <!-- FOOTER -->
         <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 py-5 px-4 text-center text-xs text-slate-500 dark:text-slate-400">
             <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
                 <span><strong>INCAR Study Hub</strong> · Escuela de Ingeniería de Bilbao (UPV/EHU)</span>
@@ -1030,15 +867,13 @@
         </footer>
     </div>
 
-    <!-- ==================== JAVASCRIPT ENGINE (CONECTADO A CONFIG.JSON) ==================== -->
+    <!-- JAVASCRIPT ENGINE -->
     <script>
-        // Respaldo local automático con exactamente tus datos por si falla la carga o se abre en local
         const DEFAULT_CONFIG = {
             "app_config": {
                 "title": "Plataforma de Estudio INCAR",
                 "version": "2.1.0",
-                "default_subject": "TIA",
-                "master_key": "ADMIN-TIA-2026"
+                "default_subject": "TIA"
             },
             "admin_users": [
                 {
@@ -1051,7 +886,7 @@
                     "username": "Lobini",
                     "email": "ibarron007@ikasle.ehu.eus",
                     "password": "LobiniBizcochini",
-                    "role": "admin"
+                    "role": "student"
                 },
                 {
                     "username": "Isamena",
@@ -1100,11 +935,11 @@
                                 },
                                 {
                                     "question": "¿Cuáles son los aspectos positivos (+) y negativos (-) de PSO?",
-                                    "answer": "<b>Positivos (+):</b> Independiente de derivadas (no exige función diferenciable ni convexa), evade óptimos locales y tiene mejora monótona ($g_{best}$ nunca empeora).<br><b>Negativos (-):</b> Voracidad computacional, mala escalabilidad en alta dimensión y sin garantía matemática de óptimo global."
+                                    "answer": "<b>Positivos (+):</b> Independiente de derivadas, evade óptimos locales y tiene mejora monótona ($g_{best}$ nunca empeora).<br><b>Negativos (-):</b> Voracidad computacional, mala escalabilidad en alta dimensión y sin garantía matemática de óptimo global."
                                 },
                                 {
                                     "question": "¿En qué se diferencia el ámbito de uso de PSO frente a los Algoritmos Genéticos (GA)?",
-                                    "answer": "• <b>PSO:</b> Diseñado de forma nativa para espacios de variables continuas ($\\mathbb{R}^D$), como sintonización PID ($K_p, K_i, K_d$), trayectorias B-splines o despacho económico.<br>• <b>GA:</b> Superior en problemas con variables discretas, binarias o combinatorias puras."
+                                    "answer": "• <b>PSO:</b> Diseñado para variables continuas ($\\mathbb{R}^D$), como sintonización PID o trayectorias.<br>• <b>GA:</b> Superior en variables discretas, binarias o combinatorias puras."
                                 }
                             ]
                         },
@@ -1115,23 +950,23 @@
                             "flashcards": [
                                 {
                                     "question": "¿Cómo se define la mutación básica en Evolución Diferencial ($DE/rand/1$)?",
-                                    "answer": "Para cada individuo $x_{i,G}$ se eligen 3 vectores aleatorios distintos ($r_1 \\neq r_2 \\neq r_3 \\neq i$):<br>$$v_{i,G} = x_{r_1,G} + F \\cdot (x_{r_2,G} - x_{r_3,G})$$<br>Donde $F \\in (0,2)$ es el factor de escala del paso de mutación."
+                                    "answer": "Para cada individuo $x_{i,G}$ se eligen 3 vectores aleatorios distintos ($r_1 \\neq r_2 \\neq r_3 \\neq i$):<br>$$v_{i,G} = x_{r_1,G} + F \\cdot (x_{r_2,G} - x_{r_3,G})$$<br>Donde $F \\in (0,2)$ es el factor de escala."
                                 },
                                 {
                                     "question": "¿Cómo funciona el Cruce Binomial (Crossover) en DE?",
-                                    "answer": "Genera el vector de prueba (trial vector) $u_{i,G}$ coordenada a coordenada ($j=1,\\dots,D$):<br>$$u_{j,i,G} = \\begin{cases} v_{j,i,G} & \\text{si } rand_j(0,1) \\le CR \\text{ o } j = j_{rand} \\\\ x_{j,i,G} & \\text{en caso contrario} \\end{cases}$$"
+                                    "answer": "Genera el vector de prueba $u_{i,G}$ coordenada a coordenada:<br>$$u_{j,i,G} = \\begin{cases} v_{j,i,G} & \\text{si } rand_j(0,1) \\le CR \\text{ o } j = j_{rand} \\\\ x_{j,i,G} & \\text{en caso contrario} \\end{cases}$$"
                                 },
                                 {
-                                    "question": "¿Por qué se incluye el índice aleatorio $j_{rand} \\in \\{1,\\dots,D\\}$ en el cruce de DE?",
-                                    "answer": "Para garantizar matemáticamente que el vector de prueba $u_{i,G}$ herede al menos una coordenada del vector mutante $v_{i,G}$, incluso si la constante de cruce $CR = 0$."
+                                    "question": "¿Por qué se incluye el índice aleatorio $j_{rand}$ en el cruce de DE?",
+                                    "answer": "Para garantizar matemáticamente que el vector de prueba $u_{i,G}$ herede al menos una coordenada del vector mutante $v_{i,G}$, incluso si $CR = 0$."
                                 },
                                 {
                                     "question": "¿Cómo opera la Selección Elitista Uno a Uno en DE?",
-                                    "answer": "Compara directamente el vector de prueba $u_{i,G}$ con el vector actual $x_{i,G}$:<br>$$x_{i,G+1} = \\begin{cases} u_{i,G} & \\text{si } f(u_{i,G}) \\le f(x_{i,G}) \\\\ x_{i,G} & \\text{si } f(u_{i,G}) > f(x_{i,G}) \\end{cases}$$"
+                                    "answer": "Compara el vector de prueba $u_{i,G}$ con el actual $x_{i,G}$:<br>$$x_{i,G+1} = \\begin{cases} u_{i,G} & \\text{si } f(u_{i,G}) \\le f(x_{i,G}) \\\\ x_{i,G} & \\text{si } f(u_{i,G}) > f(x_{i,G}) \\end{cases}$$"
                                 },
                                 {
-                                    "question": "¿Cuáles son las ventajas y desventajas principales de Differential Evolution (DE)?",
-                                    "answer": "<b>Ventajas (+):</b> Muy robusto para óptimo global, implementación sencilla y pocos parámetros a ajustar.<br><b>Desventajas (-):</b> Voracidad computacional (cientos o miles de evaluaciones de $f(x)$) y riesgo de convergencia prematura."
+                                    "question": "¿Cuáles son las ventajas y desventajas de Differential Evolution (DE)?",
+                                    "answer": "<b>Ventajas (+):</b> Muy robusto para óptimo global, implementación sencilla y pocos parámetros.<br><b>Desventajas (-):</b> Voracidad computacional y riesgo de convergencia prematura."
                                 }
                             ]
                         },
@@ -1142,31 +977,31 @@
                             "flashcards": [
                                 {
                                     "question": "¿Cómo funciona el algoritmo Backpropagation y la Regla Delta?",
-                                    "answer": "1. <b>Forward pass:</b> Los datos cruzan la red hasta generar una predicción.<br>2. <b>Cálculo del error:</b> Se compara la salida con el valor real.<br>3. <b>Backward pass (Regla Delta):</b> Si la pendiente (gradiente) del error es positiva, el peso se ajusta en sentido negativo modulado por el Factor de Aprendizaje. Exige funciones de activación derivables (ej. Sigmoide)."
+                                    "answer": "1. <b>Forward pass:</b> Propaga datos hasta la predicción.<br>2. <b>Cálculo del error:</b> Compara salida con el valor real.<br>3. <b>Backward pass:</b> Ajusta pesos en sentido contrario al gradiente con Factor de Aprendizaje (requiere activaciones derivables)."
                                 },
                                 {
-                                    "question": "¿Por qué las redes multicapa clásicas (MLP) fallan con imágenes HD y se usan CNN?",
-                                    "answer": "Porque una foto HD requeriría millones de neuronas de entrada y la red memorizaría píxeles en posiciones exactas (si el objeto se desplaza 1 cm, falla). Las CNN detectan patrones espaciales jerárquicos invariantes a la traslación."
+                                    "question": "¿Por qué las redes multicapa clásicas fallan con imágenes HD y se usan CNN?",
+                                    "answer": "Porque una foto HD requeriría millones de neuronas de entrada memorizando posiciones rígidas de píxeles. Las CNN detectan patrones espaciales jerárquicos invariantes a traslación."
                                 },
                                 {
-                                    "question": "¿Cuál es la jerarquía de aprendizaje visual de una Red Convolucional (CNN)?",
-                                    "answer": "• <b>Primeras capas:</b> Líneas simples (verticales, horizontales, diagonales).<br>• <b>Capas intermedias:</b> Formas compuestas (ojos, narices, ruedas).<br>• <b>Últimas capas:</b> Objetos completos (una cara, un coche)."
+                                    "question": "¿Cuál es la jerarquía de aprendizaje visual de una CNN?",
+                                    "answer": "• <b>Primeras capas:</b> Líneas y bordes simples.<br>• <b>Capas intermedias:</b> Formas compuestas (ojos, ruedas).<br>• <b>Últimas capas:</b> Objetos completos (caras, coches)."
                                 },
                                 {
                                     "question": "¿Qué son Kernel, Padding y Stride en una CNN?",
-                                    "answer": "• <b>Kernel:</b> Matriz pequeña (ej. 3x3) que filtra la imagen buscando un patrón.<br>• <b>Padding:</b> Borde de ceros añadido alrededor de la imagen para evitar que pierda tamaño tras la convolución.<br>• <b>Stride:</b> Paso o número de píxeles que salta el kernel al desplazarse."
+                                    "answer": "• <b>Kernel:</b> Matriz filtro pequeña (ej. 3x3).<br>• <b>Padding:</b> Borde de ceros para no perder resolución espacial.<br>• <b>Stride:</b> Desplazamiento o salto en píxeles del kernel."
                                 },
                                 {
-                                    "question": "¿Qué hacen las etapas ReLU, Max Pooling, Flattening y SoftMax en una CNN?",
-                                    "answer": "• <b>ReLU:</b> Convierte valores negativos en 0 y mantiene los positivos ($\\max(0,x)$).<br>• <b>Max Pooling:</b> Submuestreo por bloques (ej. 2x2) quedándose con el valor máximo.<br>• <b>Flattening:</b> Aplana los mapas 2D en un único vector 1D.<br>• <b>SoftMax:</b> Convierte números brutos en probabilidades porcentuales entre 0 y 1 que suman 100%."
+                                    "question": "¿Qué hacen ReLU, Max Pooling, Flattening y SoftMax en una CNN?",
+                                    "answer": "• <b>ReLU:</b> $\\max(0, x)$ limpia negativos a cero.<br>• <b>Max Pooling:</b> Submuestreo por bloques eligiendo el máximo.<br>• <b>Flattening:</b> Convierte mapas 2D en vector 1D.<br>• <b>SoftMax:</b> Probabilidades porcentuales entre 0 y 1 que suman 100%."
                                 },
                                 {
-                                    "question": "¿Qué es una capa Dropout y cómo evita el sobreajuste (Overfitting)?",
-                                    "answer": "Es una técnica de regularización que apaga (pone a cero) aleatoriamente un porcentaje de neuronas en cada iteración de entrenamiento, obligando a la red a repartir el aprendizaje y no depender de una sola neurona."
+                                    "question": "¿Qué es la regularización Dropout y cómo evita el Overfitting?",
+                                    "answer": "Apaga aleatoriamente un porcentaje de neuronas en cada paso de entrenamiento, impidiendo la codependencia y forzando a repartir el aprendizaje."
                                 },
                                 {
-                                    "question": "¿Cómo se divide el conjunto de datos (Dataset) en Deep Learning y para qué sirve cada bloque?",
-                                    "answer": "• <b>Entrenamiento (Train, 70-80%):</b> Ajuste real de los pesos sinápticos.<br>• <b>Validación (Validation, 10-15%):</b> Afinar hiperparámetros y detener el entrenamiento si el error sube (Early Stopping).<br>• <b>Testeo (Test, 10-15%):</b> Guardado hasta el final para evaluar la generalización real."
+                                    "question": "¿Cómo se divide el Dataset en Deep Learning?",
+                                    "answer": "• <b>Train (70-80%):</b> Ajuste de pesos.<br>• <b>Validation (10-15%):</b> Afinar hiperparámetros y Early Stopping.<br>• <b>Test (10-15%):</b> Medir generalización real al final."
                                 }
                             ]
                         },
@@ -1176,24 +1011,24 @@
                             "title": "Bloque 4: Transformers y Funciones de Pérdida",
                             "flashcards": [
                                 {
-                                    "question": "¿Qué diferencia a un Transformer de las antiguas redes recurrentes (RNN)?",
-                                    "answer": "A diferencia de las RNN que leían palabras secuencialmente una por una, el Transformer lee toda la secuencia de golpe en paralelo gracias al mecanismo de Auto-Atención (Self-Attention)."
+                                    "question": "¿Qué diferencia a un Transformer de las RNN tradicionales?",
+                                    "answer": "En lugar de procesar palabra por palabra secuencialmente, el Transformer procesa toda la frase a la vez en paralelo gracias a la Auto-Atención (Self-Attention)."
                                 },
                                 {
-                                    "question": "¿Qué son los Embeddings, el Positional Encoding y el Self-Attention en un Transformer?",
-                                    "answer": "• <b>Embeddings:</b> Conversión de palabras a vectores numéricos.<br>• <b>Positional Encoding:</b> Señal matemática inyectada para indicar el orden de las palabras al leerse de golpe.<br>• <b>Self-Attention:</b> Cálculo matemático de cuánta atención debe prestar cada palabra a las demás para entender el contexto (ej. 'banco' presta atención a 'parque')."
+                                    "question": "¿Qué función cumplen Embeddings, Positional Encoding y Self-Attention?",
+                                    "answer": "• <b>Embeddings:</b> Vectores continuos de palabras.<br>• <b>Positional Encoding:</b> Señal de posición inyectada al leer todo en bloque.<br>• <b>Self-Attention:</b> Evalúa la relevancia contextual entre todas las palabras de la frase."
                                 },
                                 {
-                                    "question": "¿Cuál es la diferencia entre Variable Categórica (Nominal) y Variable Ordinal al elegir función de pérdida?",
-                                    "answer": "• <b>Categórica (Nominal):</b> Sin orden lógico (ej. colores, letras). Usa <b>Entropía Cruzada</b> porque cualquier fallo es igual de grave.<br>• <b>Ordinal:</b> Con orden inherente (ej. tallas S=1, M=2, L=3). Puede usar <b>MSE</b> porque confundir S con L debe penalizarse más que confundir S con M."
+                                    "question": "¿Cuándo se usa Entropía Cruzada vs Error Cuadrático Medio (MSE)?",
+                                    "answer": "• <b>Entropía Cruzada:</b> Variables Categóricas Nominales sin orden.<br>• <b>MSE:</b> Variables Continuas u Ordinales donde la distancia del error importa."
                                 },
                                 {
-                                    "question": "¿Cuál es la fórmula exacta del Error Cuadrático Medio (MSE)?",
-                                    "answer": "$$MSE = \\frac{1}{N} \\sum_{i=1}^{N} (y_i - \\hat{y}_i)^2$$<br>Donde $N$ es el total de muestras, $y_i$ el valor real y $\\hat{y}_i$ el valor predicho."
+                                    "question": "¿Cuál es la fórmula del Error Cuadrático Medio (MSE)?",
+                                    "answer": "$$MSE = \\frac{1}{N} \\sum_{i=1}^{N} (y_i - \\hat{y}_i)^2$$"
                                 },
                                 {
-                                    "question": "¿Cuál es la fórmula exacta de la Entropía Cruzada Categórica (Cross-Entropy)?",
-                                    "answer": "$$L_{CE} = -\\sum_{i=1}^{C} y_i \\log(\\hat{y}_i)$$<br>Como $y_i$ es un vector One-Hot (1 para la clase correcta y 0 para el resto), en la práctica se resume a $-\\log(\\hat{y}_{correcta})$."
+                                    "question": "¿Cuál es la fórmula de la Entropía Cruzada Categórica?",
+                                    "answer": "$$L_{CE} = -\\sum_{i=1}^{C} y_i \\log(\\hat{y}_i) = -\\log(\\hat{y}_{correcta})$$"
                                 }
                             ]
                         }
@@ -1203,22 +1038,22 @@
                             "id": 1, "block": 1, "difficulty": "facil",
                             "question": "En el algoritmo PSO, ¿qué representa el componente $g_{best}$?",
                             "options": [
-                                "La mejor posición histórica alcanzada por una partícula individual.",
+                                "La mejor posición histórica de una partícula individual.",
                                 "La mejor posición encontrada por el enjambre completo.",
                                 "La velocidad máxima permitida del enjambre.",
                                 "El factor de ponderación estocástico."
                             ],
                             "answer": 1,
-                            "hint": "Fíjate en la letra 'g' de global frente a la 'p' de personal.",
-                            "explanation": "$g_{best}$ (global best) es la mejor posición histórica encontrada por cualquier partícula de todo el enjambre."
+                            "hint": "Fíjate en la letra 'g' de global.",
+                            "explanation": "gbest es la mejor posición global histórica hallada por cualquier miembro del enjambre."
                         },
                         {
                             "id": 2, "block": 1, "difficulty": "medio",
                             "question": "¿Qué valor aproximado del parámetro de inercia ($w$) en PSO favorece la explotación local y el refinamiento fino?",
                             "options": ["w alto (0.8 - 1.2)", "w bajo (0.2 - 0.4)", "w negativo (-1.0)", "w superior a 2.0"],
                             "answer": 1,
-                            "hint": "Un valor pequeño frena la inercia previa para buscar con precisión en la zona actual.",
-                            "explanation": "Un valor bajo de inercia ($w \\approx 0.2 - 0.4$) reduce la influencia de la velocidad previa, favoreciendo la explotación local en torno al óptimo."
+                            "hint": "Un valor bajo disminuye la velocidad previa acumulada.",
+                            "explanation": "Un factor bajo de inercia favorece la explotación fina alrededor del mínimo."
                         },
                         {
                             "id": 3, "block": 1, "difficulty": "facil",
@@ -1230,8 +1065,8 @@
                                 "Distribución exponencial creciente."
                             ],
                             "answer": 0,
-                            "hint": "Revisa la definición de $r_1, r_2 \\sim \\mathcal{U}(0,1)$ en la sección 1.1.3.",
-                            "explanation": "$r_1, r_2 \\sim \\mathcal{U}(0,1)$ son números aleatorios uniformemente distribuidos entre 0 y 1 que dotan al algoritmo de capacidad estocástica para escapar de óptimos locales."
+                            "hint": "r1, r2 ~ U(0,1).",
+                            "explanation": "Son variables aleatorias uniformes entre 0 y 1."
                         },
                         {
                             "id": 4, "block": 1, "difficulty": "medio",
@@ -1243,34 +1078,34 @@
                                 "Asignando directamente coste menos infinito."
                             ],
                             "answer": 1,
-                            "hint": "Busca la Ecuación (4) de la sección 1.1.4.",
-                            "explanation": "Como $g_k(x)=0$ busca soluciones exactas y no se despeja fácilmente, se aplica una penalización exterior exponencial $\\lambda_1 \\cdot e^{|g_k(x)|^2}$."
+                            "hint": "Ecuación (4) del PDF.",
+                            "explanation": "Se aplica una penalización exterior exponencial sobre el cuadrado del residuo."
                         },
                         {
                             "id": 5, "block": 1, "difficulty": "facil",
                             "question": "¿En qué tipo de espacios de búsqueda es nativo y especialmente superior PSO frente a los Algoritmos Genéticos (GA)?",
                             "options": [
-                                "En espacios de variables continuas ($\\mathbb{R}^D$), como la sintonización de parámetros PID.",
+                                "En espacios de variables continuas ($\\mathbb{R}^D$), como sintonización de parámetros PID.",
                                 "En problemas puramente binarios o de grafos discretos.",
                                 "En ordenación alfabética de cadenas de texto.",
                                 "Únicamente en funciones lineales y convexas."
                             ],
                             "answer": 0,
-                            "hint": "Piensa en las constantes continuas $K_p, K_i, K_d$ de un regulador.",
-                            "explanation": "PSO está diseñado de forma nativa para espacios continuos ($\\mathbb{R}^D$), mientras que los Algoritmos Genéticos destacan en problemas discretos, binarios o combinatorios."
+                            "hint": "Variables reales continuas como Kp, Ki, Kd.",
+                            "explanation": "PSO opera de forma nativa sobre espacios continuos reales."
                         },
                         {
                             "id": 6, "block": 1, "difficulty": "dificil",
                             "question": "¿Qué significa que el algoritmo PSO posee la 'propiedad de mejora monótona'?",
                             "options": [
                                 "Que todas las partículas reducen su velocidad a cero en la primera iteración.",
-                                "Que la mejor solución histórica global ($g_{best}$) se preserva siempre en memoria, impidiendo que la mejor estimación del algoritmo empeore.",
+                                "Que la mejor solución histórica global ($g_{best}$) se preserva siempre en memoria, impidiendo que la mejor estimación empeore.",
                                 "Que garantiza matemáticamente encontrar el óptimo global en tiempo finito.",
                                 "Que el coste computacional disminuye exponencialmente con la dimensión."
                             ],
                             "answer": 1,
-                            "hint": "Revisa la tabla de Aspectos Positivos (+) de la sección 1.3.",
-                            "explanation": "Al conservar siempre en memoria $g_{best}$ y actualizarlo solo si aparece una solución mejor, la calidad de la mejor solución global encontrada nunca empeora con las iteraciones."
+                            "hint": "La mejor memoria global nunca se sobrescribe con un valor peor.",
+                            "explanation": "Al conservar siempre gbest, la solución óptima registrada es monótonamente no decreciente en calidad."
                         },
                         {
                             "id": 7, "block": 2, "difficulty": "facil",
@@ -1282,8 +1117,8 @@
                                 "Dos vectores idénticos."
                             ],
                             "answer": 0,
-                            "hint": "Mira los subíndices de la ecuación $v_{i,G} = x_{r_1,G} + F \\cdot (x_{r_2,G} - x_{r_3,G})$.",
-                            "explanation": "Se seleccionan aleatoriamente tres individuos distintos ($r_1, r_2, r_3$) para calcular la diferencia vectorial escalada por $F$ y sumarla al vector base $x_{r_1,G}$."
+                            "hint": "r1, r2, r3 distintos.",
+                            "explanation": "Se eligen tres individuos aleatorios mutuamente diferentes y distintos de i."
                         },
                         {
                             "id": 8, "block": 2, "difficulty": "medio",
@@ -1295,16 +1130,16 @@
                                 "Para ordenar los individuos de menor a mayor coste."
                             ],
                             "answer": 1,
-                            "hint": "¿Qué ocurriría si por azar todos los números aleatorios fueran mayores que $CR$?",
-                            "explanation": "Si $rand_j(0,1) > CR$ en todas las dimensiones, el vector de prueba sería un clon exacto de $x_{i,G}$. Forzar $j = j_{rand}$ garantiza que al menos una componente provenga del mutante."
+                            "hint": "Evita que el candidato sea una copia 100% idéntica del padre.",
+                            "explanation": "Asegura la transmisión de al menos un gen mutado, incluso con CR=0."
                         },
                         {
                             "id": 9, "block": 2, "difficulty": "medio",
                             "question": "¿En qué rango de valores se define habitualmente el factor de escala $F$ en la mutación de Evolución Diferencial?",
                             "options": ["$F \\in (0, 2)$", "$F \\in [-100, -10]$", "$F = 0$ constante", "$F \\in [10, 100]$"],
                             "answer": 0,
-                            "hint": "Consulta la Ecuación (8) en la sección 2.1.2.",
-                            "explanation": "En DE, $F \\in (0, 2)$ es el factor de escala que modula el paso de mutación a partir del gradiente intrínseco de la población."
+                            "hint": "Ecuación (8) del PDF.",
+                            "explanation": "F modula la diferencia entre vectores y suele pertenecer a (0, 2)."
                         },
                         {
                             "id": 10, "block": 2, "difficulty": "dificil",
@@ -1316,8 +1151,8 @@
                                 "Se compara $u_{i,G}$ contra el peor individuo de toda la población."
                             ],
                             "answer": 0,
-                            "hint": "Revisa la Ecuación (10) de selección estricta.",
-                            "explanation": "La selección en DE es uno a uno y elitista: como $f(u_{i,G}) \\le f(x_{i,G})$ ($4.2 \\le 4.5$), el vector de prueba $u_{i,G}$ pasa a la siguiente generación."
+                            "hint": "En minimización, menor coste es mejor.",
+                            "explanation": "Como 4.2 <= 4.5, el vector de prueba sustituye directamente al vector base."
                         },
                         {
                             "id": 11, "block": 3, "difficulty": "facil",
@@ -1329,8 +1164,8 @@
                                 "Se multiplica por infinito."
                             ],
                             "answer": 0,
-                            "hint": "Queremos descender por la curva de error (descenso del gradiente).",
-                            "explanation": "Si la pendiente del error sube (positiva), el peso debe ajustarse en sentido contrario (negativo) para reducir el error, usando el Factor de Aprendizaje para moderar el paso."
+                            "hint": "Descenso del gradiente.",
+                            "explanation": "Si la pendiente sube, el ajuste va en sentido opuesto (-gradiente) para reducir el error."
                         },
                         {
                             "id": 12, "block": 3, "difficulty": "medio",
@@ -1342,24 +1177,24 @@
                                 "Para evitar dividir los datos en Train y Test."
                             ],
                             "answer": 0,
-                            "hint": "La regla de la cadena en Backpropagation necesita derivar la función de activación.",
-                            "explanation": "Para calcular las derivadas que indican cómo cambiar los pesos capa por capa, las neuronas deben emplear funciones de activación derivables."
+                            "hint": "Regla de la cadena.",
+                            "explanation": "El ajuste de pesos hacia atrás exige funciones no lineales y derivables."
                         },
                         {
                             "id": 13, "block": 3, "difficulty": "facil",
                             "question": "En una Red Convolucional (CNN), ¿qué elemento se añade alrededor de la imagen original (borde de ceros) para evitar que la imagen resultante se reduzca de tamaño al pasar el Kernel?",
                             "options": ["Padding", "Stride", "Flattening", "Dropout"],
                             "answer": 0,
-                            "hint": "Es el paso 2 de la Anatomía de una Red Convolucional (sección 3.3).",
-                            "explanation": "El Padding añade un borde de ceros alrededor de la imagen de entrada para conservar las dimensiones espaciales tras aplicar el filtro (Kernel)."
+                            "hint": "Borde de ceros.",
+                            "explanation": "El Padding mantiene la resolución espacial al aplicar kernels."
                         },
                         {
                             "id": 14, "block": 3, "difficulty": "medio",
                             "question": "En una CNN, ¿qué operación recorre la imagen en pequeños bloques (por ejemplo, de 2x2) y se queda únicamente con el píxel de mayor valor para comprimir la información?",
                             "options": ["Max Pooling (Submuestreo)", "SoftMax", "Positional Encoding", "Backpropagation"],
                             "answer": 0,
-                            "hint": "Revisa el punto 5 de la sección 3.3 (Pooling).",
-                            "explanation": "El Max Pooling reduce la resolución espacial de los mapas de características quedándose solo con el valor máximo de cada ventana (ej. 2x2), reteniendo el patrón más relevante."
+                            "hint": "Submuestreo por bloques.",
+                            "explanation": "Max Pooling conserva la activación dominante reduciendo dimensiones."
                         },
                         {
                             "id": 15, "block": 3, "difficulty": "dificil",
@@ -1371,16 +1206,16 @@
                                 "Aplanar la matriz bidimensional en un vector unidimensional."
                             ],
                             "answer": 1,
-                            "hint": "Recuerda la expresión $f(x) = \\max(0, x)$.",
-                            "explanation": "ReLU introduce no linealidad limpiando los valores negativos a cero y dejando intactos los positivos, resaltando las zonas donde se ha detectado el patrón claramente."
+                            "hint": "f(x) = max(0, x).",
+                            "explanation": "ReLU elimina respuestas negativas y mantiene zonas de activación positiva clara."
                         },
                         {
                             "id": 16, "block": 3, "difficulty": "medio",
                             "question": "¿Qué técnica de regularización apaga (pone a cero) aleatoriamente un porcentaje de neuronas en cada iteración de entrenamiento para evitar el sobreajuste (Overfitting)?",
                             "options": ["Capa Dropout", "Flattening", "Stride", "Cruce Binomial"],
                             "answer": 0,
-                            "hint": "Obliga a la red a no depender de una única neurona para detectar un patrón.",
-                            "explanation": "La capa Dropout desactiva aleatoriamente neuronas durante el entrenamiento, forzando a la red a distribuir el aprendizaje y ser más robusta."
+                            "hint": "Apaga neuronas.",
+                            "explanation": "Dropout desactiva conexiones aleatorias obligando a generalizar."
                         },
                         {
                             "id": 17, "block": 3, "difficulty": "medio",
@@ -1392,16 +1227,16 @@
                                 "Para sustituir la función SoftMax."
                             ],
                             "answer": 0,
-                            "hint": "Revisa la sección 3.4.1 (División de los Datos).",
-                            "explanation": "Los datos de Validación permiten monitorizar la generalización durante el entrenamiento, ajustar hiperparámetros y aplicar parada temprana si el error de validación sube."
+                            "hint": "Control de generalización y Early Stopping.",
+                            "explanation": "Sirve para evaluar el modelo durante el entrenamiento sin contaminar el cálculo de pesos."
                         },
                         {
                             "id": 18, "block": 4, "difficulty": "facil",
                             "question": "¿Qué función se coloca en la última capa de una red de clasificación de caracteres ('A', 'B', 'C') para convertir los números brutos en una distribución de probabilidades porcentuales entre 0 y 1?",
                             "options": ["SoftMax", "ReLU", "Max Pooling", "MSE"],
                             "answer": 0,
-                            "hint": "Convierte los logits en probabilidades que suman el 100%.",
-                            "explanation": "La función SoftMax transforma las salidas brutas de la última capa en probabilidades normalizadas entre 0 y 1 (ej. 90% 'A', 8% 'B', 2% 'C')."
+                            "hint": "Suma 100%.",
+                            "explanation": "SoftMax normaliza los logits en probabilidades numéricas."
                         },
                         {
                             "id": 19, "block": 4, "difficulty": "medio",
@@ -1413,8 +1248,8 @@
                                 "Porque la Entropía Cruzada está prohibida en redes neuronales."
                             ],
                             "answer": 0,
-                            "hint": "Compara la distancia entre S y L frente a la distancia entre M y L.",
-                            "explanation": "Al existir un orden natural en las variables ordinales, el MSE penaliza cuadráticamente la lejanía del fallo, castigando mucho más confundir extremos (S con L) que categorías adyacentes."
+                            "hint": "Distancia matemática entre categorías.",
+                            "explanation": "Al haber orden natural, el error cuadrático cuantifica la gravedad de la desviación."
                         },
                         {
                             "id": 20, "block": 4, "difficulty": "facil",
@@ -1426,8 +1261,8 @@
                                 "El operador de mutación $DE/rand/1$."
                             ],
                             "answer": 0,
-                            "hint": "Recuerda el ejemplo de la palabra 'banco' prestando atención a 'parque'.",
-                            "explanation": "El mecanismo de Auto-Atención (Self-Attention) calcula matemáticamente cuánta relevancia o atención debe prestar cada palabra a todas las demás de la frase simultáneamente."
+                            "hint": "Atención cruzada entre términos simultáneos.",
+                            "explanation": "Self-Attention calcula la correlación contextual de todas las palabras en paralelo."
                         },
                         {
                             "id": 21, "block": 4, "difficulty": "medio",
@@ -1439,8 +1274,8 @@
                                 "Factor de inercia $w$."
                             ],
                             "answer": 0,
-                            "hint": "Revisa el punto 1 de la sección 4.1.",
-                            "explanation": "El Positional Encoding inyecta una señal matemática de posición a cada vector de palabra (embedding) para conservar la información del orden secuencial."
+                            "hint": "Señal matemática de posición.",
+                            "explanation": "El Positional Encoding introduce el orden temporal en la representación paralela."
                         },
                         {
                             "id": 22, "block": 4, "difficulty": "dificil",
@@ -1452,15 +1287,14 @@
                                 "A la suma directa de todas las probabilidades incorrectas."
                             ],
                             "answer": 0,
-                            "hint": "Todos los términos de la suma donde $y_i = 0$ se anulan.",
-                            "explanation": "Como $y_i = 0$ para todas las clases incorrectas, todos esos sumandos valen 0 y la fórmula se reduce a calcular $-\\log(\\hat{y}_{correcta})$, penalizando fuertemente si $\\hat{y}_{correcta} \\to 0$."
+                            "hint": "Las clases incorrectas se multiplican por 0.",
+                            "explanation": "Los sumandos con y_i=0 se anulan, quedando solo -log(probabilidad de la clase real)."
                         }
                     ]
                 }
             ]
         };
 
-        // Retos Extra de Ingeniería (Inventados de alto nivel para el Módulo 2)
         const EXTRA_ENGINEERING_CHALLENGES = [
             {
                 id: "EX1",
@@ -1474,13 +1308,13 @@
                     "Se reinicia la velocidad de todas las partículas del enjambre a cero."
                 ],
                 answer: 0,
-                explanation: "En restricciones de inecuación ($g_k(x) \\le 0$), cualquier violación de la región factible ($M_p = 14.2\\% > 10\\%$) recibe una penalización de barrera infinita ($C_{nuevo}(x) = \\infty$), descartándola como mejor solución."
+                explanation: "Al violar la inecuación g_k(x) <= 0, se aplica barrera infinita C_nuevo = infinito."
             },
             {
                 id: "EX2",
                 topic: "Control & PSO/DE",
                 title: "Planificación de Trayectorias B-Spline en Manipulador Robótico con DE",
-                question: "Optimizando los puntos de control continuos de una trayectoria B-Spline con Evolución Diferencial ($D = 6$, $CR = 0.2$), en una iteración todos los números aleatorios uniformes $rand_j(0,1)$ salen mayores que $0.5$ para las 6 coordenadas. ¿Qué ocurre con el vector de prueba $u_{i,G}$?",
+                question: "Optimizando los puntos de control de una trayectoria B-Spline con Evolución Diferencial ($D = 6$, $CR = 0.2$), en una iteración todos los números aleatorios uniformes $rand_j(0,1)$ salen mayores que $0.5$ para las 6 coordenadas. ¿Qué ocurre con el vector de prueba $u_{i,G}$?",
                 options: [
                     "Gracias al índice aleatorio obligatorio $j_{rand} \\in \\{1,\\dots,6\\}$, exactamente una coordenada se copia del vector mutante $v_{i,G}$ y las otras 5 del vector objetivo $x_{i,G}$.",
                     "El vector $u_{i,G}$ queda vacío y da error numérico.",
@@ -1488,7 +1322,7 @@
                     "Se invierte el signo del factor de escala $F$."
                 ],
                 answer: 0,
-                explanation: "Aunque ningún $rand_j(0,1) \\le CR$, la condición lógica 'o $j = j_{rand}$' en la Ecuación (9) garantiza que al menos la dimensión $j_{rand}$ herede el valor del vector mutante $v_{i,G}$."
+                explanation: "La condición 'o j = j_rand' garantiza que al menos un componente procede del mutante."
             },
             {
                 id: "EX3",
@@ -1502,13 +1336,13 @@
                     "Pierde los bordes en la convolución quedando en $30 \\times 30$."
                 ],
                 answer: 0,
-                explanation: "Con $W=32, K=3, P=1, S=1$, la salida convolucional es $\\lfloor(32 - 3 + 2)/1\\rfloor + 1 = 32\\times 32$. Después, el Max Pooling $2\\times 2$ con paso 2 divide a la mitad ambas dimensiones: $16 \\times 16$."
+                explanation: "Padding 1 preserva 32x32 y el Max Pooling 2x2 divide el mapa exactamente a 16x16."
             },
             {
                 id: "EX4",
                 topic: "Deep Learning & Gradientes",
                 title: "Diagnóstico de Curvas de Entrenamiento vs. Validación",
-                question: "Entrenando una red profunda para detección de defectos en piezas metálicas, en la época 40 observas que el error de Entrenamiento (Train) baja a $0.002$, pero el error de Validación (Validation) lleva subiendo desde la época 18 (pasando de $0.08$ a $0.31$). ¿Qué fenómeno ocurre y qué dos medidas de los apuntes debes aplicar?",
+                question: "Entrenando una red profunda para detección de defectos, en la época 40 el error de Train baja a $0.002$, pero el error de Validation lleva subiendo desde la época 18 (pasando de $0.08$ a $0.31$). ¿Qué fenómeno ocurre y qué medidas debes aplicar?",
                 options: [
                     "Hay Sobreajuste (Overfitting): la red memoriza Train. Debes detener el entrenamiento en el mínimo de validación (Early Stopping) y añadir capas Dropout.",
                     "Hay Subajuste (Underfitting): debes eliminar los datos de validación y entrenar 500 épocas más.",
@@ -1516,13 +1350,13 @@
                     "Debes cambiar todas las funciones ReLU por escalones no derivables."
                 ],
                 answer: 0,
-                explanation: "Tal y como explica el Bloque 3.4, cuando el error de validación sube mientras el de entrenamiento baja, la red está memorizando (Overfitting). El conjunto de validación sirve precisamente para parar a tiempo y regularizar con Dropout."
+                explanation: "Subida del error de validación con caída en train delata memorización (Overfitting)."
             },
             {
                 id: "EX5",
                 topic: "Transformers & Atención",
                 title: "Desambiguación Contextual y Penalización Logarítmica en Clasificación",
-                question: "Un modelo clasifica comandos de voz entre 3 clases nominales. Para una muestra cuya clase real es la 1 ($y = [1, 0, 0]$), la capa SoftMax predice $\\hat{y} = [0.01, 0.90, 0.09]$ (alta confianza en una clase errónea). ¿Cuánto vale la pérdida de Entropía Cruzada (en logaritmo natural)?",
+                question: "Un modelo clasifica entre 3 clases nominales. Para una muestra cuya clase real es la 1 ($y = [1, 0, 0]$), la capa SoftMax predice $\\hat{y} = [0.01, 0.90, 0.09]$ (alta confianza en la clase 2). ¿Cuánto vale la pérdida de Entropía Cruzada?",
                 options: [
                     "$L_{CE} = -\\ln(0.01) \\approx 4.605$, aplicando un castigo severo por equivocarse con alta seguridad.",
                     "$L_{CE} = -\\ln(0.90) \\approx 0.105$.",
@@ -1530,18 +1364,16 @@
                     "$L_{CE} = (1 - 0.01)^2 / 3 = 0.326$."
                 ],
                 answer: 0,
-                explanation: "En Entropía Cruzada $L_{CE} = -\\sum y_i \\ln(\\hat{y}_i) = -\\ln(\\hat{y}_{correcta})$. Como asignó solo un $1\\%$ ($0.01$) a la clase correcta, $-\\ln(0.01) = 4.605$, penalizando fuertemente la predicción errónea confiada."
+                explanation: "L_CE = -ln(0.01) = 4.605. Castiga exponencialmente predecir una clase errónea con certeza."
             }
         ];
 
-        // ==================== ESTADO GLOBAL DE LA APLICACIÓN ====================
         let appConfig = null;
         let authorizedUsers = [];
         let subjectsList = [];
         let currentUser = null;
         let activeSubject = null;
 
-        // Estado del Quiz
         let selectedDifficulty = 'medio';
         let selectedCount = 10;
         let currentQuizQuestions = [];
@@ -1551,16 +1383,13 @@
         let quizTimerInterval = null;
         let quizSecondsElapsed = 0;
 
-        // Estado de Flashcards
         let allFlashcards = [];
         let filteredFlashcards = [];
         let currentCardIndex = 0;
-        let flashcardStatusMap = {}; // { cardId: 'mastered' | 'review' }
+        let flashcardStatusMap = {};
 
-        // Estadísticas de progreso
         let userStats = { testsDone: 0, totalScorePct: 0 };
 
-        // ==================== INICIALIZACIÓN Y CARGA DE CONFIG.JSON ====================
         window.addEventListener('DOMContentLoaded', async () => {
             await initAppData();
             loadPersistedState();
@@ -1568,10 +1397,9 @@
             runLossCalculator();
             renderExtraChallenges();
 
-            // Atajo de teclado Espacio para girar Flashcards
             window.addEventListener('keydown', (e) => {
                 const fcSection = document.getElementById('module-flashcards');
-                if (e.code === 'Space' && fcSection && !fcSection.classList.contains('hidden') && document.activeElement.tagName !== 'INPUT') {
+                if (e.code === 'Space' && fcSection && !fcSection.classList.contains('hidden') && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
                     e.preventDefault();
                     flipCurrentFlashcard();
                 }
@@ -1584,46 +1412,18 @@
                 const res = await fetch('./config.json', { cache: 'no-store' });
                 if (res.ok) {
                     const text = await res.text();
-                    // Si al archivo config.json le faltaban las llaves externas { }, lo repara automáticamente
                     const trimmed = text.trim();
                     const normalizedJson = trimmed.startsWith('{') ? trimmed : `{${trimmed}}`;
                     loadedData = JSON.parse(normalizedJson);
-                    showToast('config.json cargado correctamente desde el repositorio', 'success');
                 }
             } catch (err) {
-                console.warn('Usando configuración integrada de respaldo:', err);
+                console.warn('Cargando configuración interna de respaldo.');
             }
 
             const source = loadedData || DEFAULT_CONFIG;
             appConfig = source.app_config || DEFAULT_CONFIG.app_config;
-
-            // Cargar lista de usuarios autorizados (combinando config.json + guardados en navegador)
-            const savedUsers = localStorage.getItem('incar_whitelist_v2');
-            if (savedUsers) {
-                authorizedUsers = JSON.parse(savedUsers);
-                // Asegurar que los usuarios de config.json estén siempre presentes
-                (source.admin_users || []).forEach(u => {
-                    if (!authorizedUsers.some(existing => existing.email.toLowerCase() === (u.email || '').toLowerCase())) {
-                        authorizedUsers.push(u);
-                    }
-                });
-            } else {
-                authorizedUsers = [...(source.admin_users || DEFAULT_CONFIG.admin_users)];
-            }
-            saveWhitelist();
-
-            // Cargar asignaturas
-            const savedSubjects = localStorage.getItem('incar_subjects_v2');
-            if (savedSubjects) {
-                subjectsList = JSON.parse(savedSubjects);
-            } else {
-                subjectsList = [...(source.subjects || DEFAULT_CONFIG.subjects)];
-            }
-
-            const masterKeyEl = document.getElementById('display-master-key');
-            if (masterKeyEl && appConfig.master_key) {
-                masterKeyEl.textContent = appConfig.master_key;
-            }
+            authorizedUsers = source.admin_users || DEFAULT_CONFIG.admin_users;
+            subjectsList = source.subjects || DEFAULT_CONFIG.subjects;
         }
 
         function loadPersistedState() {
@@ -1667,7 +1467,6 @@
             setTimeout(() => el.remove(), 3500);
         }
 
-        // ==================== AUTENTICACIÓN Y WHITELIST DE COMPAÑEROS ====================
         function handleLogin(e) {
             e.preventDefault();
             const inputUser = document.getElementById('login-email').value.trim().toLowerCase();
@@ -1675,48 +1474,28 @@
             const errBox = document.getElementById('login-error-box');
             const errText = document.getElementById('login-error-text');
 
-            // Permite entrar con correo o con nombre de usuario del config.json
+            if (!inputPass) {
+                errText.textContent = 'Introduce tu contraseña obligatoriamente.';
+                errBox.classList.remove('hidden');
+                return;
+            }
+
             const found = authorizedUsers.find(u =>
                 ((u.email && u.email.toLowerCase() === inputUser) ||
                  (u.username && u.username.toLowerCase() === inputUser)) &&
                 u.password === inputPass
             );
 
-            // También soporta el admin maestro por defecto
-            const isMasterDefault = (inputUser === 'admin@ehu.eus' && inputPass === (appConfig?.master_key || 'ADMIN-TIA-2026'));
-
-            if (found || isMasterDefault) {
+            if (found) {
                 errBox.classList.add('hidden');
-                currentUser = found || { username: 'Admin Propietario', email: 'admin@ehu.eus', role: 'admin' };
+                currentUser = found;
                 sessionStorage.setItem('incar_active_user', JSON.stringify(currentUser));
                 enterAuthenticatedApp();
                 showToast(`¡Bienvenido/a, ${currentUser.username}!`, 'success');
             } else {
-                errText.textContent = 'Correo o contraseña incorrectos. Pide acceso a Iker o Lobini.';
+                errText.textContent = 'Credenciales no autorizadas. Comprueba tus datos.';
                 errBox.classList.remove('hidden');
             }
-        }
-
-        function quickAdminLogin() {
-            const adminUser = authorizedUsers.find(u => u.role === 'admin') || {
-                username: 'iker', email: 'iteso002@ikasle.ehu.eus', role: 'admin'
-            };
-            document.getElementById('login-email').value = adminUser.email;
-            document.getElementById('login-password').value = adminUser.password || 'ADMIN-2026';
-            currentUser = adminUser;
-            sessionStorage.setItem('incar_active_user', JSON.stringify(currentUser));
-            enterAuthenticatedApp();
-            showToast(`Sesión iniciada como Administrador (${currentUser.username})`, 'success');
-        }
-
-        function quickStudentLogin() {
-            const studentUser = authorizedUsers.find(u => u.role === 'student') || authorizedUsers[0];
-            document.getElementById('login-email').value = studentUser.email;
-            document.getElementById('login-password').value = studentUser.password;
-            currentUser = studentUser;
-            sessionStorage.setItem('incar_active_user', JSON.stringify(currentUser));
-            enterAuthenticatedApp();
-            showToast(`Sesión iniciada como ${currentUser.username}`, 'info');
         }
 
         function togglePasswordVisibility() {
@@ -1735,14 +1514,6 @@
             document.getElementById('login-view').classList.add('hidden');
             document.getElementById('app-wrapper').classList.remove('hidden');
             document.getElementById('current-user-badge').textContent = `${currentUser.username} (${currentUser.role === 'admin' ? 'Admin' : 'Estudiante'})`;
-
-            const adminBtn = document.getElementById('nav-admin-btn');
-            if (currentUser.role === 'admin') {
-                adminBtn.classList.remove('hidden');
-            } else {
-                adminBtn.classList.add('hidden');
-            }
-
             renderSubjectsHub();
             openSubject(appConfig?.default_subject || 'TIA');
         }
@@ -1752,93 +1523,9 @@
             currentUser = null;
             document.getElementById('app-wrapper').classList.add('hidden');
             document.getElementById('login-view').classList.remove('hidden');
+            document.getElementById('login-password').value = '';
         }
 
-        function promptMasterAdminKey() {
-            const key = prompt('Introduce la Clave Maestra de Administrador (ej. ADMIN-TIA-2026 o ADMIN-2026):');
-            if (key === (appConfig?.master_key || 'ADMIN-TIA-2026') || key === 'ADMIN-2026') {
-                openAdminModal();
-            } else if (key !== null) {
-                showToast('Clave maestra incorrecta', 'error');
-            }
-        }
-
-        function openAdminModal() {
-            renderWhitelistTable();
-            document.getElementById('admin-modal').classList.remove('hidden');
-        }
-
-        function closeAdminModal() {
-            document.getElementById('admin-modal').classList.add('hidden');
-        }
-
-        function saveWhitelist() {
-            localStorage.setItem('incar_whitelist_v2', JSON.stringify(authorizedUsers));
-        }
-
-        function renderWhitelistTable() {
-            const tbody = document.getElementById('whitelist-table-body');
-            const countEl = document.getElementById('whitelist-count');
-            countEl.textContent = authorizedUsers.length;
-
-            tbody.innerHTML = authorizedUsers.map((u, idx) => `
-                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
-                    <td class="py-3 px-4 font-semibold">${u.username}</td>
-                    <td class="py-3 px-4 font-mono text-xs text-slate-500 dark:text-slate-300">${u.email}</td>
-                    <td class="py-3 px-4 font-mono text-xs text-blue-500">${u.password}</td>
-                    <td class="py-3 px-4">
-                        <span class="px-2 py-0.5 rounded-full text-[11px] font-bold uppercase ${u.role === 'admin' ? 'bg-amber-500/20 text-amber-400' : 'bg-emerald-500/20 text-emerald-400'}">
-                            ${u.role || 'student'}
-                        </span>
-                    </td>
-                    <td class="py-3 px-4 text-right">
-                        <button onclick="removeAuthorizedUser(${idx})" class="text-rose-500 hover:text-rose-400 text-xs font-semibold px-2 py-1 rounded hover:bg-rose-500/10">
-                            <i class="fa-solid fa-trash"></i> Quitar
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function handleAddAuthorizedUser(e) {
-            e.preventDefault();
-            const username = document.getElementById('new-user-name').value.trim();
-            const email = document.getElementById('new-user-email').value.trim();
-            const password = document.getElementById('new-user-pass').value.trim();
-
-            authorizedUsers.push({ username, email, password, role: 'student' });
-            saveWhitelist();
-            renderWhitelistTable();
-            e.target.reset();
-            showToast(`Usuario ${username} autorizado correctamente`, 'success');
-        }
-
-        function removeAuthorizedUser(idx) {
-            if (authorizedUsers.length <= 1) {
-                showToast('Debe quedar al menos un administrador activo', 'error');
-                return;
-            }
-            authorizedUsers.splice(idx, 1);
-            saveWhitelist();
-            renderWhitelistTable();
-        }
-
-        function exportWhitelistJSON() {
-            const exportObj = {
-                app_config: appConfig,
-                admin_users: authorizedUsers,
-                subjects: subjectsList
-            };
-            const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'config.json';
-            a.click();
-            showToast('Archivo config.json actualizado descargado', 'success');
-        }
-
-        // ==================== GESTIÓN DE ASIGNATURAS Y TEMA ====================
         function toggleTheme() {
             const html = document.documentElement;
             const icon = document.getElementById('theme-icon');
@@ -1921,18 +1608,18 @@
                         question: q.question || q.q,
                         options: q.options,
                         answer: q.answer ?? q.ans ?? 0,
-                        hint: q.hint || 'Revisa los apuntes de la asignatura.',
-                        explanation: q.explanation || q.exp || 'Respuesta correcta verificada.'
+                        hint: q.hint || 'Revisa el temario oficial.',
+                        explanation: q.explanation || q.exp || 'Respuesta verificada.'
                     }));
                 } catch (err) {
-                    showToast('El JSON de preguntas tenía un error de formato', 'error');
+                    showToast('Formato JSON de preguntas inválido', 'error');
                     return;
                 }
             }
 
             const newSubj = {
                 id: code, code, name, description, icon, color,
-                blocks: [{ id: 1, code: 'B1', title: `Bloque 1: ${name}`, flashcards: [{ question: `Concepto clave de ${name}`, answer: description }] }],
+                blocks: [{ id: 1, code: 'B1', title: `Bloque 1: ${name}`, flashcards: [{ question: `Concepto fundamental de ${name}`, answer: description }] }],
                 questions: questions.length ? questions : DEFAULT_CONFIG.subjects[0].questions
             };
 
@@ -1940,7 +1627,7 @@
             localStorage.setItem('incar_subjects_v2', JSON.stringify(subjectsList));
             closeSubjectModal();
             renderSubjectsHub();
-            showToast(`Asignatura ${code} creada con éxito`, 'success');
+            showToast(`Asignatura ${code} añadida correctamente`, 'success');
         }
 
         function switchTiaTab(tab) {
@@ -1968,16 +1655,13 @@
             document.getElementById('stat-cards-mastered').textContent = `${masteredCount} / ${allFlashcards.length}`;
         }
 
-        // ==================== MOTOR DE TESTS (10 / 25 / 50 PREGUNTAS + GENERADOR PARAMÉTRICO) ====================
         function selectQuizDifficulty(diff) {
             selectedDifficulty = diff;
             ['facil', 'medio', 'dificil'].forEach(d => {
                 const btn = document.getElementById(`diff-btn-${d}`);
-                if (d === diff) {
-                    btn.className = 'diff-selector p-3.5 rounded-xl border-2 border-blue-600 bg-blue-500/10 text-center transition';
-                } else {
-                    btn.className = 'diff-selector p-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-800 text-center transition';
-                }
+                btn.className = d === diff
+                    ? 'diff-selector p-3.5 rounded-xl border-2 border-blue-600 bg-blue-500/10 text-center transition'
+                    : 'diff-selector p-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-800 text-center transition';
             });
         }
 
@@ -1985,15 +1669,12 @@
             selectedCount = count;
             [10, 25, 50].forEach(c => {
                 const btn = document.getElementById(`count-btn-${c}`);
-                if (c === count) {
-                    btn.className = 'count-selector p-3.5 rounded-xl border-2 border-blue-600 bg-blue-500/10 text-center transition';
-                } else {
-                    btn.className = 'count-selector p-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-800 text-center transition';
-                }
+                btn.className = c === count
+                    ? 'count-selector p-3.5 rounded-xl border-2 border-blue-600 bg-blue-500/10 text-center transition'
+                    : 'count-selector p-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-800 text-center transition';
             });
         }
 
-        // Generador de problemas numéricos únicos de TIA para rellenar hasta 25 o 50 preguntas sin repetir
         function generateParametricQuestion(index, diff, blockFilter) {
             const blocks = blockFilter === 'all' ? ['B1', 'B2', 'B3', 'B4'] : [blockFilter];
             const chosenBlock = blocks[index % blocks.length];
@@ -2012,7 +1693,7 @@
                     id: `GEN-B1-${index}`,
                     block: 'B1',
                     difficulty: diff,
-                    question: `[Cálculo Cinemático PSO #${index}] Una partícula se encuentra en $x_i(t) = ${x}$ con velocidad $v_i(t) = ${v}$. Sabiendo que $w = ${w}$, $p_{best,i} = ${pbest}$, $g_{best} = ${gbest}$ y $c_1 r_1 = c_2 r_2 = 0.5$, ¿cuáles son su nueva velocidad $v_i(t+1)$ y posición $x_i(t+1)$?`,
+                    question: `[Cálculo Cinemático PSO #${index}] Una partícula tiene $x_i(t) = ${x}$ y velocidad $v_i(t) = ${v}$. Con $w = ${w}$, $p_{best,i} = ${pbest}$, $g_{best} = ${gbest}$ y $c_1 r_1 = c_2 r_2 = 0.5$, ¿cuáles son $v_i(t+1)$ y $x_i(t+1)$?`,
                     options: [
                         `$v_i(t+1) = ${vNext}$ y $x_i(t+1) = ${xNext}$`,
                         `$v_i(t+1) = ${(vNext + 1.5).toFixed(2)}$ y $x_i(t+1) = ${(xNext - 1).toFixed(2)}$`,
@@ -2020,8 +1701,8 @@
                         `$v_i(t+1) = ${(vNext * 2).toFixed(2)}$ y $x_i(t+1) = ${(xNext + 3).toFixed(2)}$`
                     ],
                     answer: 0,
-                    hint: "Aplica $v_i(t+1) = w\\cdot v_i(t) + c_1 r_1 (p_{best,i} - x_i(t)) + c_2 r_2 (g_{best} - x_i(t))$ y luego $x_i(t+1) = x_i(t) + v_i(t+1)$.",
-                    explanation: `Sustituyendo en las ecuaciones cinemáticas (1) y (2): $v_i(t+1) = ${w}\\cdot(${v}) + 0.5\\cdot(${pbest}-${x}) + 0.5\\cdot(${gbest}-${x}) = ${vNext}$, por lo que $x_i(t+1) = ${x} + ${vNext} = ${xNext}$.`
+                    hint: "Aplica $v_i(t+1) = w\\cdot v_i(t) + c_1 r_1 (p_{best,i} - x_i(t)) + c_2 r_2 (g_{best} - x_i(t))$.",
+                    explanation: `Sustituyendo: $v_i(t+1) = ${w}\\cdot(${v}) + 0.5\\cdot(${pbest}-${x}) + 0.5\\cdot(${gbest}-${x}) = ${vNext}$. Entonces $x_i(t+1) = ${x} + ${vNext} = ${xNext}$.`
                 };
             } else if (chosenBlock === 'B2') {
                 const xr1 = (index % 5) + 2;
@@ -2033,7 +1714,7 @@
                     id: `GEN-B2-${index}`,
                     block: 'B2',
                     difficulty: diff,
-                    question: `[Cálculo Mutación DE #${index}] En Evolución Diferencial ($DE/rand/1$), para una coordenada se seleccionan $x_{r_1,G} = ${xr1}$, $x_{r_2,G} = ${xr2}$ y $x_{r_3,G} = ${xr3}$ con factor de escala $F = ${F}$. ¿Cuánto vale la componente del vector mutante $v_{i,G}$?`,
+                    question: `[Cálculo Mutación DE #${index}] En Evolución Diferencial ($DE/rand/1$), para una coordenada se eligen $x_{r_1,G} = ${xr1}$, $x_{r_2,G} = ${xr2}$ y $x_{r_3,G} = ${xr3}$ con factor $F = ${F}$. ¿Cuánto vale el mutante $v_{i,G}$?`,
                     options: [
                         `$v_{i,G} = ${vMut}$`,
                         `$v_{i,G} = ${(vMut + 2.5).toFixed(2)}$`,
@@ -2041,20 +1722,17 @@
                         `$v_{i,G} = 0.00$`
                     ],
                     answer: 0,
-                    hint: "Aplica la Ecuación (8): $v_{i,G} = x_{r_1,G} + F \\cdot (x_{r_2,G} - x_{r_3,G})$.",
-                    explanation: `Calculando la diferencia escalada: $v_{i,G} = ${xr1} + ${F} \\cdot (${xr2} - ${xr3}) = ${vMut}$.`
+                    hint: "Ecuación (8): $v_{i,G} = x_{r_1,G} + F \\cdot (x_{r_2,G} - x_{r_3,G})$.",
+                    explanation: `Calculando: $v_{i,G} = ${xr1} + ${F} \\cdot (${xr2} - ${xr3}) = ${vMut}$.`
                 };
             } else if (chosenBlock === 'B3') {
                 const W = 16 + (index % 4) * 4;
-                const K = 3;
-                const P = 1;
-                const S = 1;
                 const afterPool = W / 2;
                 return {
                     id: `GEN-B3-${index}`,
                     block: 'B3',
                     difficulty: diff,
-                    question: `[Arquitectura CNN #${index}] Una matriz de entrada de tamaño $${W} \\times ${W}$ atraviesa una convolución con Kernel $${K}\\times ${K}$, Padding $P=${P}$ y Stride $S=${S}$, seguida de una capa ReLU y un Max Pooling de ventana $2\\times 2$ (paso 2). ¿Cuál es el tamaño de la matriz resultante antes del Flattening?`,
+                    question: `[Arquitectura CNN #${index}] Una entrada de $${W} \\times ${W}$ atraviesa convolución con Kernel $3\\times 3$, Padding $P=1$ y Stride $S=1$, seguida de Max Pooling de $2\\times 2$ (paso 2). ¿Qué tamaño tiene el mapa resultante?`,
                     options: [
                         `$${afterPool} \\times ${afterPool}$`,
                         `$${W} \\times ${W}$`,
@@ -2062,8 +1740,8 @@
                         `$2 \\times 2$`
                     ],
                     answer: 0,
-                    hint: "Con Kernel 3x3 y Padding 1 el tamaño se mantiene igual tras la convolución; luego el Max Pooling 2x2 reduce las dimensiones a la mitad.",
-                    explanation: `El Padding $P=1$ conserva el tamaño $${W}\\times ${W}$ en la convolución y el Max Pooling $2\\times 2$ lo comprime a la mitad: $${afterPool}\\times ${afterPool}$.`
+                    hint: "Kernel 3x3 con Padding 1 preserva tamaño; Max Pooling 2x2 lo reduce a la mitad.",
+                    explanation: `El Padding conserva $${W}\\times ${W}$ y el Max Pooling lo comprime a $${afterPool}\\times ${afterPool}$.`
                 };
             } else {
                 const yReal = (index % 3) + 1;
@@ -2073,7 +1751,7 @@
                     id: `GEN-B4-${index}`,
                     block: 'B4',
                     difficulty: diff,
-                    question: `[Funciones de Pérdida #${index}] Evaluando una muestra de una variable ordinal codificada numéricamente donde el valor real es $y_i = ${yReal}$ y la red predice $\\hat{y}_i = ${yHat}$, ¿cuál es el error cuadrático $(y_i - \\hat{y}_i)^2$ aportado al MSE?`,
+                    question: `[Funciones de Pérdida #${index}] En una variable ordinal donde $y_i = ${yReal}$ y la red predice $\\hat{y}_i = ${yHat}$, ¿cuál es el término $(y_i - \\hat{y}_i)^2$ aportado al MSE?`,
                     options: [
                         `$(y_i - \\hat{y}_i)^2 = ${sqErr}$`,
                         `$(y_i - \\hat{y}_i)^2 = ${sqErr + 3}$`,
@@ -2081,8 +1759,8 @@
                         `$(y_i - \\hat{y}_i)^2 = -${sqErr}$`
                     ],
                     answer: 0,
-                    hint: "Eleva al cuadrado la diferencia entre el valor esperado y el predicho.",
-                    explanation: `Aplicando la fórmula del MSE: $(${yReal} - (${yHat}))^2 = ${sqErr}$.`
+                    hint: "Diferencia elevada al cuadrado.",
+                    explanation: `Calculando el término cuadrático: $(${yReal} - (${yHat}))^2 = ${sqErr}$.`
                 };
             }
         }
@@ -2109,17 +1787,14 @@
                 normBlock: typeof q.block === 'number' ? `B${q.block}` : q.block
             }));
 
-            // 1. Filtrar por bloque
             let pool = blockFilter === 'all'
                 ? [...baseBank]
                 : baseBank.filter(q => q.normBlock === blockFilter);
 
-            // 2. Priorizar la dificultad elegida, completando con otras dificultades del JSON si hacen falta más
             let diffMatches = pool.filter(q => q.difficulty === selectedDifficulty);
             let otherDiffs = pool.filter(q => q.difficulty !== selectedDifficulty);
             let combined = [...diffMatches.sort(() => Math.random() - 0.5), ...otherDiffs.sort(() => Math.random() - 0.5)];
 
-            // 3. Si el usuario pide 25 o 50 preguntas, generar ejercicios algorítmicos hasta completar la cantidad exacta
             let genIdx = 1;
             while (combined.length < selectedCount) {
                 combined.push(generateParametricQuestion(genIdx++, selectedDifficulty, blockFilter));
@@ -2167,7 +1842,7 @@
             document.getElementById('quiz-question-text').innerHTML = q.question;
             const hintBox = document.getElementById('quiz-hint-box');
             hintBox.classList.add('hidden');
-            hintBox.innerHTML = `<i class="fa-solid fa-lightbulb mr-1.5"></i> <strong>Pista:</strong> ${q.hint || 'Repasa las ecuaciones del bloque correspondiente.'}`;
+            hintBox.innerHTML = `<i class="fa-solid fa-lightbulb mr-1.5"></i> <strong>Pista:</strong> ${q.hint || 'Repasa las ecuaciones del bloque.'}`;
 
             const chosen = userQuizAnswers[currentQuizIndex];
             const optsContainer = document.getElementById('quiz-options-container');
@@ -2306,7 +1981,6 @@
             document.getElementById('quiz-setup-panel').classList.remove('hidden');
         }
 
-        // ==================== MÓDULO 2: RETOS EXTRA DE INGENIERÍA ====================
         function renderExtraChallenges() {
             const filter = document.getElementById('extra-topic-filter').value;
             const grid = document.getElementById('extra-challenges-grid');
@@ -2352,7 +2026,6 @@
             document.getElementById(`extra-exp-${id}`).classList.remove('hidden');
         }
 
-        // ==================== MÓDULO 3: FLASHCARDS INTERACTIVAS 3D ====================
         function prepareSubjectFlashcards(subj) {
             allFlashcards = [];
             (subj.blocks || []).forEach(b => {
@@ -2376,11 +2049,9 @@
 
         function filterFlashcards(block) {
             document.querySelectorAll('.fc-filter-btn').forEach(btn => {
-                if (btn.dataset.block === block) {
-                    btn.className = 'fc-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-blue-600 text-white';
-                } else {
-                    btn.className = 'fc-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300';
-                }
+                btn.className = (btn.dataset.block === block)
+                    ? 'fc-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-blue-600 text-white'
+                    : 'fc-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300';
             });
 
             if (block === 'all') {
@@ -2388,7 +2059,7 @@
             } else if (block === 'pending') {
                 filteredFlashcards = allFlashcards.filter(c => flashcardStatusMap[c.id] !== 'mastered');
                 if (!filteredFlashcards.length) {
-                    showToast('¡Ya dominas todas las tarjetas! Mostrando todas.', 'success');
+                    showToast('¡Has dominado todas las tarjetas!', 'success');
                     filteredFlashcards = [...allFlashcards];
                 }
             } else {
@@ -2402,7 +2073,7 @@
             filteredFlashcards.sort(() => Math.random() - 0.5);
             currentCardIndex = 0;
             renderCurrentFlashcard();
-            showToast('Tarjetas mezcladas aleatoriamente', 'info');
+            showToast('Tarjetas mezcladas', 'info');
         }
 
         function flipCurrentFlashcard() {
@@ -2450,7 +2121,6 @@
             renderMath(document.getElementById('module-flashcards'));
         }
 
-        // ==================== MÓDULO 4: CALCULADORAS EN VIVO ====================
         function runPsoCalculator() {
             const w = parseFloat(document.getElementById('calc-pso-w').value) || 0;
             const v = parseFloat(document.getElementById('calc-pso-v').value) || 0;
@@ -2491,7 +2161,7 @@
             document.getElementById('calc-loss-output').innerHTML = `
                 <div class="text-blue-500 font-bold">• Entropía Cruzada $L_{CE} = -\\ln(${prob.toFixed(2)})$ = ${ceLossLn.toFixed(4)} nats (en $\\log_{10}$: ${ceLossLog10.toFixed(4)})</div>
                 <div class="text-emerald-500 font-bold">• Error Cuadrático $(y_i - \\hat{y}_i)^2 = (${yReal} - ${yHat})^2$ = ${mseLoss.toFixed(4)}</div>
-                <div class="text-slate-400 text-[11px]">${prob < 0.2 ? '⚠️ Confianza muy baja en la clase correcta: la Entropía Cruzada dispara el castigo.' : '✔ Predicción bien encaminada con baja penalización logarítmica.'}</div>
+                <div class="text-slate-400 text-[11px]">${prob < 0.2 ? '⚠️ Castigo exponencial por baja probabilidad en la clase esperada.' : '✔ Predicción con buena convergencia.'}</div>
             `;
             renderMath(document.getElementById('calc-loss-output'));
         }
