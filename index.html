@@ -776,7 +776,7 @@
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Ecuaciones y formulación matemática de los cuatro bloques oficiales</p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Bloque 1 -->
                         <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-3">
                             <span class="px-2.5 py-1 rounded-md bg-blue-500/15 text-blue-500 font-bold text-xs">Bloque 1 · Particle Swarm Optimization (PSO)</span>
@@ -787,13 +787,9 @@
                                     $$x_i(t+1) = x_i(t) + v_i(t+1)$$
                                 </div>
                                 <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1">
-                                    <li><strong>Inercia ($w$):</strong> $w$ alto ($ pprox 0.8 - 1.2$) $
-ightarrow$ exploración global. $w$ bajo ($ pprox 0.2 - 0.4$) $
-ightarrow$ explotación local fina.</li>
+                                    <li><strong>Inercia ($w$):</strong> $w$ alto ($\approx 0.8 - 1.2$) $\rightarrow$ exploración global. $w$ bajo ($\approx 0.2 - 0.4$) $\rightarrow$ explotación local fina.</li>
                                     <li><strong>Restricción de Ecuación ($g_k(x) = 0$):</strong> $$C_{Nuevo}(x) = C_{Original}(x) + \lambda_1 \cdot e^{|g_k(x)|^2}$$</li>
-                                    <li><strong>Restricción de Inecuación ($g_k(x) \le 0$):</strong> Si cumple $
-ightarrow C_{Original}(x)$; si infringe $
-ightarrow \infty$.</li>
+                                    <li><strong>Restricción de Inecuación ($g_k(x) \le 0$):</strong> Si cumple $\rightarrow C_{Original}(x)$; si infringe $\rightarrow \infty$.</li>
                                 </ul>
                             </div>
                         </div>
@@ -802,20 +798,17 @@ ightarrow \infty$.</li>
                         <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-3">
                             <span class="px-2.5 py-1 rounded-md bg-indigo-500/15 text-indigo-500 font-bold text-xs">Bloque 2 · Evolución Diferencial (DE)</span>
                             <div class="text-xs sm:text-sm space-y-2">
-                                <p class="font-semibold">Mutación ($DE/rand/1$) con $r_1 
-eq r_2 
-eq r_3 
-eq i$:</p>
+                                <p class="font-semibold">Mutación ($DE/rand/1$) con $r_1 \neq r_2 \neq r_3 \neq i$:</p>
                                 <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 math-box">
                                     $$v_{i,G} = x_{r_1,G} + F \cdot (x_{r_2,G} - x_{r_3,G}), \quad F \in (0, 2)$$
                                 </div>
                                 <p class="font-semibold">Cruce Binomial ($CR \in [0,1], j_{rand} \in \{1,\dots,D\}$):</p>
                                 <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 math-box">
-                                    $$u_{j,i,G} = egin{cases} v_{j,i,G} & 	ext{si } rand_j(0,1) \le CR 	ext{ o } j = j_{rand} \ x_{j,i,G} & 	ext{en caso contrario} \end{cases}$$
+                                    $$u_{j,i,G} = \begin{cases} v_{j,i,G} & \text{si } rand_j(0,1) \le CR \text{ o } j = j_{rand} \\ x_{j,i,G} & \text{en caso contrario} \end{cases}$$
                                 </div>
                                 <p class="font-semibold">Selección Elitista Uno a Uno:</p>
                                 <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 math-box">
-                                    $$x_{i,G+1} = u_{i,G} 	ext{ si } f(u_{i,G}) \le f(x_{i,G}), 	ext{ sino } x_{i,G}$$
+                                    $$x_{i,G+1} = u_{i,G} \text{ si } f(u_{i,G}) \le f(x_{i,G}), \text{ sino } x_{i,G}$$
                                 </div>
                             </div>
                         </div>
@@ -826,16 +819,14 @@ eq i$:</p>
                             <div class="text-xs sm:text-sm space-y-2">
                                 <p class="font-semibold">Backpropagation y Regla Delta:</p>
                                 <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 math-box">
-                                    $$\Delta w_{ij} = -\eta \cdot rac{\partial E}{\partial w_{ij}}, \quad 	ext{ReLU}(x) = \max(0, x)$$
+                                    $$\Delta w_{ij} = -\eta \cdot \frac{\partial E}{\partial w_{ij}}, \quad \text{ReLU}(x) = \max(0, x)$$
                                 </div>
                                 <p class="font-semibold">Dimensión de Salida en Convolución / Pooling:</p>
                                 <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 math-box">
-                                    $$O = \left\lfloor rac{W - K + 2P}{S} 
-ight
-floor + 1$$
+                                    $$O = \left\lfloor \frac{W - K + 2P}{S} \right\rfloor + 1$$
                                 </div>
                                 <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1">
-                                    <li><strong>División Dataset:</strong> Train ($70	ext{-}80\%$), Validation ($10	ext{-}15\%$), Test ($10	ext{-}15\%$).</li>
+                                    <li><strong>División Dataset:</strong> Train ($70-80\%$), Validation ($10-15\%$), Test ($10-15\%$).</li>
                                     <li><strong>Dropout:</strong> Apaga aleatoriamente neuronas en cada iteración para evitar <em>Overfitting</em>.</li>
                                 </ul>
                             </div>
@@ -847,7 +838,7 @@ floor + 1$$
                             <div class="text-xs sm:text-sm space-y-2">
                                 <p class="font-semibold">Error Cuadrático Medio (MSE - Regresión y Ordinales):</p>
                                 <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 math-box">
-                                    $$MSE = rac{1}{N}\sum_{i=1}^{N}(y_i - \hat{y}_i)^2$$
+                                    $$MSE = \frac{1}{N}\sum_{i=1}^{N}(y_i - \hat{y}_i)^2$$
                                 </div>
                                 <p class="font-semibold">Entropía Cruzada Categórica (Clasificación Nominal + SoftMax):</p>
                                 <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 math-box">
