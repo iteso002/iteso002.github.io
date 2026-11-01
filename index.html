@@ -1472,9 +1472,8 @@
             });
         });
 
-        let fullTiaBank = []; // Variable global accesible desde startConfiguredQuiz
-
-    let fullDevBank = []; // <-- Asegúrate de declarar ambas arriba del script
+        let fullTiaBank = []; // Banco global de preguntas tipo test
+        let fullDevBank = []; // Banco global de preguntas de desarrollo
 
 async function initAppData() {
     let loadedData = null;
@@ -2376,7 +2375,6 @@ function guardarClaveGroq() {
     showToast('API Key guardada localmente', 'success');
 }
 
-let fullDevBank = []; // Variable global de respaldo
 
 function cargarSiguientePreguntaDev() {
     // 1. Prioriza el banco cargado en la variable global o en activeSubject
