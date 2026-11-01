@@ -1582,35 +1582,40 @@ async function initAppData() {
         }
 
         function handleLogin(e) {
-            e.preventDefault();
-            const inputUser = document.getElementById('login-email').value.trim().toLowerCase();
-            const inputPass = document.getElementById('login-password').value.trim();
-            const errBox = document.getElementById('login-error-box');
-            const errText = document.getElementById('login-error-text');
+    e.preventDefault();
+    const inputUser = document.getElementById('login-email').value.trim().toLowerCase();
+    const inputPass = document.getElementById('login-password').value.trim();
+    const errBox = document.getElementById('login-error-box');
+    const errText = document.getElementById('login-error-text');
 
-            if (!inputPass) {
-                errText.textContent = 'Introduce tu contraseña obligatoriamente.';
-                errBox.classList.remove('hidden');
-                return;
-            }
+    if (!inputPass) {
+        errText.textContent = 'Introduce tu contraseña obligatoriamente.';
+        errBox.classList.remove('hidden');
+        return;
+    }
 
-            const found = authorizedUsers.find(u =>
-                ((u.email && u.email.toLowerCase() === inputUser) ||
-                 (u.username && u.username.toLowerCase() === inputUser)) &&
-                u.password === inputPass
-            );
+    // Si authorizedUsers no se llenó por fallo de fetch, usa la lista de respaldo
+    const usersToSearch = (authorizedUsers && authorizedUsers.length > 0) 
+        ? authorizedUsers 
+        : DEFAULT_CONFIG.admin_users;
 
-            if (found) {
-                errBox.classList.add('hidden');
-                currentUser = found;
-                sessionStorage.setItem('incar_active_user', JSON.stringify(currentUser));
-                enterAuthenticatedApp();
-                showToast(`¡Bienvenido/a, ${currentUser.username}!`, 'success');
-            } else {
-                errText.textContent = 'Credenciales no autorizadas. Comprueba tus datos.';
-                errBox.classList.remove('hidden');
-            }
-        }
+    const found = usersToSearch.find(u =>
+        ((u.email && u.email.toLowerCase() === inputUser) ||
+         (u.username && u.username.toLowerCase() === inputUser)) &&
+        u.password === inputPass
+    );
+
+    if (found) {
+        errBox.classList.add('hidden');
+        currentUser = found;
+        sessionStorage.setItem('incar_active_user', JSON.stringify(currentUser));
+        enterAuthenticatedApp();
+        showToast(`¡Bienvenido/a, ${currentUser.username}!`, 'success');
+    } else {
+        errText.textContent = 'Credenciales no autorizadas. Comprueba tus datos.';
+        errBox.classList.remove('hidden');
+    }
+}
 
         function togglePasswordVisibility() {
             const input = document.getElementById('login-password');
