@@ -91,7 +91,7 @@
       "5. ReLU (Rectified Linear Unit): f(x) = max(0, x). Rango [0, +inf). Pone a 0 cualquier valor negativo y mantiene la identidad para positivos. Derivada simple (0 para x < 0, 1 para x > 0), gran eficiencia computacional y estándar en capas ocultas de redes profundas."
     ],
     "reference_context": "Funciones de activación del temario: 1. Signo / Escalón (salida discreta/binaria, derivada nula que impide Backpropagation). 2. Lineal f(x)=x (derivada constante, capas múltiples colapsan en una sola). 3. Sigmoidea f(x) = 1/(1+e^-x) (rango 0 a 1, continua y derivable, adecuada para propagación de gradiente). 4. Sigmoidea bipolar centrada en cero (rango -1 a 1, simétrica respecto al origen). 5. ReLU f(x) = max(0, x) (limpia valores negativos a 0 y preserva los positivos, computacionalmente eficiente)."
-  }
+  },
   {
     "id": "DEV-CNN-01",
     "block": "B3",
