@@ -1481,7 +1481,9 @@ floor + 1$$
             });
         });
 
-        async function initAppData() {
+        let fullTiaBank = []; // Variable global accesible desde startConfiguredQuiz
+
+async function initAppData() {
     let loadedData = null;
     try {
         const res = await fetch('./config.json', { cache: 'no-store' });
@@ -1500,14 +1502,21 @@ floor + 1$$
     authorizedUsers = source.admin_users || DEFAULT_CONFIG.admin_users;
     subjectsList = source.subjects || DEFAULT_CONFIG.subjects;
 
-    // --- NUEVO: Carga del banco ampliado de preguntas (archivo o API externa) ---
+    // --- Carga del banco ampliado de preguntas ---
     try {
         const qRes = await fetch('./questions_tia.json', { cache: 'no-store' });
         if (qRes.ok) {
             const externalQuestions = await qRes.json();
-            const tiaSubj = subjectsList.find(s => (s.code || s.id) === 'TIA');
-            if (tiaSubj && Array.isArray(externalQuestions) && externalQuestions.length > 0) {
-                tiaSubj.questions = externalQuestions;
+            if (Array.isArray(externalQuestions) && externalQuestions.length > 0) {
+                fullTiaBank = externalQuestions; // Asigna a la variable global
+
+                const tiaSubj = subjectsList.find(s => (s.code || s.id) === 'TIA');
+                if (tiaSubj) {
+                    tiaSubj.questions = externalQuestions;
+                }
+                if (activeSubject && (activeSubject.code === 'TIA' || activeSubject.id === 'TIA')) {
+                    activeSubject.questions = externalQuestions;
+                }
             }
         }
     } catch (e) {
@@ -1655,19 +1664,24 @@ floor + 1$$
         }
 
         function openSubject(code) {
-            const subj = subjectsList.find(s => (s.code || s.id) === code) || subjectsList[0];
-            activeSubject = subj;
+    const subj = subjectsList.find(s => (s.code || s.id) === code) || subjectsList[0];
+    activeSubject = subj;
 
-            document.getElementById('subject-hub-view').classList.add('hidden');
-            document.getElementById('tia-workspace-view').classList.remove('hidden');
-            document.getElementById('back-to-hub-btn').classList.remove('hidden');
-            document.getElementById('active-subject-title').textContent = subj.name;
-            document.getElementById('header-subtitle').textContent = `${subj.code || subj.id} · ${subj.name}`;
+    // Si abres TIA y fullTiaBank ya se cargó, enlaza el banco completo
+    if ((subj.code === 'TIA' || subj.id === 'TIA') && fullTiaBank.length > 0) {
+        activeSubject.questions = fullTiaBank;
+    }
 
-            prepareSubjectFlashcards(subj);
-            updateGlobalStatsUI();
-            renderMath(document.getElementById('tia-workspace-view'));
-        }
+    document.getElementById('subject-hub-view').classList.add('hidden');
+    document.getElementById('tia-workspace-view').classList.remove('hidden');
+    document.getElementById('back-to-hub-btn').classList.remove('hidden');
+    document.getElementById('active-subject-title').textContent = subj.name;
+    document.getElementById('header-subtitle').textContent = `${subj.code || subj.id} · ${subj.name}`;
+
+    prepareSubjectFlashcards(subj);
+    updateGlobalStatsUI();
+    renderMath(document.getElementById('tia-workspace-view'));
+}
 
         function openSubjectModal() {
             document.getElementById('subject-modal').classList.remove('hidden');
@@ -1769,107 +1783,107 @@ floor + 1$$
         }
 
         function generateParametricQuestion(index, diff, blockFilter) {
-    const blocks = blockFilter === 'all' ? ['B1', 'B2', 'B3', 'B4'] : [blockFilter];
-    const chosenBlock = blocks[index % blocks.length];
-
-    if (chosenBlock === 'B1') {
-        // Rangos amplios: inercia w de 0.1 a 1.4, velocidades de -20 a +35
-        const w = Number((0.15 + Math.random() * 1.1).toFixed(2));
-        const v = Math.floor(Math.random() * 56) - 20; // [-20, 35]
-        const x = Math.floor(Math.random() * 81) - 30; // [-30, 50]
-        const pbest = x + Math.floor(Math.random() * 25) - 10;
-        const gbest = x + Math.floor(Math.random() * 35) - 12;
-        const c1r1 = Number((0.1 + Math.random() * 1.8).toFixed(2));
-        const c2r2 = Number((0.1 + Math.random() * 1.8).toFixed(2));
-        const vNext = Number((w * v + c1r1 * (pbest - x) + c2r2 * (gbest - x)).toFixed(2));
-        const xNext = Number((x + vNext).toFixed(2));
-
-        return {
-            id: `GEN-B1-${Date.now()}-${index}`,
-            block: 'B1',
-            difficulty: diff,
-            question: `[Cálculo Cinemático PSO Dinámico] Una partícula se encuentra en $x_i(t) = ${x}$ con velocidad previa $v_i(t) = ${v}$. Si $w = ${w}$, $p_{best,i} = ${pbest}$, $g_{best} = ${gbest}$, $c_1 r_1 = ${c1r1}$ y $c_2 r_2 = ${c2r2}$, ¿cuáles son $v_i(t+1)$ y $x_i(t+1)$?`,
-            options: [
-                `$v_i(t+1) = ${vNext}$ y $x_i(t+1) = ${xNext}$`,
-                `$v_i(t+1) = ${(vNext + 2.75).toFixed(2)}$ y $x_i(t+1) = ${(xNext - 3.20).toFixed(2)}$`,
-                `$v_i(t+1) = 0.00$ y $x_i(t+1) = ${x}$`,
-                `$v_i(t+1) = ${(vNext * 1.6).toFixed(2)}$ y $x_i(t+1) = ${(xNext + 5.10).toFixed(2)}$`
-            ],
-            answer: 0,
-            hint: "Ecuaciones cinemáticas: $v(t+1) = w\\cdot v(t) + c_1 r_1(p_{best}-x) + c_2 r_2(g_{best}-x)$; $x(t+1) = x(t) + v(t+1)$.",
-            explanation: `Sustituyendo: $v_i(t+1) = ${w}\\cdot(${v}) + ${c1r1}\\cdot(${pbest}-${x}) + ${c2r2}\\cdot(${gbest}-${x}) = ${vNext}$. Posición: $x_i(t+1) = ${x} + (${vNext}) = ${xNext}$.`
-        };
-    } else if (chosenBlock === 'B2') {
-        const xr1 = Number((Math.random() * 120 - 40).toFixed(1));
-        const xr2 = Number((Math.random() * 120 - 40).toFixed(1));
-        const xr3 = Number((Math.random() * 120 - 40).toFixed(1));
-        const F = Number((0.2 + Math.random() * 1.6).toFixed(2));
-        const vMut = Number((xr1 + F * (xr2 - xr3)).toFixed(2));
-
-        return {
-            id: `GEN-B2-${Date.now()}-${index}`,
-            block: 'B2',
-            difficulty: diff,
-            question: `[Mutación DE/rand/1 Dinámica] Para una coordenada con vectores base $x_{r_1,G} = ${xr1}$, $x_{r_2,G} = ${xr2}$, $x_{r_3,G} = ${xr3}$ y factor de escala $F = ${F}$, calcula el vector mutante $v_{i,G}$:`,
-            options: [
-                `$v_{i,G} = ${vMut}$`,
-                `$v_{i,G} = ${(vMut + 4.60).toFixed(2)}$`,
-                `$v_{i,G} = ${(xr1 - xr2).toFixed(2)}$`,
-                `$v_{i,G} = ${(vMut * 0.5).toFixed(2)}$`
-            ],
-            answer: 0,
-            hint: "Aplica $v_{i,G} = x_{r_1,G} + F \\cdot (x_{r_2,G} - x_{r_3,G})$.",
-            explanation: `Cálculo directo: $${xr1} + ${F} \\cdot (${xr2} - (${xr3})) = ${vMut}$.`
-        };
-    } else if (chosenBlock === 'B3') {
-        const sizes = [32, 64, 128, 256, 512];
-        const W = sizes[Math.floor(Math.random() * sizes.length)];
-        const K = 3;
-        const P = 1;
-        const S = 1;
-        const poolWindow = 2;
-        const poolStride = 2;
-        const convOut = Math.floor((W - K + 2 * P) / S) + 1; // Mantiene W si K=3, P=1, S=1
-        const finalDim = Math.floor((convOut - poolWindow) / poolStride) + 1;
-
-        return {
-            id: `GEN-B3-${Date.now()}-${index}`,
-            block: 'B3',
-            difficulty: diff,
-            question: `[Arquitectura CNN Dinámica] Un mapa de características de $${W} \\times ${W}$ entra a una convolución ($K=3, P=1, S=1$) y posteriormente a un Max Pooling ($2 \\times 2$ con $Stride=2$). ¿Cuál es la dimensión de salida final?`,
-            options: [
-                `$${finalDim} \\times ${finalDim}$ píxeles`,
-                `$${W} \\times ${W}$ píxeles`,
-                `$${finalDim * 2} \\times ${finalDim * 2}$ píxeles`,
-                `$${finalDim - 4} \\times ${finalDim - 4}$ píxeles`
-            ],
-            answer: 0,
-            hint: "Con $K=3, P=1, S=1$ la dimensión no cambia. Max Pooling $2\\times 2$ con paso 2 la divide a la mitad.",
-            explanation: `Salida Convolución: $\\lfloor(${W}-3+2)/1\\rfloor+1 = ${convOut}$. Tras Max Pooling 2x2 ($Stride=2$): ${convOut}/2 = ${finalDim}\\times ${finalDim}$.`
-        };
-    } else {
-        const yReal = Math.floor(Math.random() * 8) + 1;
-        let yHat = Math.floor(Math.random() * 8) + 1;
-        while (yHat === yReal) yHat = Math.floor(Math.random() * 8) + 1;
-        const sqErr = Math.pow(yReal - yHat, 2);
-
-        return {
-            id: `GEN-B4-${Date.now()}-${index}`,
-            block: 'B4',
-            difficulty: diff,
-            question: `[Pérdida MSE Dinámica] En una variable ordinal donde la clase real es $y_i = ${yReal}$ y la red predice $\\hat{y}_i = ${yHat}$, ¿cuál es el error cuadrático individual $(y_i - \\hat{y}_i)^2$?`,
-            options: [
-                `$(y_i - \\hat{y}_i)^2 = ${sqErr}$`,
-                `$(y_i - \\hat{y}_i)^2 = ${sqErr + 5}$`,
-                `$(y_i - \\hat{y}_i)^2 = ${Math.abs(yReal - yHat)}$`,
-                `$(y_i - \\hat{y}_i)^2 = ${(sqErr * 2)}$`
-            ],
-            answer: 0,
-            hint: "Resta ambos valores y eleva el resultado al cuadrado.",
-            explanation: `$(y_i - \\hat{y}_i)^2 = (${yReal} - ${yHat})^2 = (${yReal - yHat})^2 = ${sqErr}$.`
-        };
-    }
-}
+            const blocks = blockFilter === 'all' ? ['B1', 'B2', 'B3', 'B4'] : [blockFilter];
+            const chosenBlock = blocks[index % blocks.length];
+        
+            if (chosenBlock === 'B1') {
+                // Rangos amplios: inercia w de 0.1 a 1.4, velocidades de -20 a +35
+                const w = Number((0.15 + Math.random() * 1.1).toFixed(2));
+                const v = Math.floor(Math.random() * 56) - 20; // [-20, 35]
+                const x = Math.floor(Math.random() * 81) - 30; // [-30, 50]
+                const pbest = x + Math.floor(Math.random() * 25) - 10;
+                const gbest = x + Math.floor(Math.random() * 35) - 12;
+                const c1r1 = Number((0.1 + Math.random() * 1.8).toFixed(2));
+                const c2r2 = Number((0.1 + Math.random() * 1.8).toFixed(2));
+                const vNext = Number((w * v + c1r1 * (pbest - x) + c2r2 * (gbest - x)).toFixed(2));
+                const xNext = Number((x + vNext).toFixed(2));
+        
+                return {
+                    id: `GEN-B1-${Date.now()}-${index}`,
+                    block: 'B1',
+                    difficulty: diff,
+                    question: `[Cálculo Cinemático PSO Dinámico] Una partícula se encuentra en $x_i(t) = ${x}$ con velocidad previa $v_i(t) = ${v}$. Si $w = ${w}$, $p_{best,i} = ${pbest}$, $g_{best} = ${gbest}$, $c_1 r_1 = ${c1r1}$ y $c_2 r_2 = ${c2r2}$, ¿cuáles son $v_i(t+1)$ y $x_i(t+1)$?`,
+                    options: [
+                        `$v_i(t+1) = ${vNext}$ y $x_i(t+1) = ${xNext}$`,
+                        `$v_i(t+1) = ${(vNext + 2.75).toFixed(2)}$ y $x_i(t+1) = ${(xNext - 3.20).toFixed(2)}$`,
+                        `$v_i(t+1) = 0.00$ y $x_i(t+1) = ${x}$`,
+                        `$v_i(t+1) = ${(vNext * 1.6).toFixed(2)}$ y $x_i(t+1) = ${(xNext + 5.10).toFixed(2)}$`
+                    ],
+                    answer: 0,
+                    hint: "Ecuaciones cinemáticas: $v(t+1) = w\\cdot v(t) + c_1 r_1(p_{best}-x) + c_2 r_2(g_{best}-x)$; $x(t+1) = x(t) + v(t+1)$.",
+                    explanation: `Sustituyendo: $v_i(t+1) = ${w}\\cdot(${v}) + ${c1r1}\\cdot(${pbest}-${x}) + ${c2r2}\\cdot(${gbest}-${x}) = ${vNext}$. Posición: $x_i(t+1) = ${x} + (${vNext}) = ${xNext}$.`
+                };
+            } else if (chosenBlock === 'B2') {
+                const xr1 = Number((Math.random() * 120 - 40).toFixed(1));
+                const xr2 = Number((Math.random() * 120 - 40).toFixed(1));
+                const xr3 = Number((Math.random() * 120 - 40).toFixed(1));
+                const F = Number((0.2 + Math.random() * 1.6).toFixed(2));
+                const vMut = Number((xr1 + F * (xr2 - xr3)).toFixed(2));
+        
+                return {
+                    id: `GEN-B2-${Date.now()}-${index}`,
+                    block: 'B2',
+                    difficulty: diff,
+                    question: `[Mutación DE/rand/1 Dinámica] Para una coordenada con vectores base $x_{r_1,G} = ${xr1}$, $x_{r_2,G} = ${xr2}$, $x_{r_3,G} = ${xr3}$ y factor de escala $F = ${F}$, calcula el vector mutante $v_{i,G}$:`,
+                    options: [
+                        `$v_{i,G} = ${vMut}$`,
+                        `$v_{i,G} = ${(vMut + 4.60).toFixed(2)}$`,
+                        `$v_{i,G} = ${(xr1 - xr2).toFixed(2)}$`,
+                        `$v_{i,G} = ${(vMut * 0.5).toFixed(2)}$`
+                    ],
+                    answer: 0,
+                    hint: "Aplica $v_{i,G} = x_{r_1,G} + F \\cdot (x_{r_2,G} - x_{r_3,G})$.",
+                    explanation: `Cálculo directo: $${xr1} + ${F} \\cdot (${xr2} - (${xr3})) = ${vMut}$.`
+                };
+            } else if (chosenBlock === 'B3') {
+                const sizes = [32, 64, 128, 256, 512];
+                const W = sizes[Math.floor(Math.random() * sizes.length)];
+                const K = 3;
+                const P = 1;
+                const S = 1;
+                const poolWindow = 2;
+                const poolStride = 2;
+                const convOut = Math.floor((W - K + 2 * P) / S) + 1; // Mantiene W si K=3, P=1, S=1
+                const finalDim = Math.floor((convOut - poolWindow) / poolStride) + 1;
+        
+                return {
+                    id: `GEN-B3-${Date.now()}-${index}`,
+                    block: 'B3',
+                    difficulty: diff,
+                    question: `[Arquitectura CNN Dinámica] Un mapa de características de $${W} \\times ${W}$ entra a una convolución ($K=3, P=1, S=1$) y posteriormente a un Max Pooling ($2 \\times 2$ con $Stride=2$). ¿Cuál es la dimensión de salida final?`,
+                    options: [
+                        `$${finalDim} \\times ${finalDim}$ píxeles`,
+                        `$${W} \\times ${W}$ píxeles`,
+                        `$${finalDim * 2} \\times ${finalDim * 2}$ píxeles`,
+                        `$${finalDim - 4} \\times ${finalDim - 4}$ píxeles`
+                    ],
+                    answer: 0,
+                    hint: "Con $K=3, P=1, S=1$ la dimensión no cambia. Max Pooling $2\\times 2$ con paso 2 la divide a la mitad.",
+                    explanation: `Salida Convolución: $\\lfloor(${W}-3+2)/1\\rfloor+1 = ${convOut}$. Tras Max Pooling 2x2 ($Stride=2$): ${convOut}/2 = ${finalDim}\\times ${finalDim}$.`
+                };
+            } else {
+                const yReal = Math.floor(Math.random() * 8) + 1;
+                let yHat = Math.floor(Math.random() * 8) + 1;
+                while (yHat === yReal) yHat = Math.floor(Math.random() * 8) + 1;
+                const sqErr = Math.pow(yReal - yHat, 2);
+        
+                return {
+                    id: `GEN-B4-${Date.now()}-${index}`,
+                    block: 'B4',
+                    difficulty: diff,
+                    question: `[Pérdida MSE Dinámica] En una variable ordinal donde la clase real es $y_i = ${yReal}$ y la red predice $\\hat{y}_i = ${yHat}$, ¿cuál es el error cuadrático individual $(y_i - \\hat{y}_i)^2$?`,
+                    options: [
+                        `$(y_i - \\hat{y}_i)^2 = ${sqErr}$`,
+                        `$(y_i - \\hat{y}_i)^2 = ${sqErr + 5}$`,
+                        `$(y_i - \\hat{y}_i)^2 = ${Math.abs(yReal - yHat)}$`,
+                        `$(y_i - \\hat{y}_i)^2 = ${(sqErr * 2)}$`
+                    ],
+                    answer: 0,
+                    hint: "Resta ambos valores y eleva el resultado al cuadrado.",
+                    explanation: `$(y_i - \\hat{y}_i)^2 = (${yReal} - ${yHat})^2 = (${yReal - yHat})^2 = ${sqErr}$.`
+                };
+            }
+        }
 
         function fisherYatesShuffle(array) {
             const arr = [...array];
@@ -1899,26 +1913,35 @@ floor + 1$$
     const blockFilter = document.getElementById('quiz-block-filter').value;
     quizFeedbackMode = document.getElementById('quiz-feedback-mode').value;
 
-    const baseBank = (activeSubject?.questions || []).map(q => ({
+    // 1. Determinar el banco de origen: usar fullTiaBank (questions_tia.json) si existe
+    let rawBank = [];
+    if (blockFilter === 'all' && typeof fullTiaBank !== 'undefined' && fullTiaBank.length > 0) {
+        rawBank = fullTiaBank;
+    } else if (typeof fullTiaBank !== 'undefined' && fullTiaBank.length > 0) {
+        rawBank = fullTiaBank;
+    } else {
+        rawBank = activeSubject?.questions || [];
+    }
+
+    const baseBank = rawBank.map(q => ({
         ...q,
-        normBlock: typeof q.block === 'number' ? `B${q.block}` : q.block
+        normBlock: typeof q.block === 'number' ? `B${q.block}` : (q.block || 'B1')
     }));
 
-    // 1. Filtrar por bloque
-    let pool = blockFilter === 'all'
+    // 2. Filtrar por bloque
+    let pool = (blockFilter === 'all')
         ? [...baseBank]
         : baseBank.filter(q => q.normBlock === blockFilter);
 
-    // 2. Priorizar dificultad seleccionada
+    // 3. Separar por dificultad y barajar con Fisher-Yates
     let diffMatches = pool.filter(q => q.difficulty === selectedDifficulty);
     let otherDiffs = pool.filter(q => q.difficulty !== selectedDifficulty);
-    
-    // Barajar con Fisher-Yates
+
     diffMatches = fisherYatesShuffle(diffMatches);
     otherDiffs = fisherYatesShuffle(otherDiffs);
     let combined = [...diffMatches, ...otherDiffs];
 
-    // 3. Deduplicación estricta por ID y texto de pregunta
+    // 4. Deduplicación estricta por ID o texto de la pregunta
     const seenIds = new Set();
     const uniquePool = [];
     for (const q of combined) {
@@ -1929,19 +1952,24 @@ floor + 1$$
         }
     }
 
-    // 4. Si faltan preguntas para la meta (ej. 25 o 50), rellenar con paramétricas únicas
+    // 5. Rellenar con paramétricas únicas SOLO si el banco tiene menos preguntas que la meta solicitada
     let genIdx = 1;
     while (uniquePool.length < selectedCount) {
         const paramQ = generateParametricQuestion(genIdx++, selectedDifficulty, blockFilter);
-        uniquePool.push(paramQ);
+        const paramKey = paramQ.id || paramQ.question.trim().toLowerCase();
+        if (!seenIds.has(paramKey)) {
+            seenIds.add(paramKey);
+            uniquePool.push(paramQ);
+        }
     }
 
-    // 5. Selección final y barajado de preguntas y opciones
+    // 6. Selección final: recortar a la cantidad pedida (10, 25 o 50) y barajar opciones (A, B, C, D)
     const finalSelected = fisherYatesShuffle(uniquePool.slice(0, selectedCount));
     currentQuizQuestions = finalSelected.map(q => shuffleOptionsKeepAnswer(q));
     currentQuizIndex = 0;
     userQuizAnswers = new Array(currentQuizQuestions.length).fill(null);
 
+    // 7. Transición de interfaz y arranque del temporizador
     document.getElementById('quiz-setup-panel').classList.add('hidden');
     document.getElementById('quiz-results-panel').classList.add('hidden');
     document.getElementById('quiz-active-panel').classList.remove('hidden');
