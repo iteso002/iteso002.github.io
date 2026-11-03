@@ -934,1626 +934,908 @@
     </div>
 
     <!-- JAVASCRIPT ENGINE -->
-    <script>
-        const DEFAULT_CONFIG = {
-            "app_config": {
-                "title": "Plataforma de Estudio INCAR",
-                "version": "2.1.0",
-                "default_subject": "TIA"
-            },
-            "admin_users": [
-                {
-                    "username": "iker",
-                    "email": "iteso002@ikasle.ehu.eus",
-                    "password": "ADMIN-2026",
-                    "role": "admin"
-                },
-                {
-                    "username": "Lobini",
-                    "email": "ibarron007@ikasle.ehu.eus",
-                    "password": "LobiniBizcochini",
-                    "role": "student"
-                },
-                {
-                    "username": "Isamena",
-                    "email": "jdelrio015@ikasle.ehu.eus",
-                    "password": "ExjefaDelBisky",
-                    "role": "student"
-                }
-            ],
-            "subjects": [
-                {
-                    "id": "TIA",
-                    "code": "TIA",
-                    "name": "Técnicas Inteligentes de Aprendizaje",
-                    "description": "Máster en Ingeniería de Control, Automatización y Robótica (PSO, DE, Redes Neuronales, CNN, Deep Learning y Transformers)",
-                    "icon": "fa-brain",
-                    "color": "blue",
-                    "blocks": [
-                        {
-                            "id": 1,
-                            "code": "B1",
-                            "title": "Bloque 1: Particle Swarm Optimization (PSO)",
-                            "flashcards": [
-                                {
-                                    "question": "¿Cuáles son los 5 pasos secuenciales del algoritmo PSO?",
-                                    "answer": "1. Inicialización aleatoria (posición $x_i(0)$ y velocidad $v_i(0)$).<br>2. Evaluación de aptitud en $f(x)$.<br>3. Actualización de memorias ($p_{best,i}$ y $g_{best}$).<br>4. Actualización cinemática de velocidad y posición.<br>5. Criterio de parada (iteraciones o tolerancia $\\epsilon$)."
-                                },
-                                {
-                                    "question": "¿Cuál es la ecuación cinemática de velocidad y posición en PSO?",
-                                    "answer": "$$v_i(t+1) = w \\cdot v_i(t) + c_1 \\cdot r_1 \\cdot (p_{best,i} - x_i(t)) + c_2 \\cdot r_2 \\cdot (g_{best} - x_i(t))$$<br>$$x_i(t+1) = x_i(t) + v_i(t+1)$$"
-                                },
-                                {
-                                    "question": "¿Qué función cumple el parámetro de inercia ($w$) alto vs. bajo en PSO?",
-                                    "answer": "• <b>$w$ alto ($\\approx 0.8 - 1.2$):</b> Facilita la exploración global, evitando la convergencia prematura.<br>• <b>$w$ bajo ($\\approx 0.2 - 0.4$):</b> Favorece la explotación local y el refinamiento fino en torno al óptimo."
-                                },
-                                {
-                                    "question": "¿Qué representan los parámetros $c_1$, $c_2$ y $(r_1, r_2)$ en PSO?",
-                                    "answer": "• <b>$c_1$ (Cognitivo/Personal):</b> Atracción hacia su propia memoria de éxito ($p_{best,i}$).<br>• <b>$c_2$ (Social/Global):</b> Atracción colectiva hacia el líder del enjambre ($g_{best}$).<br>• <b>$r_1, r_2 \\sim \\mathcal{U}(0,1)$:</b> Factores estocásticos uniformes para escapar de óptimos locales."
-                                },
-                                {
-                                    "question": "¿Cómo se manejan las restricciones de ecuación ($g_k(x) = 0$) en PSO?",
-                                    "answer": "Mediante una función de penalización exterior exponencial sobre el coste original:<br>$$C_{Nuevo}(x) = C_{Original}(x) + \\lambda_1 \\cdot e^{|g_k(x)|^2}$$"
-                                },
-                                {
-                                    "question": "¿Cómo se manejan las restricciones de inecuación ($g_k(x) \\le 0$) en PSO?",
-                                    "answer": "Restringe áreas (el más usado en ingeniería) mediante barrera estricta:<br>• Si cumple $g_k(x) \\le 0 \\rightarrow C_{Nuevo}(x) = C_{Original}(x)$<br>• Si infringe $g_k(x) > 0 \\rightarrow C_{Nuevo}(x) = \\infty$"
-                                },
-                                {
-                                    "question": "¿Cuáles son los aspectos positivos (+) y negativos (-) de PSO?",
-                                    "answer": "<b>Positivos (+):</b> Independiente de derivadas, evade óptimos locales y tiene mejora monótona ($g_{best}$ nunca empeora).<br><b>Negativos (-):</b> Voracidad computacional, mala escalabilidad en alta dimensión y sin garantía matemática de óptimo global."
-                                },
-                                {
-                                    "question": "¿En qué se diferencia el ámbito de uso de PSO frente a los Algoritmos Genéticos (GA)?",
-                                    "answer": "• <b>PSO:</b> Diseñado para variables continuas ($\\mathbb{R}^D$), como sintonización PID o trayectorias.<br>• <b>GA:</b> Superior en variables discretas, binarias o combinatorias puras."
-                                }
-                            ]
-                        },
-                        {
-                            "id": 2,
-                            "code": "B2",
-                            "title": "Bloque 2: Differential Evolution (DE)",
-                            "flashcards": [
-                                {
-                                    "question": "¿Cómo se define la mutación básica en Evolución Diferencial ($DE/rand/1$)?",
-                                    "answer": "Para cada individuo $x_{i,G}$ se eligen 3 vectores aleatorios distintos ($r_1 \\neq r_2 \\neq r_3 \\neq i$):<br>$$v_{i,G} = x_{r_1,G} + F \\cdot (x_{r_2,G} - x_{r_3,G})$$<br>Donde $F \\in (0,2)$ es el factor de escala."
-                                },
-                                {
-                                    "question": "¿Cómo funciona el Cruce Binomial (Crossover) en DE?",
-                                    "answer": "Genera el vector de prueba $u_{i,G}$ coordenada a coordenada:<br>$$u_{j,i,G} = \\begin{cases} v_{j,i,G} & \\text{si } rand_j(0,1) \\le CR \\text{ o } j = j_{rand} \\\\ x_{j,i,G} & \\text{en caso contrario} \\end{cases}$$"
-                                },
-                                {
-                                    "question": "¿Por qué se incluye el índice aleatorio $j_{rand}$ en el cruce de DE?",
-                                    "answer": "Para garantizar matemáticamente que el vector de prueba $u_{i,G}$ herede al menos una coordenada del vector mutante $v_{i,G}$, incluso si $CR = 0$."
-                                },
-                                {
-                                    "question": "¿Cómo opera la Selección Elitista Uno a Uno en DE?",
-                                    "answer": "Compara el vector de prueba $u_{i,G}$ con el actual $x_{i,G}$:<br>$$x_{i,G+1} = \\begin{cases} u_{i,G} & \\text{si } f(u_{i,G}) \\le f(x_{i,G}) \\\\ x_{i,G} & \\text{si } f(u_{i,G}) > f(x_{i,G}) \\end{cases}$$"
-                                },
-                                {
-                                    "question": "¿Cuáles son las ventajas y desventajas de Differential Evolution (DE)?",
-                                    "answer": "<b>Ventajas (+):</b> Muy robusto para óptimo global, implementación sencilla y pocos parámetros.<br><b>Desventajas (-):</b> Voracidad computacional y riesgo de convergencia prematura."
-                                }
-                            ]
-                        },
-                        {
-                            "id": 3,
-                            "code": "B3",
-                            "title": "Bloque 3: Redes Neuronales y Deep Learning",
-                            "flashcards": [
-                                {
-                                    "question": "¿Cómo funciona el algoritmo Backpropagation y la Regla Delta?",
-                                    "answer": "1. <b>Forward pass:</b> Propaga datos hasta la predicción.<br>2. <b>Cálculo del error:</b> Compara salida con el valor real.<br>3. <b>Backward pass:</b> Ajusta pesos en sentido contrario al gradiente con Factor de Aprendizaje (requiere activaciones derivables)."
-                                },
-                                {
-                                    "question": "¿Por qué las redes multicapa clásicas fallan con imágenes HD y se usan CNN?",
-                                    "answer": "Porque una foto HD requeriría millones de neuronas de entrada memorizando posiciones rígidas de píxeles. Las CNN detectan patrones espaciales jerárquicos invariantes a traslación."
-                                },
-                                {
-                                    "question": "¿Cuál es la jerarquía de aprendizaje visual de una CNN?",
-                                    "answer": "• <b>Primeras capas:</b> Líneas y bordes simples.<br>• <b>Capas intermedias:</b> Formas compuestas (ojos, ruedas).<br>• <b>Últimas capas:</b> Objetos completos (caras, coches)."
-                                },
-                                {
-                                    "question": "¿Qué son Kernel, Padding y Stride en una CNN?",
-                                    "answer": "• <b>Kernel:</b> Matriz filtro pequeña (ej. 3x3).<br>• <b>Padding:</b> Borde de ceros para no perder resolución espacial.<br>• <b>Stride:</b> Desplazamiento o salto en píxeles del kernel."
-                                },
-                                {
-                                    "question": "¿Qué hacen ReLU, Max Pooling, Flattening y SoftMax en una CNN?",
-                                    "answer": "• <b>ReLU:</b> $\\max(0, x)$ limpia negativos a cero.<br>• <b>Max Pooling:</b> Submuestreo por bloques eligiendo el máximo.<br>• <b>Flattening:</b> Convierte mapas 2D en vector 1D.<br>• <b>SoftMax:</b> Probabilidades porcentuales entre 0 y 1 que suman 100%."
-                                },
-                                {
-                                    "question": "¿Qué es la regularización Dropout y cómo evita el Overfitting?",
-                                    "answer": "Apaga aleatoriamente un porcentaje de neuronas en cada paso de entrenamiento, impidiendo la codependencia y forzando a repartir el aprendizaje."
-                                },
-                                {
-                                    "question": "¿Cómo se divide el Dataset en Deep Learning?",
-                                    "answer": "• <b>Train (70-80%):</b> Ajuste de pesos.<br>• <b>Validation (10-15%):</b> Afinar hiperparámetros y Early Stopping.<br>• <b>Test (10-15%):</b> Medir generalización real al final."
-                                }
-                            ]
-                        },
-                        {
-                            "id": 4,
-                            "code": "B4",
-                            "title": "Bloque 4: Transformers y Funciones de Pérdida",
-                            "flashcards": [
-                                {
-                                    "question": "¿Qué diferencia a un Transformer de las RNN tradicionales?",
-                                    "answer": "En lugar de procesar palabra por palabra secuencialmente, el Transformer procesa toda la frase a la vez en paralelo gracias a la Auto-Atención (Self-Attention)."
-                                },
-                                {
-                                    "question": "¿Qué función cumplen Embeddings, Positional Encoding y Self-Attention?",
-                                    "answer": "• <b>Embeddings:</b> Vectores continuos de palabras.<br>• <b>Positional Encoding:</b> Señal de posición inyectada al leer todo en bloque.<br>• <b>Self-Attention:</b> Evalúa la relevancia contextual entre todas las palabras de la frase."
-                                },
-                                {
-                                    "question": "¿Cuándo se usa Entropía Cruzada vs Error Cuadrático Medio (MSE)?",
-                                    "answer": "• <b>Entropía Cruzada:</b> Variables Categóricas Nominales sin orden.<br>• <b>MSE:</b> Variables Continuas u Ordinales donde la distancia del error importa."
-                                },
-                                {
-                                    "question": "¿Cuál es la fórmula del Error Cuadrático Medio (MSE)?",
-                                    "answer": "$$MSE = \\frac{1}{N} \\sum_{i=1}^{N} (y_i - \\hat{y}_i)^2$$"
-                                },
-                                {
-                                    "question": "¿Cuál es la fórmula de la Entropía Cruzada Categórica?",
-                                    "answer": "$$L_{CE} = -\\sum_{i=1}^{C} y_i \\log(\\hat{y}_i) = -\\log(\\hat{y}_{correcta})$$"
-                                }
-                            ]
-                        }
-                    ],
-                    "questions": [
-                        {
-                            "id": 1, "block": 1, "difficulty": "facil",
-                            "question": "En el algoritmo PSO, ¿qué representa el componente $g_{best}$?",
-                            "options": [
-                                "La mejor posición histórica de una partícula individual.",
-                                "La mejor posición encontrada por el enjambre completo.",
-                                "La velocidad máxima permitida del enjambre.",
-                                "El factor de ponderación estocástico."
-                            ],
-                            "answer": 1,
-                            "hint": "Fíjate en la letra 'g' de global.",
-                            "explanation": "gbest es la mejor posición global histórica hallada por cualquier miembro del enjambre."
-                        },
-                        {
-                            "id": 2, "block": 1, "difficulty": "medio",
-                            "question": "¿Qué valor aproximado del parámetro de inercia ($w$) en PSO favorece la explotación local y el refinamiento fino?",
-                            "options": ["w alto (0.8 - 1.2)", "w bajo (0.2 - 0.4)", "w negativo (-1.0)", "w superior a 2.0"],
-                            "answer": 1,
-                            "hint": "Un valor bajo disminuye la velocidad previa acumulada.",
-                            "explanation": "Un factor bajo de inercia favorece la explotación fina alrededor del mínimo."
-                        },
-                        {
-                            "id": 3, "block": 1, "difficulty": "facil",
-                            "question": "¿Qué distribución siguen los factores estocásticos $r_1$ y $r_2$ en las ecuaciones cinemáticas de PSO?",
-                            "options": [
-                                "Distribución uniforme en el intervalo [0, 1].",
-                                "Distribución normal estándar de media 0 y varianza 1.",
-                                "Son constantes fijas iguales a 2.",
-                                "Distribución exponencial creciente."
-                            ],
-                            "answer": 0,
-                            "hint": "r1, r2 ~ U(0,1).",
-                            "explanation": "Son variables aleatorias uniformes entre 0 y 1."
-                        },
-                        {
-                            "id": 4, "block": 1, "difficulty": "medio",
-                            "question": "Según los apuntes de TIA, ¿cómo penaliza PSO una restricción de igualdad $g_k(x) = 0$ sobre la función de coste?",
-                            "options": [
-                                "Descartando el enjambre completo y reiniciando la iteración.",
-                                "Sumando un término exponencial: $C_{Nuevo}(x) = C_{Original}(x) + \\lambda_1 \\cdot e^{|g_k(x)|^2}$.",
-                                "Multiplicando el coste original por cero.",
-                                "Asignando directamente coste menos infinito."
-                            ],
-                            "answer": 1,
-                            "hint": "Ecuación (4) del PDF.",
-                            "explanation": "Se aplica una penalización exterior exponencial sobre el cuadrado del residuo."
-                        },
-                        {
-                            "id": 5, "block": 1, "difficulty": "facil",
-                            "question": "¿En qué tipo de espacios de búsqueda es nativo y especialmente superior PSO frente a los Algoritmos Genéticos (GA)?",
-                            "options": [
-                                "En espacios de variables continuas ($\\mathbb{R}^D$), como sintonización de parámetros PID.",
-                                "En problemas puramente binarios o de grafos discretos.",
-                                "En ordenación alfabética de cadenas de texto.",
-                                "Únicamente en funciones lineales y convexas."
-                            ],
-                            "answer": 0,
-                            "hint": "Variables reales continuas como Kp, Ki, Kd.",
-                            "explanation": "PSO opera de forma nativa sobre espacios continuos reales."
-                        },
-                        {
-                            "id": 6, "block": 1, "difficulty": "dificil",
-                            "question": "¿Qué significa que el algoritmo PSO posee la 'propiedad de mejora monótona'?",
-                            "options": [
-                                "Que todas las partículas reducen su velocidad a cero en la primera iteración.",
-                                "Que la mejor solución histórica global ($g_{best}$) se preserva siempre en memoria, impidiendo que la mejor estimación empeore.",
-                                "Que garantiza matemáticamente encontrar el óptimo global en tiempo finito.",
-                                "Que el coste computacional disminuye exponencialmente con la dimensión."
-                            ],
-                            "answer": 1,
-                            "hint": "La mejor memoria global nunca se sobrescribe con un valor peor.",
-                            "explanation": "Al conservar siempre gbest, la solución óptima registrada es monótonamente no decreciente en calidad."
-                        },
-                        {
-                            "id": 7, "block": 2, "difficulty": "facil",
-                            "question": "En el esquema de mutación $DE/rand/1$ de Evolución Diferencial, ¿cuántos vectores distintos del individuo activo $i$ se eligen al azar para crear el vector mutante $v_{i,G}$?",
-                            "options": [
-                                "Tres vectores distintos entre sí ($r_1 \\neq r_2 \\neq r_3 \\neq i$).",
-                                "Un único vector líder.",
-                                "Todos los vectores de la población simultáneamente.",
-                                "Dos vectores idénticos."
-                            ],
-                            "answer": 0,
-                            "hint": "r1, r2, r3 distintos.",
-                            "explanation": "Se eligen tres individuos aleatorios mutuamente diferentes y distintos de i."
-                        },
-                        {
-                            "id": 8, "block": 2, "difficulty": "medio",
-                            "question": "En el Cruce Binomial de Evolución Diferencial (DE), ¿para qué sirve la condición $j = j_{rand}$?",
-                            "options": [
-                                "Para reiniciar la población si hay convergencia prematura.",
-                                "Para asegurar que el vector de prueba $u_{i,G}$ herede al menos una coordenada del vector mutante $v_{i,G}$.",
-                                "Para eliminar la constante de escala $F$.",
-                                "Para ordenar los individuos de menor a mayor coste."
-                            ],
-                            "answer": 1,
-                            "hint": "Evita que el candidato sea una copia 100% idéntica del padre.",
-                            "explanation": "Asegura la transmisión de al menos un gen mutado, incluso con CR=0."
-                        },
-                        {
-                            "id": 9, "block": 2, "difficulty": "medio",
-                            "question": "¿En qué rango de valores se define habitualmente el factor de escala $F$ en la mutación de Evolución Diferencial?",
-                            "options": ["$F \\in (0, 2)$", "$F \\in [-100, -10]$", "$F = 0$ constante", "$F \\in [10, 100]$"],
-                            "answer": 0,
-                            "hint": "Ecuación (8) del PDF.",
-                            "explanation": "F modula la diferencia entre vectores y suele pertenecer a (0, 2)."
-                        },
-                        {
-                            "id": 10, "block": 2, "difficulty": "dificil",
-                            "question": "En la Selección Elitista Uno a Uno de DE (minimizando $f$), si el vector candidato $u_{i,G}$ obtiene $f(u_{i,G}) = 4.2$ y el vector actual $x_{i,G}$ tiene $f(x_{i,G}) = 4.5$, ¿qué ocurre en la generación $G+1$?",
-                            "options": [
-                                "$u_{i,G}$ reemplaza a $x_{i,G}$ como nuevo individuo $x_{i,G+1}$ porque $f(u_{i,G}) \\le f(x_{i,G})$.",
-                                "Se conserva $x_{i,G}$ porque tiene un valor mayor.",
-                                "Se promedian ambos vectores.",
-                                "Se compara $u_{i,G}$ contra el peor individuo de toda la población."
-                            ],
-                            "answer": 0,
-                            "hint": "En minimización, menor coste es mejor.",
-                            "explanation": "Como 4.2 <= 4.5, el vector de prueba sustituye directamente al vector base."
-                        },
-                        {
-                            "id": 11, "block": 3, "difficulty": "facil",
-                            "question": "En el algoritmo Backpropagation, según la Regla Delta, si la pendiente (derivada) del error respecto a un peso es positiva, ¿hacia dónde se ajusta dicho peso?",
-                            "options": [
-                                "Hacia el sentido negativo, modulado por el Factor de Aprendizaje.",
-                                "Hacia el sentido positivo, duplicando su valor.",
-                                "Se mantiene constante en cero.",
-                                "Se multiplica por infinito."
-                            ],
-                            "answer": 0,
-                            "hint": "Descenso del gradiente.",
-                            "explanation": "Si la pendiente sube, el ajuste va en sentido opuesto (-gradiente) para reducir el error."
-                        },
-                        {
-                            "id": 12, "block": 3, "difficulty": "medio",
-                            "question": "¿Por qué las neuronas de una red entrenada con Backpropagation necesitan funciones de activación como la Sigmoide o ReLU?",
-                            "options": [
-                                "Porque se requiere calcular la derivada (gradiente) del error para propagarlo hacia atrás.",
-                                "Porque convierten automáticamente las imágenes en texto.",
-                                "Para que todos los pesos valgan exactamente 1.",
-                                "Para evitar dividir los datos en Train y Test."
-                            ],
-                            "answer": 0,
-                            "hint": "Regla de la cadena.",
-                            "explanation": "El ajuste de pesos hacia atrás exige funciones no lineales y derivables."
-                        },
-                        {
-                            "id": 13, "block": 3, "difficulty": "facil",
-                            "question": "En una Red Convolucional (CNN), ¿qué elemento se añade alrededor de la imagen original (borde de ceros) para evitar que la imagen resultante se reduzca de tamaño al pasar el Kernel?",
-                            "options": ["Padding", "Stride", "Flattening", "Dropout"],
-                            "answer": 0,
-                            "hint": "Borde de ceros.",
-                            "explanation": "El Padding mantiene la resolución espacial al aplicar kernels."
-                        },
-                        {
-                            "id": 14, "block": 3, "difficulty": "medio",
-                            "question": "En una CNN, ¿qué operación recorre la imagen en pequeños bloques (por ejemplo, de 2x2) y se queda únicamente con el píxel de mayor valor para comprimir la información?",
-                            "options": ["Max Pooling (Submuestreo)", "SoftMax", "Positional Encoding", "Backpropagation"],
-                            "answer": 0,
-                            "hint": "Submuestreo por bloques.",
-                            "explanation": "Max Pooling conserva la activación dominante reduciendo dimensiones."
-                        },
-                        {
-                            "id": 15, "block": 3, "difficulty": "dificil",
-                            "question": "En una red convolucional, ¿cuál es el propósito principal de la función de activación ReLU tras la convolución?",
-                            "options": [
-                                "Normalizar los canales de color de la imagen de entrada.",
-                                "Convertir todos los valores negativos a 0 y dejar los positivos intactos.",
-                                "Reducir las dimensiones espaciales mediante submuestreo.",
-                                "Aplanar la matriz bidimensional en un vector unidimensional."
-                            ],
-                            "answer": 1,
-                            "hint": "f(x) = max(0, x).",
-                            "explanation": "ReLU elimina respuestas negativas y mantiene zonas de activación positiva clara."
-                        },
-                        {
-                            "id": 16, "block": 3, "difficulty": "medio",
-                            "question": "¿Qué técnica de regularización apaga (pone a cero) aleatoriamente un porcentaje de neuronas en cada iteración de entrenamiento para evitar el sobreajuste (Overfitting)?",
-                            "options": ["Capa Dropout", "Flattening", "Stride", "Cruce Binomial"],
-                            "answer": 0,
-                            "hint": "Apaga neuronas.",
-                            "explanation": "Dropout desactiva conexiones aleatorias obligando a generalizar."
-                        },
-                        {
-                            "id": 17, "block": 3, "difficulty": "medio",
-                            "question": "En la división clásica de datos en Deep Learning, ¿para qué se utiliza el bloque de Validación (10-15% de los datos)?",
-                            "options": [
-                                "Para medir el error durante el entrenamiento con datos no usados en el ajuste de pesos, afinar hiperparámetros y detener el entrenamiento si empieza el sobreajuste.",
-                                "Para ajustar directamente los pesos sinápticos mediante Backpropagation en cada época.",
-                                "Se guarda sin tocar hasta el final del proyecto para la demostración al cliente.",
-                                "Para sustituir la función SoftMax."
-                            ],
-                            "answer": 0,
-                            "hint": "Control de generalización y Early Stopping.",
-                            "explanation": "Sirve para evaluar el modelo durante el entrenamiento sin contaminar el cálculo de pesos."
-                        },
-                        {
-                            "id": 18, "block": 4, "difficulty": "facil",
-                            "question": "¿Qué función se coloca en la última capa de una red de clasificación de caracteres ('A', 'B', 'C') para convertir los números brutos en una distribución de probabilidades porcentuales entre 0 y 1?",
-                            "options": ["SoftMax", "ReLU", "Max Pooling", "MSE"],
-                            "answer": 0,
-                            "hint": "Suma 100%.",
-                            "explanation": "SoftMax normaliza los logits en probabilidades numéricas."
-                        },
-                        {
-                            "id": 19, "block": 4, "difficulty": "medio",
-                            "question": "Si queremos predecir una Variable Ordinal como la talla de una camiseta ($S=1, M=2, L=3$), ¿por qué los apuntes recomiendan que puede tratarse con el Error Cuadrático Medio (MSE)?",
-                            "options": [
-                                "Porque existe un orden inherente y equivocarse prediciendo 'S' cuando era 'L' ($|1-3|^2=4$) debe penalizarse más que predecir 'M' ($|2-3|^2=1$).",
-                                "Porque las tallas no tienen ningún orden lógico ni jerarquía entre sí.",
-                                "Porque MSE solo funciona con vectores One-Hot de probabilidad.",
-                                "Porque la Entropía Cruzada está prohibida en redes neuronales."
-                            ],
-                            "answer": 0,
-                            "hint": "Distancia matemática entre categorías.",
-                            "explanation": "Al haber orden natural, el error cuadrático cuantifica la gravedad de la desviación."
-                        },
-                        {
-                            "id": 20, "block": 4, "difficulty": "facil",
-                            "question": "¿Cuál es la innovación principal de la arquitectura Transformer que le permite entender el contexto entre palabras leyendo toda la secuencia de golpe?",
-                            "options": [
-                                "El Mecanismo de Auto-Atención (Self-Attention).",
-                                "El filtro Max Pooling de 2x2.",
-                                "La lectura secuencial palabra por palabra de izquierda a derecha sin paralelismo.",
-                                "El operador de mutación $DE/rand/1$."
-                            ],
-                            "answer": 0,
-                            "hint": "Atención cruzada entre términos simultáneos.",
-                            "explanation": "Self-Attention calcula la correlación contextual de todas las palabras en paralelo."
-                        },
-                        {
-                            "id": 21, "block": 4, "difficulty": "medio",
-                            "question": "Como el Transformer lee todas las palabras de la secuencia a la vez, ¿qué elemento se inyecta a los Embeddings para que la red sepa en qué orden estaban las palabras?",
-                            "options": [
-                                "Positional Encoding (Codificación Posicional).",
-                                "Capa Dropout.",
-                                "Padding de ceros 2D.",
-                                "Factor de inercia $w$."
-                            ],
-                            "answer": 0,
-                            "hint": "Señal matemática de posición.",
-                            "explanation": "El Positional Encoding introduce el orden temporal en la representación paralela."
-                        },
-                        {
-                            "id": 22, "block": 4, "difficulty": "dificil",
-                            "question": "En un problema de clasificación multiclase con vector real One-Hot ($y_c = 1$ para la clase correcta y $0$ para las demás), ¿a qué expresión se reduce la pérdida de Entropía Cruzada $L_{CE} = -\\sum_{i=1}^C y_i \\log(\\hat{y}_i)$?",
-                            "options": [
-                                "Al logaritmo negativo de la probabilidad predicha para la clase correcta: $L_{CE} = -\\log(\\hat{y}_{correcta})$.",
-                                "Al promedio de las diferencias al cuadrado dividido por $N$.",
-                                "A cero siempre que la red use SoftMax.",
-                                "A la suma directa de todas las probabilidades incorrectas."
-                            ],
-                            "answer": 0,
-                            "hint": "Las clases incorrectas se multiplican por 0.",
-                            "explanation": "Los sumandos con y_i=0 se anulan, quedando solo -log(probabilidad de la clase real)."
-                        }
-                    ]
-                }
-            ]
-        };
+    <!-- JAVASCRIPT ENGINE -->
+<script>
+    let appConfig = null;
+    let authorizedUsers = [];
+    let subjectsList = [];
+    let currentUser = null;
+    let activeSubject = null;
 
-        const EXTRA_ENGINEERING_CHALLENGES = [
-            {
-                id: "EX1",
-                topic: "Control & PSO/DE",
-                title: "Sintonización Óptima de un PID en Planta Industrial con Restricción de Sobreoscilación",
-                question: "Estás sintonizando un controlador PID ($x = [K_p, K_i, K_d]^T \\in \\mathbb{R}^3$) mediante PSO minimizando el criterio integral $IAE$. El pliego exige una sobreoscilación máxima $M_p \\le 10\\%$. En la iteración $t$, una partícula obtiene $IAE = 1.85$ pero produce $M_p = 14.2\\%$. Según el manejo de restricciones de inecuación de los apuntes (Ec. 5 y 6), ¿cómo se evalúa esta partícula?",
-                options: [
-                    "Infringe $g(x) = M_p - 10 \\le 0$, por lo que se le asigna $C_{nuevo}(x) = \\infty$ y no puede actualizar $p_{best,i}$ ni $g_{best}$.",
-                    "Se acepta como nuevo $g_{best}$ porque su $IAE = 1.85$ es muy bajo.",
-                    "Se divide el coste original entre 14.2.",
-                    "Se reinicia la velocidad de todas las partículas del enjambre a cero."
-                ],
-                answer: 0,
-                explanation: "Al violar la inecuación g_k(x) <= 0, se aplica barrera infinita C_nuevo = infinito."
-            },
-            {
-                id: "EX2",
-                topic: "Control & PSO/DE",
-                title: "Planificación de Trayectorias B-Spline en Manipulador Robótico con DE",
-                question: "Optimizando los puntos de control de una trayectoria B-Spline con Evolución Diferencial ($D = 6$, $CR = 0.2$), en una iteración todos los números aleatorios uniformes $rand_j(0,1)$ salen mayores que $0.5$ para las 6 coordenadas. ¿Qué ocurre con el vector de prueba $u_{i,G}$?",
-                options: [
-                    "Gracias al índice aleatorio obligatorio $j_{rand} \\in \\{1,\\dots,6\\}$, exactamente una coordenada se copia del vector mutante $v_{i,G}$ y las otras 5 del vector objetivo $x_{i,G}$.",
-                    "El vector $u_{i,G}$ queda vacío y da error numérico.",
-                    "Las 6 coordenadas se copian íntegramente de $x_{i,G}$ sin ningún cambio.",
-                    "Se invierte el signo del factor de escala $F$."
-                ],
-                answer: 0,
-                explanation: "La condición 'o j = j_rand' garantiza que al menos un componente procede del mutante."
-            },
-            {
-                id: "EX3",
-                topic: "Arquitecturas CNN",
-                title: "Cálculo Dimensional de Mapa de Características en Visión Artificial",
-                question: "Una cámara industrial captura una imagen en escala de grises de $32 \\times 32$ píxeles. Pasa por una capa convolucional con Kernel $K = 3\\times 3$, Padding $P = 1$ y Stride $S = 1$, seguida de un Max Pooling de ventana $2\\times 2$ con Stride $S = 2$. ¿Qué dimensiones espaciales tendrá el mapa resultante?",
-                options: [
-                    "Sale de la convolución con $32 \\times 32$ (gracias al Padding $P=1$) y tras el Max Pooling $2\\times 2$ se reduce a $16 \\times 16$.",
-                    "Sale con $64 \\times 64$ píxeles.",
-                    "Se reduce directamente a un escalar $1 \\times 1$.",
-                    "Pierde los bordes en la convolución quedando en $30 \\times 30$."
-                ],
-                answer: 0,
-                explanation: "Padding 1 preserva 32x32 y el Max Pooling 2x2 divide el mapa exactamente a 16x16."
-            },
-            {
-                id: "EX4",
-                topic: "Deep Learning & Gradientes",
-                title: "Diagnóstico de Curvas de Entrenamiento vs. Validación",
-                question: "Entrenando una red profunda para detección de defectos, en la época 40 el error de Train baja a $0.002$, pero el error de Validation lleva subiendo desde la época 18 (pasando de $0.08$ a $0.31$). ¿Qué fenómeno ocurre y qué medidas debes aplicar?",
-                options: [
-                    "Hay Sobreajuste (Overfitting): la red memoriza Train. Debes detener el entrenamiento en el mínimo de validación (Early Stopping) y añadir capas Dropout.",
-                    "Hay Subajuste (Underfitting): debes eliminar los datos de validación y entrenar 500 épocas más.",
-                    "La función SoftMax ha dejado de sumar 1.",
-                    "Debes cambiar todas las funciones ReLU por escalones no derivables."
-                ],
-                answer: 0,
-                explanation: "Subida del error de validación con caída en train delata memorización (Overfitting)."
-            },
-            {
-                id: "EX5",
-                topic: "Transformers & Atención",
-                title: "Desambiguación Contextual y Penalización Logarítmica en Clasificación",
-                question: "Un modelo clasifica entre 3 clases nominales. Para una muestra cuya clase real es la 1 ($y = [1, 0, 0]$), la capa SoftMax predice $\\hat{y} = [0.01, 0.90, 0.09]$ (alta confianza en la clase 2). ¿Cuánto vale la pérdida de Entropía Cruzada?",
-                options: [
-                    "$L_{CE} = -\\ln(0.01) \\approx 4.605$, aplicando un castigo severo por equivocarse con alta seguridad.",
-                    "$L_{CE} = -\\ln(0.90) \\approx 0.105$.",
-                    "$L_{CE} = 0$ porque las probabilidades suman 1.",
-                    "$L_{CE} = (1 - 0.01)^2 / 3 = 0.326$."
-                ],
-                answer: 0,
-                explanation: "L_CE = -ln(0.01) = 4.605. Castiga exponencialmente predecir una clase errónea con certeza."
+    let selectedDifficulty = 'medio';
+    let selectedCount = 10;
+    let currentQuizQuestions = [];
+    let currentQuizIndex = 0;
+    let userQuizAnswers = [];
+    let quizFeedbackMode = 'instant';
+    let quizTimerInterval = null;
+    let quizSecondsElapsed = 0;
+
+    let allFlashcards = [];
+    let filteredFlashcards = [];
+    let currentCardIndex = 0;
+    let flashcardStatusMap = {};
+
+    let userStats = { testsDone: 0, totalScorePct: 0 };
+    let preguntaDevActiva = null;
+
+    window.addEventListener('DOMContentLoaded', async () => {
+        await initAppData();
+        loadPersistedState();
+        runPsoCalculator();
+        runLossCalculator();
+
+        window.addEventListener('keydown', (e) => {
+            const fcSection = document.getElementById('module-flashcards');
+            if (e.code === 'Space' && fcSection && !fcSection.classList.contains('hidden') && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+                flipCurrentFlashcard();
             }
-        ];
-
-        let appConfig = null;
-        let authorizedUsers = [];
-        let subjectsList = [];
-        let currentUser = null;
-        let activeSubject = null;
-
-        let selectedDifficulty = 'medio';
-        let selectedCount = 10;
-        let currentQuizQuestions = [];
-        let currentQuizIndex = 0;
-        let userQuizAnswers = [];
-        let quizFeedbackMode = 'instant';
-        let quizTimerInterval = null;
-        let quizSecondsElapsed = 0;
-
-        let allFlashcards = [];
-        let filteredFlashcards = [];
-        let currentCardIndex = 0;
-        let flashcardStatusMap = {};
-
-        let userStats = { testsDone: 0, totalScorePct: 0 };
-
-        window.addEventListener('DOMContentLoaded', async () => {
-            await initAppData();
-            loadPersistedState();
-            runPsoCalculator();
-            runLossCalculator();
-            renderExtraChallenges();
-
-            window.addEventListener('keydown', (e) => {
-                const fcSection = document.getElementById('module-flashcards');
-                if (e.code === 'Space' && fcSection && !fcSection.classList.contains('hidden') && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
-                    e.preventDefault();
-                    flipCurrentFlashcard();
-                }
-            });
         });
-
-        let fullTiaBank = []; // Banco global de preguntas tipo test
-        let fullDevBank = []; // Banco global de preguntas de desarrollo
-
-async function initAppData() {
-    let loadedData = null;
-    try {
-        const res = await fetch('./config.json', { cache: 'no-store' });
-        if (res.ok) {
-            const text = await res.text();
-            const trimmed = text.trim();
-            const normalizedJson = trimmed.startsWith('{') ? trimmed : `{${trimmed}}`;
-            loadedData = JSON.parse(normalizedJson);
-        }
-    } catch (err) {
-        console.warn('Cargando configuración interna de respaldo.');
-    }
-
-    // 1. PRIMERO inicializamos las variables base y la lista de asignaturas
-    const source = loadedData || DEFAULT_CONFIG;
-    appConfig = source.app_config || DEFAULT_CONFIG.app_config; //[cite: 3]
-    authorizedUsers = source.admin_users || DEFAULT_CONFIG.admin_users; //[cite: 3]
-    subjectsList = source.subjects || DEFAULT_CONFIG.subjects; //[cite: 3]
-
-    // 2. SEGUNDO: Cargar las 150 preguntas tipo test (questions_tia.json)
-    try {
-        const qRes = await fetch('./questions_tia.json', { cache: 'no-store' });
-        if (qRes.ok) {
-            const externalQuestions = await qRes.json();
-            if (Array.isArray(externalQuestions) && externalQuestions.length > 0) {
-                fullTiaBank = externalQuestions; // Asigna a la variable global
-
-                const tiaSubj = subjectsList.find(s => (s.code || s.id) === 'TIA');
-                if (tiaSubj) {
-                    tiaSubj.questions = externalQuestions;
-                }
-                if (activeSubject && (activeSubject.code === 'TIA' || activeSubject.id === 'TIA')) {
-                    activeSubject.questions = externalQuestions;
-                }
-            }
-        }
-    } catch (e) {
-        console.warn('No se pudo cargar questions_tia.json; usando preguntas por defecto.');
-    }
-
-    // 3. TERCERO: Cargar las preguntas de desarrollo (preguntas_desarrollo_tia.json)
-    try {
-        const devRes = await fetch('./preguntas_desarrollo_tia.json', { cache: 'no-store' });
-        if (devRes.ok) {
-            const devData = await devRes.json();
-            if (Array.isArray(devData) && devData.length > 0) {
-                fullDevBank = devData; // <-- ESTA LÍNEA ES CLAVE: guarda en memoria global
-
-                const tiaSubj = subjectsList.find(s => (s.code || s.id) === 'TIA');
-                if (tiaSubj) {
-                    tiaSubj.open_questions = devData;
-                }
-                if (activeSubject && (activeSubject.code === 'TIA' || activeSubject.id === 'TIA')) {
-                    activeSubject.open_questions = devData;
-                }
-            }
-        }
-    } catch (e) {
-        console.warn('No se pudo cargar preguntas_desarrollo_tia.json');
-    }
-}
-
-        function loadPersistedState() {
-            const savedStats = localStorage.getItem('incar_stats_v2');
-            if (savedStats) userStats = JSON.parse(savedStats);
-
-            const savedFc = localStorage.getItem('incar_fc_status_v2');
-            if (savedFc) flashcardStatusMap = JSON.parse(savedFc);
-
-            const savedSession = sessionStorage.getItem('incar_active_user');
-            if (savedSession) {
-                currentUser = JSON.parse(savedSession);
-                enterAuthenticatedApp();
-            }
-        }
-
-        function renderMath(container) {
-            if (window.renderMathInElement && container) {
-                renderMathInElement(container, {
-                    delimiters: [
-                        { left: '$$', right: '$$', display: true },
-                        { left: '$', right: '$', display: false }
-                    ],
-                    throwOnError: false
-                });
-            }
-        }
-
-        function showToast(msg, type = 'info') {
-            const container = document.getElementById('toast-container');
-            if (!container) return;
-            const colors = {
-                success: 'bg-emerald-600 border-emerald-400 text-white',
-                error: 'bg-rose-600 border-rose-400 text-white',
-                info: 'bg-blue-600 border-blue-400 text-white'
-            };
-            const el = document.createElement('div');
-            el.className = `px-4 py-3 rounded-xl border shadow-xl text-xs font-semibold flex items-center gap-2 pointer-events-auto transition-all ${colors[type] || colors.info}`;
-            el.innerHTML = `<i class="fa-solid fa-circle-info"></i><span>${msg}</span>`;
-            container.appendChild(el);
-            setTimeout(() => el.remove(), 3500);
-        }
-
-        function handleLogin(e) {
-    e.preventDefault();
-    const inputUser = document.getElementById('login-email').value.trim().toLowerCase();
-    const inputPass = document.getElementById('login-password').value.trim();
-    const errBox = document.getElementById('login-error-box');
-    const errText = document.getElementById('login-error-text');
-
-    if (!inputPass) {
-        errText.textContent = 'Introduce tu contraseña obligatoriamente.';
-        errBox.classList.remove('hidden');
-        return;
-    }
-
-    // Si authorizedUsers no se llenó por fallo de fetch, usa la lista de respaldo
-    const usersToSearch = (authorizedUsers && authorizedUsers.length > 0) 
-        ? authorizedUsers 
-        : DEFAULT_CONFIG.admin_users;
-
-    const found = usersToSearch.find(u =>
-        ((u.email && u.email.toLowerCase() === inputUser) ||
-         (u.username && u.username.toLowerCase() === inputUser)) &&
-        u.password === inputPass
-    );
-
-    if (found) {
-        errBox.classList.add('hidden');
-        currentUser = found;
-        sessionStorage.setItem('incar_active_user', JSON.stringify(currentUser));
-        enterAuthenticatedApp();
-        showToast(`¡Bienvenido/a, ${currentUser.username}!`, 'success');
-    } else {
-        errText.textContent = 'Credenciales no autorizadas. Comprueba tus datos.';
-        errBox.classList.remove('hidden');
-    }
-}
-
-        function togglePasswordVisibility() {
-            const input = document.getElementById('login-password');
-            const icon = document.getElementById('pass-eye-icon');
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.className = 'fa-solid fa-eye-slash';
-            } else {
-                input.type = 'password';
-                icon.className = 'fa-solid fa-eye';
-            }
-        }
-
-        function enterAuthenticatedApp() {
-            document.getElementById('login-view').classList.add('hidden');
-            document.getElementById('app-wrapper').classList.remove('hidden');
-            document.getElementById('current-user-badge').textContent = `${currentUser.username} (${currentUser.role === 'admin' ? 'Admin' : 'Estudiante'})`;
-            renderSubjectsHub();
-            openSubject(appConfig?.default_subject || 'TIA');
-        }
-
-        function handleLogout() {
-            sessionStorage.removeItem('incar_active_user');
-            currentUser = null;
-            document.getElementById('app-wrapper').classList.add('hidden');
-            document.getElementById('login-view').classList.remove('hidden');
-            document.getElementById('login-password').value = '';
-        }
-
-        function toggleTheme() {
-            const html = document.documentElement;
-            const icon = document.getElementById('theme-icon');
-            html.classList.toggle('dark');
-            icon.className = html.classList.contains('dark') ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-        }
-
-        function showSubjectHub() {
-            document.getElementById('tia-workspace-view').classList.add('hidden');
-            document.getElementById('back-to-hub-btn').classList.add('hidden');
-            document.getElementById('subject-hub-view').classList.remove('hidden');
-            document.getElementById('header-subtitle').textContent = 'Menú Principal de Asignaturas';
-            renderSubjectsHub();
-        }
-
-        function renderSubjectsHub() {
-            const grid = document.getElementById('subjects-grid');
-            grid.innerHTML = subjectsList.map(s => {
-                const qCount = (s.questions || []).length;
-                const fcCount = (s.blocks || []).reduce((acc, b) => acc + (b.flashcards ? b.flashcards.length : 0), 0);
-                return `
-                    <div onclick="openSubject('${s.code || s.id}')" class="cursor-pointer group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-500 rounded-2xl p-6 shadow-sm hover:shadow-xl transition flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between mb-4">
-                                <span class="px-3 py-1 rounded-lg bg-blue-600 text-white font-mono font-bold text-xs">${s.code || s.id}</span>
-                                <i class="fa-solid ${s.icon || 'fa-brain'} text-2xl text-blue-500 group-hover:scale-110 transition"></i>
-                            </div>
-                            <h3 class="text-lg font-extrabold group-hover:text-blue-500 transition">${s.name}</h3>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">${s.description}</p>
-                        </div>
-                        <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
-                            <span><i class="fa-solid fa-circle-question text-blue-500 mr-1"></i> ${qCount}+ Preguntas y Generador</span>
-                            <span><i class="fa-solid fa-clone text-emerald-500 mr-1"></i> ${fcCount} Flashcards</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-    function openSubject(code) {
-    const subj = subjectsList.find(s => (s.code || s.id) === code) || subjectsList[0]; //[cite: 3]
-    activeSubject = subj; //[cite: 3]
-
-    // Sincroniza ambos bancos si se cargaron externamente
-    if (subj.code === 'TIA' || subj.id === 'TIA') {
-        if (fullTiaBank.length > 0) activeSubject.questions = fullTiaBank;
-        if (fullDevBank.length > 0) activeSubject.open_questions = fullDevBank;
-    }
-
-    document.getElementById('subject-hub-view').classList.add('hidden'); //[cite: 3]
-    document.getElementById('tia-workspace-view').classList.remove('hidden'); //[cite: 3]
-    document.getElementById('back-to-hub-btn').classList.remove('hidden'); //[cite: 3]
-    document.getElementById('active-subject-title').textContent = subj.name; //[cite: 3]
-    document.getElementById('header-subtitle').textContent = `${subj.code || subj.id} · ${subj.name}`; //[cite: 3]
-
-    prepareSubjectFlashcards(subj); //[cite: 3]
-    updateGlobalStatsUI(); //[cite: 3]
-    renderMath(document.getElementById('tia-workspace-view')); //[cite: 3]
-}
-
-        function openSubjectModal() {
-            document.getElementById('subject-modal').classList.remove('hidden');
-        }
-
-        function closeSubjectModal() {
-            document.getElementById('subject-modal').classList.add('hidden');
-        }
-
-        function handleCreateSubject(e) {
-            e.preventDefault();
-            const code = document.getElementById('subj-code').value.trim().toUpperCase();
-            const name = document.getElementById('subj-name').value.trim();
-            const description = document.getElementById('subj-desc').value.trim();
-            const icon = document.getElementById('subj-icon').value;
-            const color = document.getElementById('subj-color').value;
-            const rawJson = document.getElementById('subj-json').value.trim();
-
-            let questions = [];
-            if (rawJson) {
-                try {
-                    const parsed = JSON.parse(rawJson);
-                    questions = parsed.map((q, idx) => ({
-                        id: idx + 1,
-                        block: 1,
-                        difficulty: 'medio',
-                        question: q.question || q.q,
-                        options: q.options,
-                        answer: q.answer ?? q.ans ?? 0,
-                        hint: q.hint || 'Revisa el temario oficial.',
-                        explanation: q.explanation || q.exp || 'Respuesta verificada.'
-                    }));
-                } catch (err) {
-                    showToast('Formato JSON de preguntas inválido', 'error');
-                    return;
-                }
-            }
-
-            const newSubj = {
-                id: code, code, name, description, icon, color,
-                blocks: [{ id: 1, code: 'B1', title: `Bloque 1: ${name}`, flashcards: [{ question: `Concepto fundamental de ${name}`, answer: description }] }],
-                questions: questions.length ? questions : DEFAULT_CONFIG.subjects[0].questions
-            };
-
-            subjectsList.push(newSubj);
-            localStorage.setItem('incar_subjects_v2', JSON.stringify(subjectsList));
-            closeSubjectModal();
-            renderSubjectsHub();
-            showToast(`Asignatura ${code} añadida correctamente`, 'success');
-        }
-
-        function switchTiaTab(tab) {
-            const tabs = ['quiz', 'extra', 'flashcards', 'lab', 'ai-dev'];
-            tabs.forEach(t => {
-                const section = document.getElementById(`module-${t}`);
-                const btn = document.getElementById(`tab-btn-${t}`);
-                if (!section || !btn) return;
-                if (t === tab) {
-                    section.classList.remove('hidden');
-                    btn.className = 'tia-tab-btn px-4 py-3 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2.5 transition bg-blue-600 text-white shadow-md shadow-blue-600/20';
-                    renderMath(section);
-                    if (t === 'ai-dev' && !preguntaDevActiva) {
-                        iniciarModuloDev();
-                    }
-                } else {
-                    section.classList.add('hidden');
-                    btn.className = 'tia-tab-btn px-4 py-3 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2.5 transition bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700';
-                }
-            });
-        }
-
-        function updateGlobalStatsUI() {
-            document.getElementById('stat-tests-done').textContent = userStats.testsDone;
-            const avg = userStats.testsDone > 0 ? Math.round(userStats.totalScorePct / userStats.testsDone) + '%' : '--%';
-            document.getElementById('stat-avg-score').textContent = avg;
-
-            const masteredCount = Object.values(flashcardStatusMap).filter(v => v === 'mastered').length;
-            document.getElementById('stat-cards-mastered').textContent = `${masteredCount} / ${allFlashcards.length}`;
-        }
-
-        function selectQuizDifficulty(diff) {
-            selectedDifficulty = diff;
-            ['facil', 'medio', 'dificil'].forEach(d => {
-                const btn = document.getElementById(`diff-btn-${d}`);
-                btn.className = d === diff
-                    ? 'diff-selector p-3.5 rounded-xl border-2 border-blue-600 bg-blue-500/10 text-center transition'
-                    : 'diff-selector p-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-800 text-center transition';
-            });
-        }
-
-        function selectQuizCount(count) {
-            selectedCount = count;
-            [10, 25, 50].forEach(c => {
-                const btn = document.getElementById(`count-btn-${c}`);
-                btn.className = c === count
-                    ? 'count-selector p-3.5 rounded-xl border-2 border-blue-600 bg-blue-500/10 text-center transition'
-                    : 'count-selector p-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-800 text-center transition';
-            });
-        }
-
-        function generateParametricQuestion(index, diff, blockFilter) {
-            const blocks = blockFilter === 'all' ? ['B1', 'B2', 'B3', 'B4'] : [blockFilter];
-            const chosenBlock = blocks[index % blocks.length];
-        
-            if (chosenBlock === 'B1') {
-                // Rangos amplios: inercia w de 0.1 a 1.4, velocidades de -20 a +35
-                const w = Number((0.15 + Math.random() * 1.1).toFixed(2));
-                const v = Math.floor(Math.random() * 56) - 20; // [-20, 35]
-                const x = Math.floor(Math.random() * 81) - 30; // [-30, 50]
-                const pbest = x + Math.floor(Math.random() * 25) - 10;
-                const gbest = x + Math.floor(Math.random() * 35) - 12;
-                const c1r1 = Number((0.1 + Math.random() * 1.8).toFixed(2));
-                const c2r2 = Number((0.1 + Math.random() * 1.8).toFixed(2));
-                const vNext = Number((w * v + c1r1 * (pbest - x) + c2r2 * (gbest - x)).toFixed(2));
-                const xNext = Number((x + vNext).toFixed(2));
-        
-                return {
-                    id: `GEN-B1-${Date.now()}-${index}`,
-                    block: 'B1',
-                    difficulty: diff,
-                    question: `[Cálculo Cinemático PSO Dinámico] Una partícula se encuentra en $x_i(t) = ${x}$ con velocidad previa $v_i(t) = ${v}$. Si $w = ${w}$, $p_{best,i} = ${pbest}$, $g_{best} = ${gbest}$, $c_1 r_1 = ${c1r1}$ y $c_2 r_2 = ${c2r2}$, ¿cuáles son $v_i(t+1)$ y $x_i(t+1)$?`,
-                    options: [
-                        `$v_i(t+1) = ${vNext}$ y $x_i(t+1) = ${xNext}$`,
-                        `$v_i(t+1) = ${(vNext + 2.75).toFixed(2)}$ y $x_i(t+1) = ${(xNext - 3.20).toFixed(2)}$`,
-                        `$v_i(t+1) = 0.00$ y $x_i(t+1) = ${x}$`,
-                        `$v_i(t+1) = ${(vNext * 1.6).toFixed(2)}$ y $x_i(t+1) = ${(xNext + 5.10).toFixed(2)}$`
-                    ],
-                    answer: 0,
-                    hint: "Ecuaciones cinemáticas: $v(t+1) = w\\cdot v(t) + c_1 r_1(p_{best}-x) + c_2 r_2(g_{best}-x)$; $x(t+1) = x(t) + v(t+1)$.",
-                    explanation: `Sustituyendo: $v_i(t+1) = ${w}\\cdot(${v}) + ${c1r1}\\cdot(${pbest}-${x}) + ${c2r2}\\cdot(${gbest}-${x}) = ${vNext}$. Posición: $x_i(t+1) = ${x} + (${vNext}) = ${xNext}$.`
-                };
-            } else if (chosenBlock === 'B2') {
-                const xr1 = Number((Math.random() * 120 - 40).toFixed(1));
-                const xr2 = Number((Math.random() * 120 - 40).toFixed(1));
-                const xr3 = Number((Math.random() * 120 - 40).toFixed(1));
-                const F = Number((0.2 + Math.random() * 1.6).toFixed(2));
-                const vMut = Number((xr1 + F * (xr2 - xr3)).toFixed(2));
-        
-                return {
-                    id: `GEN-B2-${Date.now()}-${index}`,
-                    block: 'B2',
-                    difficulty: diff,
-                    question: `[Mutación DE/rand/1 Dinámica] Para una coordenada con vectores base $x_{r_1,G} = ${xr1}$, $x_{r_2,G} = ${xr2}$, $x_{r_3,G} = ${xr3}$ y factor de escala $F = ${F}$, calcula el vector mutante $v_{i,G}$:`,
-                    options: [
-                        `$v_{i,G} = ${vMut}$`,
-                        `$v_{i,G} = ${(vMut + 4.60).toFixed(2)}$`,
-                        `$v_{i,G} = ${(xr1 - xr2).toFixed(2)}$`,
-                        `$v_{i,G} = ${(vMut * 0.5).toFixed(2)}$`
-                    ],
-                    answer: 0,
-                    hint: "Aplica $v_{i,G} = x_{r_1,G} + F \\cdot (x_{r_2,G} - x_{r_3,G})$.",
-                    explanation: `Cálculo directo: $${xr1} + ${F} \\cdot (${xr2} - (${xr3})) = ${vMut}$.`
-                };
-            } else if (chosenBlock === 'B3') {
-                const sizes = [32, 64, 128, 256, 512];
-                const W = sizes[Math.floor(Math.random() * sizes.length)];
-                const K = 3;
-                const P = 1;
-                const S = 1;
-                const poolWindow = 2;
-                const poolStride = 2;
-                const convOut = Math.floor((W - K + 2 * P) / S) + 1; // Mantiene W si K=3, P=1, S=1
-                const finalDim = Math.floor((convOut - poolWindow) / poolStride) + 1;
-        
-                return {
-                    id: `GEN-B3-${Date.now()}-${index}`,
-                    block: 'B3',
-                    difficulty: diff,
-                    question: `[Arquitectura CNN Dinámica] Un mapa de características de $${W} \\times ${W}$ entra a una convolución ($K=3, P=1, S=1$) y posteriormente a un Max Pooling ($2 \\times 2$ con $Stride=2$). ¿Cuál es la dimensión de salida final?`,
-                    options: [
-                        `$${finalDim} \\times ${finalDim}$ píxeles`,
-                        `$${W} \\times ${W}$ píxeles`,
-                        `$${finalDim * 2} \\times ${finalDim * 2}$ píxeles`,
-                        `$${finalDim - 4} \\times ${finalDim - 4}$ píxeles`
-                    ],
-                    answer: 0,
-                    hint: "Con $K=3, P=1, S=1$ la dimensión no cambia. Max Pooling $2\\times 2$ con paso 2 la divide a la mitad.",
-                    explanation: `Salida Convolución: $\\lfloor(${W}-3+2)/1\\rfloor+1 = ${convOut}$. Tras Max Pooling 2x2 ($Stride=2$): ${convOut}/2 = ${finalDim}\\times ${finalDim}$.`
-                };
-            } else {
-                const yReal = Math.floor(Math.random() * 8) + 1;
-                let yHat = Math.floor(Math.random() * 8) + 1;
-                while (yHat === yReal) yHat = Math.floor(Math.random() * 8) + 1;
-                const sqErr = Math.pow(yReal - yHat, 2);
-        
-                return {
-                    id: `GEN-B4-${Date.now()}-${index}`,
-                    block: 'B4',
-                    difficulty: diff,
-                    question: `[Pérdida MSE Dinámica] En una variable ordinal donde la clase real es $y_i = ${yReal}$ y la red predice $\\hat{y}_i = ${yHat}$, ¿cuál es el error cuadrático individual $(y_i - \\hat{y}_i)^2$?`,
-                    options: [
-                        `$(y_i - \\hat{y}_i)^2 = ${sqErr}$`,
-                        `$(y_i - \\hat{y}_i)^2 = ${sqErr + 5}$`,
-                        `$(y_i - \\hat{y}_i)^2 = ${Math.abs(yReal - yHat)}$`,
-                        `$(y_i - \\hat{y}_i)^2 = ${(sqErr * 2)}$`
-                    ],
-                    answer: 0,
-                    hint: "Resta ambos valores y eleva el resultado al cuadrado.",
-                    explanation: `$(y_i - \\hat{y}_i)^2 = (${yReal} - ${yHat})^2 = (${yReal - yHat})^2 = ${sqErr}$.`
-                };
-            }
-        }
-
-        function fisherYatesShuffle(array) {
-            const arr = [...array];
-            for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
-            }
-            return arr;
-        }
-
-        
-
-        function shuffleOptionsKeepAnswer(q) {
-            const pairs = q.options.map((opt, i) => ({ opt, isCorrect: i === q.answer }));
-            for (let i = pairs.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [pairs[i], pairs[j]] = [pairs[j], pairs[i]];
-            }
-            return {
-                ...q,
-                options: pairs.map(p => p.opt),
-                answer: pairs.findIndex(p => p.isCorrect)
-            };
-        }
-
-        function startConfiguredQuiz() {
-    const blockFilter = document.getElementById('quiz-block-filter').value;
-    quizFeedbackMode = document.getElementById('quiz-feedback-mode').value;
-
-    // 1. Determinar el banco de origen: usar fullTiaBank (questions_tia.json) si existe
-    let rawBank = [];
-    if (blockFilter === 'all' && typeof fullTiaBank !== 'undefined' && fullTiaBank.length > 0) {
-        rawBank = fullTiaBank;
-    } else if (typeof fullTiaBank !== 'undefined' && fullTiaBank.length > 0) {
-        rawBank = fullTiaBank;
-    } else {
-        rawBank = activeSubject?.questions || [];
-    }
-
-    const baseBank = rawBank.map(q => ({
-        ...q,
-        normBlock: typeof q.block === 'number' ? `B${q.block}` : (q.block || 'B1')
-    }));
-
-    // 2. Filtrar por bloque
-    let pool = (blockFilter === 'all')
-        ? [...baseBank]
-        : baseBank.filter(q => q.normBlock === blockFilter);
-
-    // 3. Separar por dificultad y barajar con Fisher-Yates
-    let diffMatches = pool.filter(q => q.difficulty === selectedDifficulty);
-    let otherDiffs = pool.filter(q => q.difficulty !== selectedDifficulty);
-
-    diffMatches = fisherYatesShuffle(diffMatches);
-    otherDiffs = fisherYatesShuffle(otherDiffs);
-    let combined = [...diffMatches, ...otherDiffs];
-
-    // 4. Deduplicación estricta por ID o texto de la pregunta
-    const seenIds = new Set();
-    const uniquePool = [];
-    for (const q of combined) {
-        const key = q.id || q.question.trim().toLowerCase();
-        if (!seenIds.has(key)) {
-            seenIds.add(key);
-            uniquePool.push(q);
-        }
-    }
-
-    // 5. Rellenar con paramétricas únicas SOLO si el banco tiene menos preguntas que la meta solicitada
-    let genIdx = 1;
-    while (uniquePool.length < selectedCount) {
-        const paramQ = generateParametricQuestion(genIdx++, selectedDifficulty, blockFilter);
-        const paramKey = paramQ.id || paramQ.question.trim().toLowerCase();
-        if (!seenIds.has(paramKey)) {
-            seenIds.add(paramKey);
-            uniquePool.push(paramQ);
-        }
-    }
-
-    // 6. Selección final: recortar a la cantidad pedida (10, 25 o 50) y barajar opciones (A, B, C, D)
-    const finalSelected = fisherYatesShuffle(uniquePool.slice(0, selectedCount));
-    currentQuizQuestions = finalSelected.map(q => shuffleOptionsKeepAnswer(q));
-    currentQuizIndex = 0;
-    userQuizAnswers = new Array(currentQuizQuestions.length).fill(null);
-
-    // 7. Transición de interfaz y arranque del temporizador
-    document.getElementById('quiz-setup-panel').classList.add('hidden');
-    document.getElementById('quiz-results-panel').classList.add('hidden');
-    document.getElementById('quiz-active-panel').classList.remove('hidden');
-
-    startQuizTimer();
-    renderCurrentQuizQuestion();
-}
-
-        function startQuizTimer() {
-            clearInterval(quizTimerInterval);
-            quizSecondsElapsed = 0;
-            updateTimerUI();
-            quizTimerInterval = setInterval(() => {
-                quizSecondsElapsed++;
-                updateTimerUI();
-            }, 1000);
-        }
-
-        function updateTimerUI() {
-            const mins = String(Math.floor(quizSecondsElapsed / 60)).padStart(2, '0');
-            const secs = String(quizSecondsElapsed % 60).padStart(2, '0');
-            document.getElementById('quiz-timer-display').textContent = `${mins}:${secs}`;
-        }
-
-        function renderCurrentQuizQuestion() {
-            const q = currentQuizQuestions[currentQuizIndex];
-            const total = currentQuizQuestions.length;
-
-            document.getElementById('quiz-current-num').textContent = currentQuizIndex + 1;
-            document.getElementById('quiz-total-num').textContent = total;
-            document.getElementById('quiz-progress-bar').style.width = `${((currentQuizIndex + 1) / total) * 100}%`;
-
-            document.getElementById('active-quiz-badge-diff').textContent = (q.difficulty || selectedDifficulty).toUpperCase();
-            document.getElementById('active-quiz-badge-block').textContent = q.normBlock || `Bloque ${q.block}`;
-
-            document.getElementById('quiz-question-text').innerHTML = q.question;
-            const hintBox = document.getElementById('quiz-hint-box');
-            hintBox.classList.add('hidden');
-            hintBox.innerHTML = `<i class="fa-solid fa-lightbulb mr-1.5"></i> <strong>Pista:</strong> ${q.hint || 'Repasa las ecuaciones del bloque.'}`;
-
-            const chosen = userQuizAnswers[currentQuizIndex];
-            const optsContainer = document.getElementById('quiz-options-container');
-            const letters = ['A', 'B', 'C', 'D'];
-
-            optsContainer.innerHTML = q.options.map((optText, idx) => {
-                let style = 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 hover:border-blue-500';
-                if (chosen !== null) {
-                    if (quizFeedbackMode === 'instant') {
-                        if (idx === q.answer) {
-                            style = 'border-emerald-500 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300';
-                        } else if (idx === chosen && chosen !== q.answer) {
-                            style = 'border-rose-500 bg-rose-500/15 text-rose-700 dark:text-rose-300';
-                        }
-                    } else if (idx === chosen) {
-                        style = 'border-blue-600 bg-blue-500/15 text-blue-600 dark:text-blue-300';
-                    }
-                }
-
-                return `
-                    <button onclick="selectQuizOption(${idx})" class="w-full text-left p-4 rounded-xl border-2 transition flex items-start gap-3.5 ${style}">
-                        <span class="w-7 h-7 rounded-lg bg-slate-200 dark:bg-slate-700 font-mono font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">${letters[idx]}</span>
-                        <span class="text-sm font-medium leading-relaxed">${optText}</span>
-                    </button>
-                `;
-            }).join('');
-
-            const expBox = document.getElementById('quiz-explanation-box');
-            if (chosen !== null && quizFeedbackMode === 'instant') {
-                const isOk = chosen === q.answer;
-                expBox.className = `p-5 rounded-2xl border text-sm leading-relaxed space-y-1 ${isOk ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-200' : 'bg-rose-500/10 border-rose-500/30 text-rose-800 dark:text-rose-200'}`;
-                expBox.innerHTML = `
-                    <div class="font-bold flex items-center gap-2">
-                        <i class="fa-solid ${isOk ? 'fa-circle-check text-emerald-500' : 'fa-circle-xmark text-rose-500'}"></i>
-                        <span>${isOk ? '¡Respuesta Correcta!' : 'Respuesta Incorrecta'}</span>
-                    </div>
-                    <p class="text-xs sm:text-sm">${q.explanation}</p>
-                `;
-                expBox.classList.remove('hidden');
-            } else {
-                expBox.classList.add('hidden');
-            }
-
-            document.getElementById('quiz-prev-btn').disabled = currentQuizIndex === 0;
-            const nextBtn = document.getElementById('quiz-next-btn');
-            nextBtn.innerHTML = currentQuizIndex === total - 1
-                ? `<span>Finalizar y Ver Nota</span> <i class="fa-solid fa-flag-checkered"></i>`
-                : `<span>Siguiente</span> <i class="fa-solid fa-chevron-right"></i>`;
-
-            renderMath(document.getElementById('quiz-active-panel'));
-        }
-
-        function selectQuizOption(idx) {
-            if (userQuizAnswers[currentQuizIndex] !== null && quizFeedbackMode === 'instant') return;
-            userQuizAnswers[currentQuizIndex] = idx;
-            renderCurrentQuizQuestion();
-        }
-
-        function toggleQuizHint() {
-            document.getElementById('quiz-hint-box').classList.toggle('hidden');
-        }
-
-        function navigateQuiz(dir) {
-            const nextIdx = currentQuizIndex + dir;
-            if (nextIdx >= 0 && nextIdx < currentQuizQuestions.length) {
-                currentQuizIndex = nextIdx;
-                renderCurrentQuizQuestion();
-            } else if (nextIdx >= currentQuizQuestions.length) {
-                finishQuiz();
-            }
-        }
-
-        function finishQuiz() {
-            clearInterval(quizTimerInterval);
-            document.getElementById('quiz-active-panel').classList.add('hidden');
-            const resPanel = document.getElementById('quiz-results-panel');
-            resPanel.classList.remove('hidden');
-
-            let correct = 0;
-            currentQuizQuestions.forEach((q, i) => {
-                if (userQuizAnswers[i] === q.answer) correct++;
-            });
-
-            const total = currentQuizQuestions.length;
-            const pct = Math.round((correct / total) * 100);
-
-            userStats.testsDone++;
-            userStats.totalScorePct += pct;
-            localStorage.setItem('incar_stats_v2', JSON.stringify(userStats));
-            updateGlobalStatsUI();
-
-            document.getElementById('results-score-pct').textContent = `${pct}%`;
-            document.getElementById('results-correct-count').textContent = `${correct} / ${total}`;
-            document.getElementById('results-time-spent').textContent = document.getElementById('quiz-timer-display').textContent;
-
-            const retryBtn = document.getElementById('retry-mistakes-btn');
-            if (correct < total) retryBtn.classList.remove('hidden');
-            else retryBtn.classList.add('hidden');
-
-            const reviewList = document.getElementById('results-review-list');
-            reviewList.innerHTML = currentQuizQuestions.map((q, i) => {
-                const uAns = userQuizAnswers[i];
-                const isOk = uAns === q.answer;
-                return `
-                    <div class="p-4 rounded-xl border ${isOk ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-rose-500/30 bg-rose-500/5'} space-y-2">
-                        <div class="flex items-center justify-between text-xs font-bold">
-                            <span>Pregunta ${i + 1}</span>
-                            <span class="${isOk ? 'text-emerald-500' : 'text-rose-500'}">${isOk ? '✔ Correcta' : '✘ Fallada'}</span>
-                        </div>
-                        <p class="text-sm font-semibold">${q.question}</p>
-                        <p class="text-xs text-slate-500 dark:text-slate-300"><strong>Solución correcta:</strong> ${q.options[q.answer]}</p>
-                        <p class="text-xs text-slate-400">${q.explanation}</p>
-                    </div>
-                `;
-            }).join('');
-
-            renderMath(resPanel);
-        }
-
-        function retryFailedQuestions() {
-            const failed = currentQuizQuestions.filter((q, i) => userQuizAnswers[i] !== q.answer);
-            if (!failed.length) return;
-            currentQuizQuestions = failed.map(q => shuffleOptionsKeepAnswer(q));
-            currentQuizIndex = 0;
-            userQuizAnswers = new Array(currentQuizQuestions.length).fill(null);
-            document.getElementById('quiz-results-panel').classList.add('hidden');
-            document.getElementById('quiz-active-panel').classList.remove('hidden');
-            startQuizTimer();
-            renderCurrentQuizQuestion();
-        }
-
-        function resetQuizToSetup() {
-            clearInterval(quizTimerInterval);
-            document.getElementById('quiz-active-panel').classList.add('hidden');
-            document.getElementById('quiz-results-panel').classList.add('hidden');
-            document.getElementById('quiz-setup-panel').classList.remove('hidden');
-        }
-
-        function renderExtraChallenges() {
-            const filter = document.getElementById('extra-topic-filter').value;
-            const grid = document.getElementById('extra-challenges-grid');
-            const list = filter === 'all'
-                ? EXTRA_ENGINEERING_CHALLENGES
-                : EXTRA_ENGINEERING_CHALLENGES.filter(c => c.topic === filter);
-
-            grid.innerHTML = list.map((item, idx) => `
-                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
-                    <div class="flex items-center justify-between">
-                        <span class="px-3 py-1 rounded-full bg-purple-500/15 text-purple-500 text-xs font-bold">${item.topic}</span>
-                        <span class="text-xs font-mono text-slate-400">Reto #${idx + 1}</span>
-                    </div>
-                    <h3 class="text-base font-extrabold text-blue-500">${item.title}</h3>
-                    <p class="text-sm leading-relaxed">${item.question}</p>
-                    <div class="space-y-2">
-                        ${item.options.map((opt, oIdx) => `
-                            <button onclick="checkExtraChallenge('${item.id}', ${oIdx})" id="extra-opt-${item.id}-${oIdx}" class="w-full text-left p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 hover:border-purple-500 text-xs sm:text-sm transition">
-                                ${opt}
-                            </button>
-                        `).join('')}
-                    </div>
-                    <div id="extra-exp-${item.id}" class="hidden p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs sm:text-sm text-emerald-700 dark:text-emerald-300">
-                        <strong>Explicación de Ingeniería:</strong> ${item.explanation}
-                    </div>
-                </div>
-            `).join('');
-
-            renderMath(grid);
-        }
-
-        function checkExtraChallenge(id, chosenIdx) {
-            const item = EXTRA_ENGINEERING_CHALLENGES.find(c => c.id === id);
-            if (!item) return;
-            item.options.forEach((_, idx) => {
-                const btn = document.getElementById(`extra-opt-${id}-${idx}`);
-                if (idx === item.answer) {
-                    btn.className = 'w-full text-left p-3.5 rounded-xl border-2 border-emerald-500 bg-emerald-500/15 text-xs sm:text-sm font-semibold';
-                } else if (idx === chosenIdx) {
-                    btn.className = 'w-full text-left p-3.5 rounded-xl border-2 border-rose-500 bg-rose-500/15 text-xs sm:text-sm';
-                }
-            });
-            document.getElementById(`extra-exp-${id}`).classList.remove('hidden');
-        }
-
-        function prepareSubjectFlashcards(subj) {
-            allFlashcards = [];
-            (subj.blocks || []).forEach(b => {
-                const bCode = b.code || `B${b.id}`;
-                (b.flashcards || []).forEach((fc, idx) => {
-                    allFlashcards.push({
-                        id: `${bCode}-${idx}`,
-                        blockCode: bCode,
-                        blockTitle: b.title,
-                        question: fc.question,
-                        answer: fc.answer
-                    });
-                });
-            });
-            filteredFlashcards = [...allFlashcards];
-            currentCardIndex = 0;
-            const firstAllBtn = document.querySelector('.fc-filter-btn[data-block="all"]');
-            if (firstAllBtn) firstAllBtn.textContent = `Todas (${allFlashcards.length})`;
-            renderCurrentFlashcard();
-        }
-
-        function filterFlashcards(block) {
-            document.querySelectorAll('.fc-filter-btn').forEach(btn => {
-                btn.className = (btn.dataset.block === block)
-                    ? 'fc-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-blue-600 text-white'
-                    : 'fc-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300';
-            });
-
-            if (block === 'all') {
-                filteredFlashcards = [...allFlashcards];
-            } else if (block === 'pending') {
-                filteredFlashcards = allFlashcards.filter(c => flashcardStatusMap[c.id] !== 'mastered');
-                if (!filteredFlashcards.length) {
-                    showToast('¡Has dominado todas las tarjetas!', 'success');
-                    filteredFlashcards = [...allFlashcards];
-                }
-            } else {
-                filteredFlashcards = allFlashcards.filter(c => c.blockCode === block);
-            }
-            currentCardIndex = 0;
-            renderCurrentFlashcard();
-        }
-
-        function shuffleFlashcards() {
-            filteredFlashcards.sort(() => Math.random() - 0.5);
-            currentCardIndex = 0;
-            renderCurrentFlashcard();
-            showToast('Tarjetas mezcladas', 'info');
-        }
-
-        function flipCurrentFlashcard() {
-            document.getElementById('flashcard-3d-inner').classList.toggle('flipped');
-        }
-
-        function moveFlashcard(dir) {
-            if (!filteredFlashcards.length) return;
-            document.getElementById('flashcard-3d-inner').classList.remove('flipped');
-            currentCardIndex = (currentCardIndex + dir + filteredFlashcards.length) % filteredFlashcards.length;
-            setTimeout(renderCurrentFlashcard, 150);
-        }
-
-        function markFlashcardStatus(status) {
-            if (!filteredFlashcards.length) return;
-            const card = filteredFlashcards[currentCardIndex];
-            flashcardStatusMap[card.id] = status;
-            localStorage.setItem('incar_fc_status_v2', JSON.stringify(flashcardStatusMap));
-            updateGlobalStatsUI();
-            renderCurrentFlashcard();
-            moveFlashcard(1);
-        }
-
-        function renderCurrentFlashcard() {
-            if (!filteredFlashcards.length) return;
-            const card = filteredFlashcards[currentCardIndex];
-            document.getElementById('fc-counter-label').textContent = `Tarjeta ${currentCardIndex + 1} de ${filteredFlashcards.length}`;
-            document.getElementById('fc-front-tag').textContent = card.blockTitle;
-            document.getElementById('fc-front-question').innerHTML = card.question;
-            document.getElementById('fc-back-answer').innerHTML = card.answer;
-
-            const status = flashcardStatusMap[card.id];
-            const statusBadge = document.getElementById('fc-status-badge');
-            if (status === 'mastered') {
-                statusBadge.textContent = '✔ Dominada';
-                statusBadge.className = 'font-bold text-emerald-500';
-            } else if (status === 'review') {
-                statusBadge.textContent = '🔄 Pendiente de repaso';
-                statusBadge.className = 'font-bold text-amber-500';
-            } else {
-                statusBadge.textContent = 'Sin evaluar';
-                statusBadge.className = 'font-semibold text-slate-400';
-            }
-
-            renderMath(document.getElementById('module-flashcards'));
-        }
-
-        function runPsoCalculator() {
-            const w = parseFloat(document.getElementById('calc-pso-w').value) || 0;
-            const v = parseFloat(document.getElementById('calc-pso-v').value) || 0;
-            const x = parseFloat(document.getElementById('calc-pso-x').value) || 0;
-            const pbest = parseFloat(document.getElementById('calc-pso-pbest').value) || 0;
-            const gbest = parseFloat(document.getElementById('calc-pso-gbest').value) || 0;
-            const c1r1 = parseFloat(document.getElementById('calc-pso-c1r1').value) || 0;
-            const c2r2 = parseFloat(document.getElementById('calc-pso-c2r2').value) || 0;
-            const gk = parseFloat(document.getElementById('calc-pso-gk').value) || 0;
-
-            const inertiaTerm = w * v;
-            const cogTerm = c1r1 * (pbest - x);
-            const socTerm = c2r2 * (gbest - x);
-            const vNext = inertiaTerm + cogTerm + socTerm;
-            const xNext = x + vNext;
-            const penaltyFactor = Math.exp(gk * gk);
-
-            document.getElementById('calc-pso-output').innerHTML = `
-                <div>• <strong>Término Inercia ($w \\cdot v_i$):</strong> ${inertiaTerm.toFixed(3)} | <strong>Cognitivo:</strong> ${cogTerm.toFixed(3)} | <strong>Social:</strong> ${socTerm.toFixed(3)}</div>
-                <div class="text-blue-500 font-bold">➔ Nueva Velocidad $v_i(t+1)$ = ${vNext.toFixed(3)}</div>
-                <div class="text-emerald-500 font-bold">➔ Nueva Posición $x_i(t+1)$ = ${xNext.toFixed(3)}</div>
-                <div class="text-amber-500">➔ Penalización Igualdad $e^{|g_k(x)|^2}$ = +${penaltyFactor.toFixed(3)} · $\\lambda_1$</div>
-            `;
-            renderMath(document.getElementById('calc-pso-output'));
-        }
-
-        function runLossCalculator() {
-            const prob = parseFloat(document.getElementById('calc-ce-prob').value) || 0.85;
-            const yReal = parseFloat(document.getElementById('calc-mse-y').value) || 0;
-            const yHat = parseFloat(document.getElementById('calc-mse-yhat').value) || 0;
-
-            document.getElementById('ce-prob-label').textContent = `${prob.toFixed(2)} (${Math.round(prob * 100)}%)`;
-
-            const ceLossLn = -Math.log(prob);
-            const ceLossLog10 = -Math.log10(prob);
-            const mseLoss = Math.pow(yReal - yHat, 2);
-
-            document.getElementById('calc-loss-output').innerHTML = `
-                <div class="text-blue-500 font-bold">• Entropía Cruzada $L_{CE} = -\\ln(${prob.toFixed(2)})$ = ${ceLossLn.toFixed(4)} nats (en $\\log_{10}$: ${ceLossLog10.toFixed(4)})</div>
-                <div class="text-emerald-500 font-bold">• Error Cuadrático $(y_i - \\hat{y}_i)^2 = (${yReal} - ${yHat})^2$ = ${mseLoss.toFixed(4)}</div>
-                <div class="text-slate-400 text-[11px]">${prob < 0.2 ? '⚠️ Castigo exponencial por baja probabilidad en la clase esperada.' : '✔ Predicción con buena convergencia.'}</div>
-            `;
-            renderMath(document.getElementById('calc-loss-output'));
-        }
-
-        let preguntaDevActiva = null;
-
-function iniciarModuloDev() {
-    const savedKey = localStorage.getItem('incar_groq_key');
-    if (savedKey) {
-        document.getElementById('groq-api-key').value = savedKey;
-    }
-
-    document.getElementById('dev-user-answer').addEventListener('input', (e) => {
-        const words = e.target.value.trim().split(/\s+/).filter(Boolean).length;
-        document.getElementById('dev-word-counter').textContent = `${words} palabras`;
     });
 
-    cargarSiguientePreguntaDev();
-}
-
-function guardarClaveGroq() {
-    const key = document.getElementById('groq-api-key').value.trim();
-    if (!key) return showToast('Pega tu API Key de Groq', 'error');
-    localStorage.setItem('incar_groq_key', key);
-    showToast('API Key guardada localmente', 'success');
-}
-
-
-function cargarSiguientePreguntaDev() {
-    // 1. Prioriza el banco cargado en la variable global o en activeSubject
-    const questions = (fullDevBank && fullDevBank.length > 0)
-        ? fullDevBank
-        : ((activeSubject && activeSubject.open_questions && activeSubject.open_questions.length > 0)
-            ? activeSubject.open_questions
-            : [
-                {
-                    id: 'DEV-PSO-01',
-                    block: 'B1',
-                    title: 'Fundamentos y Cinemática de PSO',
-                    question: 'Explica en detalle el algoritmo Particle Swarm Optimization (PSO). Describe sus 5 pasos secuenciales, escribe y explica su formulación cinemática (velocidad y posición) y define el papel de cada uno de sus parámetros ($w, c_1, c_2, r_1, r_2$).',
-                    key_points: [
-                        '5 pasos: Inicialización aleatoria, evaluación de aptitud f(x), actualización de memorias (pbest y gbest), actualización cinemática, criterio de parada.',
-                        'Ecuaciones: v_i(t+1) = w*v_i(t) + c1*r1*(pbest - x_i(t)) + c2*r2*(gbest - x_i(t)) y x_i(t+1) = x_i(t) + v_i(t+1).',
-                        'Inercia w: alto (~0.8-1.2) exploración; bajo (~0.2-0.4) explotación local.',
-                        'c1 personal/cognitivo, c2 global/social, r1 y r2 uniformes U(0,1).'
-                    ],
-                    reference_context: 'Pasos de PSO: inicialización, evaluación, memorias, cinemática y parada. Inercia w regula exploración/explotación. c1 atrae a pbest, c2 a gbest.'
-                },
-                {
-                    id: 'DEV-PSO-02',
-                    block: 'B1',
-                    title: 'Restricciones y Análisis Crítico de PSO',
-                    question: '¿Cómo gestiona el algoritmo PSO las restricciones de ecuación ($g_k(x) = 0$) frente a las restricciones de inecuación ($g_k(x) \\le 0$)? Explica además sus aspectos positivos (+) y negativos (-).',
-                    key_points: [
-                        'Ecuación g_k(x) = 0: penalización exponencial exterior C_nuevo = C_original + lambda * exp(|g_k(x)|^2).',
-                        'Inecuación g_k(x) <= 0: barrera estricta infinita (infinito si infringe, C_original si cumple).',
-                        'Positivos: independiente de derivadas, evade mínimos locales, mejora monótona (gbest nunca empeora).',
-                        'Negativos: voracidad computacional, mala escalabilidad en alta dimensión, sin garantía de óptimo global.'
-                    ],
-                    reference_context: 'Ecuación con término exponencial lambda*exp(|gk|^2). Inecuación con barrera infinita. Positivos: sin derivadas, mejora monótona. Negativos: voraz computacionalmente.'
-                },
-                {
-                    id: 'DEV-DE-01',
-                    block: 'B2',
-                    title: 'Mecanismo y Etapas de Evolución Diferencial (DE)',
-                    question: 'Explica los pasos secuenciales de Evolución Diferencial (DE) bajo el esquema $DE/rand/1$: mutación, cruce binomial con la importancia de $j_{rand}$ y selección elitista uno a uno.',
-                    key_points: [
-                        'Mutación: v_i,G = x_r1,G + F*(x_r2,G - x_r3,G) con r1!=r2!=r3!=i y F en (0,2).',
-                        'Cruce binomial: hereda del mutante si rand <= CR o j = j_rand; sino del padre x.',
-                        'j_rand garantiza matemáticamente que al menos un gen proceda del mutante incluso con CR = 0.',
-                        'Selección elitista uno a uno: sustitución si f(u) <= f(x).'
-                    ],
-                    reference_context: 'Mutación DE/rand/1 con diferencia escalada F. Cruce binomial con j_rand obligatorio. Selección uno a uno elitista.'
-                },
-                {
-                    id: 'DEV-CASOS-01',
-                    block: 'B1/B2',
-                    title: 'Casos de Uso: PSO vs. DE vs. Algoritmos Genéticos (GA)',
-                    question: 'Compara el ámbito de aplicación de PSO, DE y GA. ¿En qué tipo de problemas de ingeniería destaca cada uno?',
-                    key_points: [
-                        'PSO: Espacios continuos R^D (sintonización PID, trayectorias continuas B-Splines, despacho económico).',
-                        'DE: Espacios continuos no lineales, no convexos y con valles complejos donde se requiere gran robustez global.',
-                        'GA: Espacios discretos, combinatorios o puramente binarios (rutas TSP, secuenciación de tareas/scheduling).'
-                    ],
-                    reference_context: 'PSO continuo (PID). DE continuo multimodal complejo. GA combinatorio y discreto.'
-                },
-                {
-                    id: 'DEV-DL-01',
-                    block: 'B3',
-                    title: 'Ecosistema IA: IA, Machine Learning, Big Data y Redes Neuronales',
-                    question: 'Establece la relación jerárquica y define Inteligencia Artificial (IA), Machine Learning (ML), Big Data y Redes Neuronales Artificiales.',
-                    key_points: [
-                        'IA: Campo general que engloba sistemas capaces de tareas cognitivas humanas.',
-                        'Machine Learning: Subconjunto de la IA centrado en aprender de datos sin programación explícita.',
-                        'Redes Neuronales / Deep Learning: Subconjunto del ML con arquitecturas multicapa conexionistas.',
-                        'Big Data: Ecosistema y volumen masivo de datos necesario para alimentar el entrenamiento profundo.'
-                    ],
-                    reference_context: 'IA paraguas global -> Machine Learning subcampo -> Redes Neuronales / Deep Learning subconjunto. Big Data infraestructura de soporte.'
-                },
-                {
-                    id: 'DEV-DL-02',
-                    block: 'B3',
-                    title: 'Anatomía de una Neurona y Backpropagation',
-                    question: 'Explica en qué consiste una neurona artificial (entradas, pesos, bias, activación) y el funcionamiento de Backpropagation y la Regla Delta.',
-                    key_points: [
-                        'Estructura: entradas x_i, pesos w_ij, sesgo b, combinación z = sum(w*x)+b y activación f(z).',
-                        'Forward pass: propagación hacia adelante hasta la salida.',
-                        'Cálculo del error con respecto a la etiqueta real.',
-                        'Backward pass: ajuste de pesos en sentido contrario al gradiente (Delta w = -eta * dE/dw) requiriendo funciones derivables.'
-                    ],
-                    reference_context: 'Neurona con suma ponderada + bias y función de activación. Backpropagation aplica la regla de la cadena para descender por el gradiente del error.'
-                },
-                {
-                    id: 'DEV-DL-03',
-                    block: 'B3',
-                    title: 'Las 5 Funciones de Activación del Temario Oficial',
-                    question: 'Enumera y explica las 5 funciones de activación del temario: Signo/Escalón, Lineal, Sigmoidea, Sigmoidea bipolar (centrada en cero) y ReLU.',
-                    key_points: [
-                        'Signo/Escalón: binaria, derivada nula (no apta para Backpropagation).',
-                        'Lineal: f(x)=x, derivada constante, múltiples capas colapsan a una sola.',
-                        'Sigmoidea: 1/(1+e^-x), rango (0,1), continua y derivable para Backpropagation.',
-                        'Sigmoidea bipolar: rango (-1,1), simétrica y centrada en cero.',
-                        'ReLU: max(0,x), limpia negativos a 0, computacionalmente eficiente y estándar en capas ocultas.'
-                    ],
-                    reference_context: 'Funciones de activación: Signo, Lineal, Sigmoidea, Sigmoidea bipolar y ReLU.'
-                },
-                {
-                    id: 'DEV-CNN-01',
-                    block: 'B3',
-                    title: 'Redes Convolucionales (CNN) y Regularización',
-                    question: '¿Por qué fallan las MLP clásicas con imágenes y se usan CNN? Explica Kernel, Padding, Stride, Max Pooling, Flattening y Dropout.',
-                    key_points: [
-                        'Fallo MLP: Explosión de parámetros y falta de invariancia espacial traslacional.',
-                        'Kernel: matriz filtro que extrae mapas de características.',
-                        'Padding (borde de ceros para no perder resolución) y Stride (paso del filtro).',
-                        'Max Pooling: submuestreo por bloques tomando el valor máximo; Flattening: pasa 2D a vector 1D.',
-                        'Dropout: apaga neuronas aleatoriamente para evitar sobreajuste (overfitting).'
-                    ],
-                    reference_context: 'CNN preserva relaciones espaciales 2D. Kernel, Padding, Stride, Pooling reductor, Flattening a vector y Dropout regularizador.'
-                },
-                {
-                    id: 'DEV-DATA-01',
-                    block: 'B3',
-                    title: 'División de Datasets y Tipos de Variables',
-                    question: 'Explica los porcentajes y objetivo de Train, Validation y Test. Distingue variables nominales (Entropía Cruzada) vs. ordinales/continuas (MSE).',
-                    key_points: [
-                        'Train (70-80%): Ajuste directo de pesos.',
-                        'Validation (10-15%): Ajuste de hiperparámetros y parada temprana (Early Stopping).',
-                        'Test (10-15%): Medición de generalización real final.',
-                        'Variables continuas y ordinales: poseen orden/magnitud, usan MSE para penalizar distancia.',
-                        'Variables nominales: sin orden, usan Entropía Cruzada Categórica con SoftMax.'
-                    ],
-                    reference_context: 'Train 70-80%, Validation 10-15%, Test 10-15%. Nominales con Entropía Cruzada. Ordinales y continuas con MSE.'
-                },
-                {
-                    id: 'DEV-TRANS-01',
-                    block: 'B4',
-                    title: 'Arquitectura Transformer y Auto-Atención',
-                    question: '¿Qué ventaja tiene el Transformer frente a las RNN? Explica Embeddings, Codificación Posicional (Positional Encoding) y Auto-Atención (Self-Attention).',
-                    key_points: [
-                        'Ventaja: Paralelismo total de la secuencia frente a la lectura secuencial token a token de las RNN.',
-                        'Embeddings: Representación vectorial densa y continua de palabras.',
-                        'Positional Encoding: Señal inyectada para dotar al modelo de orden posicional.',
-                        'Self-Attention: Matrices Q, K, V para ponderar relaciones entre todas las palabras de golpe.'
-                    ],
-                    reference_context: 'Transformer procesa en paralelo. Usa Embeddings + Positional Encoding + matrices de Auto-Atención (Q, K, V).'
-                }
-            ]);
-
-    // Seleccionar pregunta aleatoria asegurando que no repita la misma inmediata
-    let siguiente = questions[Math.floor(Math.random() * questions.length)];
-    if (questions.length > 1 && preguntaDevActiva && siguiente.id === preguntaDevActiva.id) {
-        siguiente = questions[(questions.indexOf(siguiente) + 1) % questions.length];
+    async function initAppData() {
+        try {
+            const res = await fetch('./config.json', { cache: 'no-store' });
+            if (res.ok) {
+                const loadedData = await res.json();
+                appConfig = loadedData.app_config;
+                authorizedUsers = loadedData.admin_users;
+                subjectsList = loadedData.subjects;
+            }
+        } catch (err) {
+            console.error('Error cargando config.json:', err);
+            showToast('Error cargando configuración. Verifica tu config.json', 'error');
+        }
     }
-    preguntaDevActiva = siguiente;
 
-    document.getElementById('dev-question-title').textContent = preguntaDevActiva.title;
-    document.getElementById('dev-block-badge').textContent = `Bloque ${preguntaDevActiva.block}`;
-    document.getElementById('dev-question-text').innerHTML = preguntaDevActiva.question;
+    function loadPersistedState() {
+        const savedStats = localStorage.getItem('incar_stats_v2');
+        if (savedStats) userStats = JSON.parse(savedStats);
 
-    const kpList = document.getElementById('dev-keypoints-list');
-    kpList.innerHTML = (preguntaDevActiva.key_points || []).map(p => `<li>${p}</li>`).join('');
+        const savedFc = localStorage.getItem('incar_fc_status_v2');
+        if (savedFc) flashcardStatusMap = JSON.parse(savedFc);
 
-    document.getElementById('dev-user-answer').value = '';
-    document.getElementById('dev-word-counter').textContent = '0 palabras';
-    document.getElementById('dev-result-box').classList.add('hidden');
-    renderMath(document.getElementById('module-ai-dev'));
-}
-async function evaluarRespuestaDev() {
-    const respuesta = document.getElementById('dev-user-answer').value.trim();
-    const apiKey = document.getElementById('groq-api-key').value.trim();
+        const savedSession = sessionStorage.getItem('incar_active_user');
+        if (savedSession) {
+            currentUser = JSON.parse(savedSession);
+            enterAuthenticatedApp();
+        }
+    }
 
-    if (!respuesta) return showToast('Escribe una respuesta para evaluar.', 'error');
-    if (!apiKey) return showToast('Introduce tu API Key de Groq en la parte superior.', 'error');
+    function renderMath(container) {
+        if (window.renderMathInElement && container) {
+            renderMathInElement(container, {
+                delimiters: [
+                    { left: '$$', right: '$$', display: true },
+                    { left: '$', right: '$', display: false }
+                ],
+                throwOnError: false
+            });
+        }
+    }
 
-    const btn = document.getElementById('dev-eval-btn');
-    const resultBox = document.getElementById('dev-result-box');
-    const scoreBadge = document.getElementById('dev-score-display');
-    const feedbackBody = document.getElementById('dev-feedback-body');
+    function showToast(msg, type = 'info') {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        const colors = {
+            success: 'bg-emerald-600 border-emerald-400 text-white',
+            error: 'bg-rose-600 border-rose-400 text-white',
+            info: 'bg-blue-600 border-blue-400 text-white'
+        };
+        const el = document.createElement('div');
+        el.className = `px-4 py-3 rounded-xl border shadow-xl text-xs font-semibold flex items-center gap-2 pointer-events-auto transition-all ${colors[type] || colors.info}`;
+        el.innerHTML = `<i class="fa-solid fa-circle-info"></i><span>${msg}</span>`;
+        container.appendChild(el);
+        setTimeout(() => el.remove(), 3500);
+    }
 
-    btn.disabled = true;
-    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Evaluando...`;
-    resultBox.classList.remove('hidden');
-    feedbackBody.innerHTML = `<p class="text-slate-400 italic">Evaluando contra los apuntes del máster...</p>`;
+    function handleLogin(e) {
+        e.preventDefault();
+        const inputUser = document.getElementById('login-email').value.trim().toLowerCase();
+        const inputPass = document.getElementById('login-password').value.trim();
+        const errBox = document.getElementById('login-error-box');
+        const errText = document.getElementById('login-error-text');
 
-    const promptEvaluacion = `
+        if (!inputPass) {
+            errText.textContent = 'Introduce tu contraseña obligatoriamente.';
+            errBox.classList.remove('hidden');
+            return;
+        }
+
+        const found = authorizedUsers.find(u =>
+            ((u.email && u.email.toLowerCase() === inputUser) ||
+             (u.username && u.username.toLowerCase() === inputUser)) &&
+            u.password === inputPass
+        );
+
+        if (found) {
+            errBox.classList.add('hidden');
+            currentUser = found;
+            sessionStorage.setItem('incar_active_user', JSON.stringify(currentUser));
+            enterAuthenticatedApp();
+            showToast(`¡Bienvenido/a, ${currentUser.username}!`, 'success');
+        } else {
+            errText.textContent = 'Credenciales no autorizadas. Comprueba tus datos.';
+            errBox.classList.remove('hidden');
+        }
+    }
+
+    function togglePasswordVisibility() {
+        const input = document.getElementById('login-password');
+        const icon = document.getElementById('pass-eye-icon');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'fa-solid fa-eye-slash';
+        } else {
+            input.type = 'password';
+            icon.className = 'fa-solid fa-eye';
+        }
+    }
+
+    function enterAuthenticatedApp() {
+        document.getElementById('login-view').classList.add('hidden');
+        document.getElementById('app-wrapper').classList.remove('hidden');
+        document.getElementById('current-user-badge').textContent = `${currentUser.username} (${currentUser.role === 'admin' ? 'Admin' : 'Estudiante'})`;
+        renderSubjectsHub();
+        openSubject(appConfig?.default_subject || 'TIA');
+    }
+
+    function handleLogout() {
+        sessionStorage.removeItem('incar_active_user');
+        currentUser = null;
+        document.getElementById('app-wrapper').classList.add('hidden');
+        document.getElementById('login-view').classList.remove('hidden');
+        document.getElementById('login-password').value = '';
+    }
+
+    function toggleTheme() {
+        const html = document.documentElement;
+        const icon = document.getElementById('theme-icon');
+        html.classList.toggle('dark');
+        icon.className = html.classList.contains('dark') ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    }
+
+    function showSubjectHub() {
+        document.getElementById('tia-workspace-view').classList.add('hidden');
+        document.getElementById('back-to-hub-btn').classList.add('hidden');
+        document.getElementById('subject-hub-view').classList.remove('hidden');
+        document.getElementById('header-subtitle').textContent = 'Menú Principal de Asignaturas';
+        renderSubjectsHub();
+    }
+
+    function renderSubjectsHub() {
+        const grid = document.getElementById('subjects-grid');
+        grid.innerHTML = subjectsList.map(s => {
+            const qCount = s.datos_cargados && s.questions ? s.questions.length : 0;
+            const fcCount = s.datos_cargados && s.blocks ? s.blocks.reduce((acc, b) => acc + (b.flashcards ? b.flashcards.length : 0), 0) : 0;
+            return `
+                <div onclick="openSubject('${s.code || s.id}')" class="cursor-pointer group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-500 rounded-2xl p-6 shadow-sm hover:shadow-xl transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="px-3 py-1 rounded-lg bg-blue-600 text-white font-mono font-bold text-xs">${s.code || s.id}</span>
+                            <i class="fa-solid ${s.icon || 'fa-brain'} text-2xl text-blue-500 group-hover:scale-110 transition"></i>
+                        </div>
+                        <h3 class="text-lg font-extrabold group-hover:text-blue-500 transition">${s.name}</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">${s.description}</p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+                        <span><i class="fa-solid ${s.datos_cargados ? 'fa-circle-check text-emerald-500' : 'fa-cloud-arrow-down text-blue-500'} mr-1"></i> ${s.datos_cargados ? qCount + ' Preguntas' : 'Datos en Nube'}</span>
+                        <span><i class="fa-solid fa-clone text-emerald-500 mr-1"></i> ${s.datos_cargados ? fcCount : '?'} Flashcards</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    async function openSubject(code) {
+        const subj = subjectsList.find(s => (s.code || s.id) === code);
+        if (!subj) return;
+        
+        activeSubject = subj;
+
+        // Carga dinámica de la asignatura desde su archivo JSON individual
+        if (!subj.datos_cargados && subj.archivo_datos) {
+            try {
+                showToast(`Descargando datos de ${subj.name}...`, 'info');
+                const res = await fetch(`./${subj.archivo_datos}`, { cache: 'no-store' });
+                if (res.ok) {
+                    const data = await res.json();
+                    subj.blocks = data.blocks || [];
+                    subj.questions = data.questions || [];
+                    subj.open_questions = data.open_questions || [];
+                    subj.extra_challenges = data.extra_challenges || [];
+                    subj.datos_cargados = true;
+                    showToast('Datos sincronizados correctamente', 'success');
+                } else {
+                    throw new Error('Archivo no encontrado');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast(`Error al descargar ${subj.archivo_datos}. Revisa el archivo JSON.`, 'error');
+                return;
+            }
+        }
+
+        document.getElementById('subject-hub-view').classList.add('hidden');
+        document.getElementById('tia-workspace-view').classList.remove('hidden');
+        document.getElementById('back-to-hub-btn').classList.remove('hidden');
+        document.getElementById('active-subject-title').textContent = subj.name;
+        document.getElementById('header-subtitle').textContent = `${subj.code || subj.id} · ${subj.name}`;
+
+        prepareSubjectFlashcards(subj);
+        updateGlobalStatsUI();
+        renderExtraChallenges();
+        renderMath(document.getElementById('tia-workspace-view'));
+    }
+
+    function openSubjectModal() {
+        document.getElementById('subject-modal').classList.remove('hidden');
+    }
+
+    function closeSubjectModal() {
+        document.getElementById('subject-modal').classList.add('hidden');
+    }
+
+    function handleCreateSubject(e) {
+        e.preventDefault();
+        showToast('Para añadir asignaturas permanentemente, edita el archivo config.json', 'info');
+        closeSubjectModal();
+    }
+
+    function switchTiaTab(tab) {
+        const tabs = ['quiz', 'extra', 'flashcards', 'lab', 'ai-dev'];
+        tabs.forEach(t => {
+            const section = document.getElementById(`module-${t}`);
+            const btn = document.getElementById(`tab-btn-${t}`);
+            if (!section || !btn) return;
+            if (t === tab) {
+                section.classList.remove('hidden');
+                btn.className = 'tia-tab-btn px-4 py-3 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2.5 transition bg-blue-600 text-white shadow-md shadow-blue-600/20';
+                renderMath(section);
+                if (t === 'ai-dev' && !preguntaDevActiva) {
+                    iniciarModuloDev();
+                }
+            } else {
+                section.classList.add('hidden');
+                btn.className = 'tia-tab-btn px-4 py-3 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2.5 transition bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700';
+            }
+        });
+    }
+
+    function updateGlobalStatsUI() {
+        document.getElementById('stat-tests-done').textContent = userStats.testsDone;
+        const avg = userStats.testsDone > 0 ? Math.round(userStats.totalScorePct / userStats.testsDone) + '%' : '--%';
+        document.getElementById('stat-avg-score').textContent = avg;
+
+        const masteredCount = Object.values(flashcardStatusMap).filter(v => v === 'mastered').length;
+        document.getElementById('stat-cards-mastered').textContent = `${masteredCount} / ${allFlashcards.length}`;
+    }
+
+    function selectQuizDifficulty(diff) {
+        selectedDifficulty = diff;
+        ['facil', 'medio', 'dificil'].forEach(d => {
+            const btn = document.getElementById(`diff-btn-${d}`);
+            btn.className = d === diff
+                ? 'diff-selector p-3.5 rounded-xl border-2 border-blue-600 bg-blue-500/10 text-center transition'
+                : 'diff-selector p-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-800 text-center transition';
+        });
+    }
+
+    function selectQuizCount(count) {
+        selectedCount = count;
+        [10, 25, 50].forEach(c => {
+            const btn = document.getElementById(`count-btn-${c}`);
+            btn.className = c === count
+                ? 'count-selector p-3.5 rounded-xl border-2 border-blue-600 bg-blue-500/10 text-center transition'
+                : 'count-selector p-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-800 text-center transition';
+        });
+    }
+
+    function generateParametricQuestion(index, diff, blockFilter) {
+        const blocks = blockFilter === 'all' ? ['B1', 'B2', 'B3', 'B4'] : [blockFilter];
+        const chosenBlock = blocks[index % blocks.length];
+    
+        if (chosenBlock === 'B1') {
+            const w = Number((0.15 + Math.random() * 1.1).toFixed(2));
+            const v = Math.floor(Math.random() * 56) - 20; 
+            const x = Math.floor(Math.random() * 81) - 30; 
+            const pbest = x + Math.floor(Math.random() * 25) - 10;
+            const gbest = x + Math.floor(Math.random() * 35) - 12;
+            const c1r1 = Number((0.1 + Math.random() * 1.8).toFixed(2));
+            const c2r2 = Number((0.1 + Math.random() * 1.8).toFixed(2));
+            const vNext = Number((w * v + c1r1 * (pbest - x) + c2r2 * (gbest - x)).toFixed(2));
+            const xNext = Number((x + vNext).toFixed(2));
+    
+            return {
+                id: `GEN-B1-${Date.now()}-${index}`,
+                block: 'B1',
+                difficulty: diff,
+                question: `[Cálculo Cinemático PSO Dinámico] Una partícula se encuentra en $x_i(t) = ${x}$ con velocidad previa $v_i(t) = ${v}$. Si $w = ${w}$, $p_{best,i} = ${pbest}$, $g_{best} = ${gbest}$, $c_1 r_1 = ${c1r1}$ y $c_2 r_2 = ${c2r2}$, ¿cuáles son $v_i(t+1)$ y $x_i(t+1)$?`,
+                options: [
+                    `$v_i(t+1) = ${vNext}$ y $x_i(t+1) = ${xNext}$`,
+                    `$v_i(t+1) = ${(vNext + 2.75).toFixed(2)}$ y $x_i(t+1) = ${(xNext - 3.20).toFixed(2)}$`,
+                    `$v_i(t+1) = 0.00$ y $x_i(t+1) = ${x}$`,
+                    `$v_i(t+1) = ${(vNext * 1.6).toFixed(2)}$ y $x_i(t+1) = ${(xNext + 5.10).toFixed(2)}$`
+                ],
+                answer: 0,
+                hint: "Ecuaciones cinemáticas: $v(t+1) = w\\cdot v(t) + c_1 r_1(p_{best}-x) + c_2 r_2(g_{best}-x)$; $x(t+1) = x(t) + v(t+1)$.",
+                explanation: `Sustituyendo: $v_i(t+1) = ${w}\\cdot(${v}) + ${c1r1}\\cdot(${pbest}-${x}) + ${c2r2}\\cdot(${gbest}-${x}) = ${vNext}$. Posición: $x_i(t+1) = ${x} + (${vNext}) = ${xNext}$.`
+            };
+        } else if (chosenBlock === 'B2') {
+            const xr1 = Number((Math.random() * 120 - 40).toFixed(1));
+            const xr2 = Number((Math.random() * 120 - 40).toFixed(1));
+            const xr3 = Number((Math.random() * 120 - 40).toFixed(1));
+            const F = Number((0.2 + Math.random() * 1.6).toFixed(2));
+            const vMut = Number((xr1 + F * (xr2 - xr3)).toFixed(2));
+    
+            return {
+                id: `GEN-B2-${Date.now()}-${index}`,
+                block: 'B2',
+                difficulty: diff,
+                question: `[Mutación DE/rand/1 Dinámica] Para una coordenada con vectores base $x_{r_1,G} = ${xr1}$, $x_{r_2,G} = ${xr2}$, $x_{r_3,G} = ${xr3}$ y factor de escala $F = ${F}$, calcula el vector mutante $v_{i,G}$:`,
+                options: [
+                    `$v_{i,G} = ${vMut}$`,
+                    `$v_{i,G} = ${(vMut + 4.60).toFixed(2)}$`,
+                    `$v_{i,G} = ${(xr1 - xr2).toFixed(2)}$`,
+                    `$v_{i,G} = ${(vMut * 0.5).toFixed(2)}$`
+                ],
+                answer: 0,
+                hint: "Aplica $v_{i,G} = x_{r_1,G} + F \\cdot (x_{r_2,G} - x_{r_3,G})$.",
+                explanation: `Cálculo directo: $${xr1} + ${F} \\cdot (${xr2} - (${xr3})) = ${vMut}$.`
+            };
+        } else if (chosenBlock === 'B3') {
+            const sizes = [32, 64, 128, 256, 512];
+            const W = sizes[Math.floor(Math.random() * sizes.length)];
+            const K = 3;
+            const P = 1;
+            const S = 1;
+            const poolWindow = 2;
+            const poolStride = 2;
+            const convOut = Math.floor((W - K + 2 * P) / S) + 1; 
+            const finalDim = Math.floor((convOut - poolWindow) / poolStride) + 1;
+    
+            return {
+                id: `GEN-B3-${Date.now()}-${index}`,
+                block: 'B3',
+                difficulty: diff,
+                question: `[Arquitectura CNN Dinámica] Un mapa de características de $${W} \\times ${W}$ entra a una convolución ($K=3, P=1, S=1$) y posteriormente a un Max Pooling ($2 \\times 2$ con $Stride=2$). ¿Cuál es la dimensión de salida final?`,
+                options: [
+                    `$${finalDim} \\times ${finalDim}$ píxeles`,
+                    `$${W} \\times ${W}$ píxeles`,
+                    `$${finalDim * 2} \\times ${finalDim * 2}$ píxeles`,
+                    `$${finalDim - 4} \\times ${finalDim - 4}$ píxeles`
+                ],
+                answer: 0,
+                hint: "Con $K=3, P=1, S=1$ la dimensión no cambia. Max Pooling $2\\times 2$ con paso 2 la divide a la mitad.",
+                explanation: `Salida Convolución: $\\lfloor(${W}-3+2)/1\\rfloor+1 = ${convOut}$. Tras Max Pooling 2x2 ($Stride=2$): ${convOut}/2 = ${finalDim}\\times ${finalDim}$.`
+            };
+        } else {
+            const yReal = Math.floor(Math.random() * 8) + 1;
+            let yHat = Math.floor(Math.random() * 8) + 1;
+            while (yHat === yReal) yHat = Math.floor(Math.random() * 8) + 1;
+            const sqErr = Math.pow(yReal - yHat, 2);
+    
+            return {
+                id: `GEN-B4-${Date.now()}-${index}`,
+                block: 'B4',
+                difficulty: diff,
+                question: `[Pérdida MSE Dinámica] En una variable ordinal donde la clase real es $y_i = ${yReal}$ y la red predice $\\hat{y}_i = ${yHat}$, ¿cuál es el error cuadrático individual $(y_i - \\hat{y}_i)^2$?`,
+                options: [
+                    `$(y_i - \\hat{y}_i)^2 = ${sqErr}$`,
+                    `$(y_i - \\hat{y}_i)^2 = ${sqErr + 5}$`,
+                    `$(y_i - \\hat{y}_i)^2 = ${Math.abs(yReal - yHat)}$`,
+                    `$(y_i - \\hat{y}_i)^2 = ${(sqErr * 2)}$`
+                ],
+                answer: 0,
+                hint: "Resta ambos valores y eleva el resultado al cuadrado.",
+                explanation: `$(y_i - \\hat{y}_i)^2 = (${yReal} - ${yHat})^2 = (${yReal - yHat})^2 = ${sqErr}$.`
+            };
+        }
+    }
+
+    function fisherYatesShuffle(array) {
+        const arr = [...array];
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    function shuffleOptionsKeepAnswer(q) {
+        const pairs = q.options.map((opt, i) => ({ opt, isCorrect: i === q.answer }));
+        for (let i = pairs.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [pairs[i], pairs[j]] = [pairs[j], pairs[i]];
+        }
+        return {
+            ...q,
+            options: pairs.map(p => p.opt),
+            answer: pairs.findIndex(p => p.isCorrect)
+        };
+    }
+
+    function startConfiguredQuiz() {
+        const blockFilter = document.getElementById('quiz-block-filter').value;
+        quizFeedbackMode = document.getElementById('quiz-feedback-mode').value;
+
+        const rawBank = activeSubject?.questions || [];
+        if (rawBank.length === 0) {
+            showToast('El banco de preguntas de esta asignatura está vacío', 'error');
+            return;
+        }
+
+        const baseBank = rawBank.map(q => ({
+            ...q,
+            normBlock: typeof q.block === 'number' ? `B${q.block}` : (q.block || 'B1')
+        }));
+
+        let pool = (blockFilter === 'all')
+            ? [...baseBank]
+            : baseBank.filter(q => q.normBlock === blockFilter);
+
+        let diffMatches = pool.filter(q => q.difficulty === selectedDifficulty);
+        let otherDiffs = pool.filter(q => q.difficulty !== selectedDifficulty);
+
+        diffMatches = fisherYatesShuffle(diffMatches);
+        otherDiffs = fisherYatesShuffle(otherDiffs);
+        let combined = [...diffMatches, ...otherDiffs];
+
+        const seenIds = new Set();
+        const uniquePool = [];
+        for (const q of combined) {
+            const key = q.id || q.question.trim().toLowerCase();
+            if (!seenIds.has(key)) {
+                seenIds.add(key);
+                uniquePool.push(q);
+            }
+        }
+
+        let genIdx = 1;
+        while (uniquePool.length < selectedCount) {
+            const paramQ = generateParametricQuestion(genIdx++, selectedDifficulty, blockFilter);
+            const paramKey = paramQ.id || paramQ.question.trim().toLowerCase();
+            if (!seenIds.has(paramKey)) {
+                seenIds.add(paramKey);
+                uniquePool.push(paramQ);
+            }
+        }
+
+        const finalSelected = fisherYatesShuffle(uniquePool.slice(0, selectedCount));
+        currentQuizQuestions = finalSelected.map(q => shuffleOptionsKeepAnswer(q));
+        currentQuizIndex = 0;
+        userQuizAnswers = new Array(currentQuizQuestions.length).fill(null);
+
+        document.getElementById('quiz-setup-panel').classList.add('hidden');
+        document.getElementById('quiz-results-panel').classList.add('hidden');
+        document.getElementById('quiz-active-panel').classList.remove('hidden');
+
+        startQuizTimer();
+        renderCurrentQuizQuestion();
+    }
+
+    function startQuizTimer() {
+        clearInterval(quizTimerInterval);
+        quizSecondsElapsed = 0;
+        updateTimerUI();
+        quizTimerInterval = setInterval(() => {
+            quizSecondsElapsed++;
+            updateTimerUI();
+        }, 1000);
+    }
+
+    function updateTimerUI() {
+        const mins = String(Math.floor(quizSecondsElapsed / 60)).padStart(2, '0');
+        const secs = String(quizSecondsElapsed % 60).padStart(2, '0');
+        document.getElementById('quiz-timer-display').textContent = `${mins}:${secs}`;
+    }
+
+    function renderCurrentQuizQuestion() {
+        const q = currentQuizQuestions[currentQuizIndex];
+        const total = currentQuizQuestions.length;
+
+        document.getElementById('quiz-current-num').textContent = currentQuizIndex + 1;
+        document.getElementById('quiz-total-num').textContent = total;
+        document.getElementById('quiz-progress-bar').style.width = `${((currentQuizIndex + 1) / total) * 100}%`;
+
+        document.getElementById('active-quiz-badge-diff').textContent = (q.difficulty || selectedDifficulty).toUpperCase();
+        document.getElementById('active-quiz-badge-block').textContent = q.normBlock || `Bloque ${q.block}`;
+
+        document.getElementById('quiz-question-text').innerHTML = q.question;
+        const hintBox = document.getElementById('quiz-hint-box');
+        hintBox.classList.add('hidden');
+        hintBox.innerHTML = `<i class="fa-solid fa-lightbulb mr-1.5"></i> <strong>Pista:</strong> ${q.hint || 'Repasa las ecuaciones del bloque.'}`;
+
+        const chosen = userQuizAnswers[currentQuizIndex];
+        const optsContainer = document.getElementById('quiz-options-container');
+        const letters = ['A', 'B', 'C', 'D'];
+
+        optsContainer.innerHTML = q.options.map((optText, idx) => {
+            let style = 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 hover:border-blue-500';
+            if (chosen !== null) {
+                if (quizFeedbackMode === 'instant') {
+                    if (idx === q.answer) {
+                        style = 'border-emerald-500 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300';
+                    } else if (idx === chosen && chosen !== q.answer) {
+                        style = 'border-rose-500 bg-rose-500/15 text-rose-700 dark:text-rose-300';
+                    }
+                } else if (idx === chosen) {
+                    style = 'border-blue-600 bg-blue-500/15 text-blue-600 dark:text-blue-300';
+                }
+            }
+
+            return `
+                <button onclick="selectQuizOption(${idx})" class="w-full text-left p-4 rounded-xl border-2 transition flex items-start gap-3.5 ${style}">
+                    <span class="w-7 h-7 rounded-lg bg-slate-200 dark:bg-slate-700 font-mono font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">${letters[idx]}</span>
+                    <span class="text-sm font-medium leading-relaxed">${optText}</span>
+                </button>
+            `;
+        }).join('');
+
+        const expBox = document.getElementById('quiz-explanation-box');
+        if (chosen !== null && quizFeedbackMode === 'instant') {
+            const isOk = chosen === q.answer;
+            expBox.className = `p-5 rounded-2xl border text-sm leading-relaxed space-y-1 ${isOk ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-200' : 'bg-rose-500/10 border-rose-500/30 text-rose-800 dark:text-rose-200'}`;
+            expBox.innerHTML = `
+                <div class="font-bold flex items-center gap-2">
+                    <i class="fa-solid ${isOk ? 'fa-circle-check text-emerald-500' : 'fa-circle-xmark text-rose-500'}"></i>
+                    <span>${isOk ? '¡Respuesta Correcta!' : 'Respuesta Incorrecta'}</span>
+                </div>
+                <p class="text-xs sm:text-sm">${q.explanation}</p>
+            `;
+            expBox.classList.remove('hidden');
+        } else {
+            expBox.classList.add('hidden');
+        }
+
+        document.getElementById('quiz-prev-btn').disabled = currentQuizIndex === 0;
+        const nextBtn = document.getElementById('quiz-next-btn');
+        nextBtn.innerHTML = currentQuizIndex === total - 1
+            ? `<span>Finalizar y Ver Nota</span> <i class="fa-solid fa-flag-checkered"></i>`
+            : `<span>Siguiente</span> <i class="fa-solid fa-chevron-right"></i>`;
+
+        renderMath(document.getElementById('quiz-active-panel'));
+    }
+
+    function selectQuizOption(idx) {
+        if (userQuizAnswers[currentQuizIndex] !== null && quizFeedbackMode === 'instant') return;
+        userQuizAnswers[currentQuizIndex] = idx;
+        renderCurrentQuizQuestion();
+    }
+
+    function toggleQuizHint() {
+        document.getElementById('quiz-hint-box').classList.toggle('hidden');
+    }
+
+    function navigateQuiz(dir) {
+        const nextIdx = currentQuizIndex + dir;
+        if (nextIdx >= 0 && nextIdx < currentQuizQuestions.length) {
+            currentQuizIndex = nextIdx;
+            renderCurrentQuizQuestion();
+        } else if (nextIdx >= currentQuizQuestions.length) {
+            finishQuiz();
+        }
+    }
+
+    function finishQuiz() {
+        clearInterval(quizTimerInterval);
+        document.getElementById('quiz-active-panel').classList.add('hidden');
+        const resPanel = document.getElementById('quiz-results-panel');
+        resPanel.classList.remove('hidden');
+
+        let correct = 0;
+        currentQuizQuestions.forEach((q, i) => {
+            if (userQuizAnswers[i] === q.answer) correct++;
+        });
+
+        const total = currentQuizQuestions.length;
+        const pct = Math.round((correct / total) * 100);
+
+        userStats.testsDone++;
+        userStats.totalScorePct += pct;
+        localStorage.setItem('incar_stats_v2', JSON.stringify(userStats));
+        updateGlobalStatsUI();
+
+        document.getElementById('results-score-pct').textContent = `${pct}%`;
+        document.getElementById('results-correct-count').textContent = `${correct} / ${total}`;
+        document.getElementById('results-time-spent').textContent = document.getElementById('quiz-timer-display').textContent;
+
+        const retryBtn = document.getElementById('retry-mistakes-btn');
+        if (correct < total) retryBtn.classList.remove('hidden');
+        else retryBtn.classList.add('hidden');
+
+        const reviewList = document.getElementById('results-review-list');
+        reviewList.innerHTML = currentQuizQuestions.map((q, i) => {
+            const uAns = userQuizAnswers[i];
+            const isOk = uAns === q.answer;
+            return `
+                <div class="p-4 rounded-xl border ${isOk ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-rose-500/30 bg-rose-500/5'} space-y-2">
+                    <div class="flex items-center justify-between text-xs font-bold">
+                        <span>Pregunta ${i + 1}</span>
+                        <span class="${isOk ? 'text-emerald-500' : 'text-rose-500'}">${isOk ? '✔ Correcta' : '✘ Fallada'}</span>
+                    </div>
+                    <p class="text-sm font-semibold">${q.question}</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-300"><strong>Solución correcta:</strong> ${q.options[q.answer]}</p>
+                    <p class="text-xs text-slate-400">${q.explanation}</p>
+                </div>
+            `;
+        }).join('');
+
+        renderMath(resPanel);
+    }
+
+    function retryFailedQuestions() {
+        const failed = currentQuizQuestions.filter((q, i) => userQuizAnswers[i] !== q.answer);
+        if (!failed.length) return;
+        currentQuizQuestions = failed.map(q => shuffleOptionsKeepAnswer(q));
+        currentQuizIndex = 0;
+        userQuizAnswers = new Array(currentQuizQuestions.length).fill(null);
+        document.getElementById('quiz-results-panel').classList.add('hidden');
+        document.getElementById('quiz-active-panel').classList.remove('hidden');
+        startQuizTimer();
+        renderCurrentQuizQuestion();
+    }
+
+    function resetQuizToSetup() {
+        clearInterval(quizTimerInterval);
+        document.getElementById('quiz-active-panel').classList.add('hidden');
+        document.getElementById('quiz-results-panel').classList.add('hidden');
+        document.getElementById('quiz-setup-panel').classList.remove('hidden');
+    }
+
+    function renderExtraChallenges() {
+        if (!activeSubject || !activeSubject.extra_challenges) return;
+        const filter = document.getElementById('extra-topic-filter').value;
+        const grid = document.getElementById('extra-challenges-grid');
+        const list = filter === 'all'
+            ? activeSubject.extra_challenges
+            : activeSubject.extra_challenges.filter(c => c.topic === filter);
+
+        grid.innerHTML = list.map((item, idx) => `
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
+                <div class="flex items-center justify-between">
+                    <span class="px-3 py-1 rounded-full bg-purple-500/15 text-purple-500 text-xs font-bold">${item.topic}</span>
+                    <span class="text-xs font-mono text-slate-400">Reto #${idx + 1}</span>
+                </div>
+                <h3 class="text-base font-extrabold text-blue-500">${item.title}</h3>
+                <p class="text-sm leading-relaxed">${item.question}</p>
+                <div class="space-y-2">
+                    ${item.options.map((opt, oIdx) => `
+                        <button onclick="checkExtraChallenge('${item.id}', ${oIdx})" id="extra-opt-${item.id}-${oIdx}" class="w-full text-left p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 hover:border-purple-500 text-xs sm:text-sm transition">
+                            ${opt}
+                        </button>
+                    `).join('')}
+                </div>
+                <div id="extra-exp-${item.id}" class="hidden p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs sm:text-sm text-emerald-700 dark:text-emerald-300">
+                    <strong>Explicación de Ingeniería:</strong> ${item.explanation}
+                </div>
+            </div>
+        `).join('');
+        renderMath(grid);
+    }
+
+    function checkExtraChallenge(id, chosenIdx) {
+        if (!activeSubject || !activeSubject.extra_challenges) return;
+        const item = activeSubject.extra_challenges.find(c => c.id === id);
+        if (!item) return;
+        item.options.forEach((_, idx) => {
+            const btn = document.getElementById(`extra-opt-${id}-${idx}`);
+            if (idx === item.answer) {
+                btn.className = 'w-full text-left p-3.5 rounded-xl border-2 border-emerald-500 bg-emerald-500/15 text-xs sm:text-sm font-semibold';
+            } else if (idx === chosenIdx) {
+                btn.className = 'w-full text-left p-3.5 rounded-xl border-2 border-rose-500 bg-rose-500/15 text-xs sm:text-sm';
+            }
+        });
+        document.getElementById(`extra-exp-${id}`).classList.remove('hidden');
+    }
+
+    function prepareSubjectFlashcards(subj) {
+        allFlashcards = [];
+        (subj.blocks || []).forEach(b => {
+            const bCode = b.code || `B${b.id}`;
+            (b.flashcards || []).forEach((fc, idx) => {
+                allFlashcards.push({
+                    id: `${bCode}-${idx}`,
+                    blockCode: bCode,
+                    blockTitle: b.title,
+                    question: fc.question,
+                    answer: fc.answer
+                });
+            });
+        });
+        filteredFlashcards = [...allFlashcards];
+        currentCardIndex = 0;
+        const firstAllBtn = document.querySelector('.fc-filter-btn[data-block="all"]');
+        if (firstAllBtn) firstAllBtn.textContent = `Todas (${allFlashcards.length})`;
+        renderCurrentFlashcard();
+    }
+
+    function filterFlashcards(block) {
+        document.querySelectorAll('.fc-filter-btn').forEach(btn => {
+            btn.className = (btn.dataset.block === block)
+                ? 'fc-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-blue-600 text-white'
+                : 'fc-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300';
+        });
+
+        if (block === 'all') {
+            filteredFlashcards = [...allFlashcards];
+        } else if (block === 'pending') {
+            filteredFlashcards = allFlashcards.filter(c => flashcardStatusMap[c.id] !== 'mastered');
+            if (!filteredFlashcards.length) {
+                showToast('¡Has dominado todas las tarjetas!', 'success');
+                filteredFlashcards = [...allFlashcards];
+            }
+        } else {
+            filteredFlashcards = allFlashcards.filter(c => c.blockCode === block);
+        }
+        currentCardIndex = 0;
+        renderCurrentFlashcard();
+    }
+
+    function shuffleFlashcards() {
+        filteredFlashcards.sort(() => Math.random() - 0.5);
+        currentCardIndex = 0;
+        renderCurrentFlashcard();
+        showToast('Tarjetas mezcladas', 'info');
+    }
+
+    function flipCurrentFlashcard() {
+        document.getElementById('flashcard-3d-inner').classList.toggle('flipped');
+    }
+
+    function moveFlashcard(dir) {
+        if (!filteredFlashcards.length) return;
+        document.getElementById('flashcard-3d-inner').classList.remove('flipped');
+        currentCardIndex = (currentCardIndex + dir + filteredFlashcards.length) % filteredFlashcards.length;
+        setTimeout(renderCurrentFlashcard, 150);
+    }
+
+    function markFlashcardStatus(status) {
+        if (!filteredFlashcards.length) return;
+        const card = filteredFlashcards[currentCardIndex];
+        flashcardStatusMap[card.id] = status;
+        localStorage.setItem('incar_fc_status_v2', JSON.stringify(flashcardStatusMap));
+        updateGlobalStatsUI();
+        renderCurrentFlashcard();
+        moveFlashcard(1);
+    }
+
+    function renderCurrentFlashcard() {
+        if (!filteredFlashcards.length) return;
+        const card = filteredFlashcards[currentCardIndex];
+        document.getElementById('fc-counter-label').textContent = `Tarjeta ${currentCardIndex + 1} de ${filteredFlashcards.length}`;
+        document.getElementById('fc-front-tag').textContent = card.blockTitle;
+        document.getElementById('fc-front-question').innerHTML = card.question;
+        document.getElementById('fc-back-answer').innerHTML = card.answer;
+
+        const status = flashcardStatusMap[card.id];
+        const statusBadge = document.getElementById('fc-status-badge');
+        if (status === 'mastered') {
+            statusBadge.textContent = '✔ Dominada';
+            statusBadge.className = 'font-bold text-emerald-500';
+        } else if (status === 'review') {
+            statusBadge.textContent = '🔄 Pendiente de repaso';
+            statusBadge.className = 'font-bold text-amber-500';
+        } else {
+            statusBadge.textContent = 'Sin evaluar';
+            statusBadge.className = 'font-semibold text-slate-400';
+        }
+
+        renderMath(document.getElementById('module-flashcards'));
+    }
+
+    function runPsoCalculator() {
+        const w = parseFloat(document.getElementById('calc-pso-w').value) || 0;
+        const v = parseFloat(document.getElementById('calc-pso-v').value) || 0;
+        const x = parseFloat(document.getElementById('calc-pso-x').value) || 0;
+        const pbest = parseFloat(document.getElementById('calc-pso-pbest').value) || 0;
+        const gbest = parseFloat(document.getElementById('calc-pso-gbest').value) || 0;
+        const c1r1 = parseFloat(document.getElementById('calc-pso-c1r1').value) || 0;
+        const c2r2 = parseFloat(document.getElementById('calc-pso-c2r2').value) || 0;
+        const gk = parseFloat(document.getElementById('calc-pso-gk').value) || 0;
+
+        const inertiaTerm = w * v;
+        const cogTerm = c1r1 * (pbest - x);
+        const socTerm = c2r2 * (gbest - x);
+        const vNext = inertiaTerm + cogTerm + socTerm;
+        const xNext = x + vNext;
+        const penaltyFactor = Math.exp(gk * gk);
+
+        document.getElementById('calc-pso-output').innerHTML = `
+            <div>• <strong>Término Inercia ($w \\cdot v_i$):</strong> ${inertiaTerm.toFixed(3)} | <strong>Cognitivo:</strong> ${cogTerm.toFixed(3)} | <strong>Social:</strong> ${socTerm.toFixed(3)}</div>
+            <div class="text-blue-500 font-bold">➔ Nueva Velocidad $v_i(t+1)$ = ${vNext.toFixed(3)}</div>
+            <div class="text-emerald-500 font-bold">➔ Nueva Posición $x_i(t+1)$ = ${xNext.toFixed(3)}</div>
+            <div class="text-amber-500">➔ Penalización Igualdad $e^{|g_k(x)|^2}$ = +${penaltyFactor.toFixed(3)} · $\\lambda_1$</div>
+        `;
+        renderMath(document.getElementById('calc-pso-output'));
+    }
+
+    function runLossCalculator() {
+        const prob = parseFloat(document.getElementById('calc-ce-prob').value) || 0.85;
+        const yReal = parseFloat(document.getElementById('calc-mse-y').value) || 0;
+        const yHat = parseFloat(document.getElementById('calc-mse-yhat').value) || 0;
+
+        document.getElementById('ce-prob-label').textContent = `${prob.toFixed(2)} (${Math.round(prob * 100)}%)`;
+
+        const ceLossLn = -Math.log(prob);
+        const ceLossLog10 = -Math.log10(prob);
+        const mseLoss = Math.pow(yReal - yHat, 2);
+
+        document.getElementById('calc-loss-output').innerHTML = `
+            <div class="text-blue-500 font-bold">• Entropía Cruzada $L_{CE} = -\\ln(${prob.toFixed(2)})$ = ${ceLossLn.toFixed(4)} nats (en $\\log_{10}$: ${ceLossLog10.toFixed(4)})</div>
+            <div class="text-emerald-500 font-bold">• Error Cuadrático $(y_i - \\hat{y}_i)^2 = (${yReal} - ${yHat})^2$ = ${mseLoss.toFixed(4)}</div>
+            <div class="text-slate-400 text-[11px]">${prob < 0.2 ? '⚠️ Castigo exponencial por baja probabilidad en la clase esperada.' : '✔ Predicción con buena convergencia.'}</div>
+        `;
+        renderMath(document.getElementById('calc-loss-output'));
+    }
+
+    function iniciarModuloDev() {
+        const savedKey = localStorage.getItem('incar_groq_key');
+        if (savedKey) {
+            document.getElementById('groq-api-key').value = savedKey;
+        }
+
+        document.getElementById('dev-user-answer').addEventListener('input', (e) => {
+            const words = e.target.value.trim().split(/\s+/).filter(Boolean).length;
+            document.getElementById('dev-word-counter').textContent = `${words} palabras`;
+        });
+
+        cargarSiguientePreguntaDev();
+    }
+
+    function guardarClaveGroq() {
+        const key = document.getElementById('groq-api-key').value.trim();
+        if (!key) return showToast('Pega tu API Key de Groq', 'error');
+        localStorage.setItem('incar_groq_key', key);
+        showToast('API Key guardada localmente', 'success');
+    }
+
+    function cargarSiguientePreguntaDev() {
+        const questions = activeSubject?.open_questions || [];
+        
+        if (questions.length === 0) {
+            document.getElementById('dev-question-title').textContent = "No hay preguntas de desarrollo configuradas para esta asignatura.";
+            return;
+        }
+
+        let siguiente = questions[Math.floor(Math.random() * questions.length)];
+        if (questions.length > 1 && preguntaDevActiva && siguiente.id === preguntaDevActiva.id) {
+            siguiente = questions[(questions.indexOf(siguiente) + 1) % questions.length];
+        }
+        preguntaDevActiva = siguiente;
+
+        document.getElementById('dev-question-title').textContent = preguntaDevActiva.title;
+        document.getElementById('dev-block-badge').textContent = `Bloque ${preguntaDevActiva.block}`;
+        document.getElementById('dev-question-text').innerHTML = preguntaDevActiva.question;
+
+        const kpList = document.getElementById('dev-keypoints-list');
+        kpList.innerHTML = (preguntaDevActiva.key_points || []).map(p => `<li>${p}</li>`).join('');
+
+        document.getElementById('dev-user-answer').value = '';
+        document.getElementById('dev-word-counter').textContent = '0 palabras';
+        document.getElementById('dev-result-box').classList.add('hidden');
+        renderMath(document.getElementById('module-ai-dev'));
+    }
+
+    async function evaluarRespuestaDev() {
+        const respuesta = document.getElementById('dev-user-answer').value.trim();
+        const apiKey = document.getElementById('groq-api-key').value.trim();
+
+        if (!respuesta) return showToast('Escribe una respuesta para evaluar.', 'error');
+        if (!apiKey) return showToast('Introduce tu API Key de Groq en la parte superior.', 'error');
+
+        const btn = document.getElementById('dev-eval-btn');
+        const resultBox = document.getElementById('dev-result-box');
+        const scoreBadge = document.getElementById('dev-score-display');
+        const feedbackBody = document.getElementById('dev-feedback-body');
+
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Evaluando...`;
+        resultBox.classList.remove('hidden');
+        feedbackBody.innerHTML = `<p class="text-slate-400 italic">Evaluando contra los apuntes del máster...</p>`;
+
+        const promptEvaluacion = `
 Eres un evaluador académico universitario riguroso del Máster en Control y Robótica.
 Evalúa la respuesta de un estudiante comparándola con el texto fuente oficial y los puntos clave requeridos.
 
@@ -2578,61 +1860,61 @@ Responde EXCLUSIVAMENTE con un JSON válido con este formato:
 }
 `;
 
-    try {
-        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${apiKey}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                model: "openai/gpt-oss-20b",
-                messages: [{ role: "user", content: promptEvaluacion }],
-                temperature: 0.1,
-                response_format: { type: "json_object" }
-            })
-        });
+        try {
+            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${apiKey}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    model: "openai/gpt-oss-20b",
+                    messages: [{ role: "user", content: promptEvaluacion }],
+                    temperature: 0.1,
+                    response_format: { type: "json_object" }
+                })
+            });
 
-        const data = await response.json();
-        if (data.error) throw new Error(data.error.message);
+            const data = await response.json();
+            if (data.error) throw new Error(data.error.message);
 
-        const evaluacion = JSON.parse(data.choices[0].message.content);
-        const nota = Number(evaluacion.nota || 0).toFixed(1);
+            const evaluacion = JSON.parse(data.choices[0].message.content);
+            const nota = Number(evaluacion.nota || 0).toFixed(1);
 
-        scoreBadge.textContent = `${nota}/10`;
-        scoreBadge.className = nota >= 7.0 
-            ? 'w-14 h-12 rounded-xl bg-emerald-500/15 text-emerald-500 flex items-center justify-center font-extrabold text-lg'
-            : (nota >= 5.0 
-                ? 'w-14 h-12 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center font-extrabold text-lg'
-                : 'w-14 h-12 rounded-xl bg-rose-500/15 text-rose-500 flex items-center justify-center font-extrabold text-lg');
+            scoreBadge.textContent = `${nota}/10`;
+            scoreBadge.className = nota >= 7.0 
+                ? 'w-14 h-12 rounded-xl bg-emerald-500/15 text-emerald-500 flex items-center justify-center font-extrabold text-lg'
+                : (nota >= 5.0 
+                    ? 'w-14 h-12 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center font-extrabold text-lg'
+                    : 'w-14 h-12 rounded-xl bg-rose-500/15 text-rose-500 flex items-center justify-center font-extrabold text-lg');
 
-        feedbackBody.innerHTML = `
-            <div class="space-y-3">
-                <div>
-                    <strong class="text-emerald-500 block mb-1">✔ Aciertos:</strong>
-                    <ul class="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-0.5">
-                        ${(evaluacion.aciertos || []).map(a => `<li>${a}</li>`).join('')}
-                    </ul>
+            feedbackBody.innerHTML = `
+                <div class="space-y-3">
+                    <div>
+                        <strong class="text-emerald-500 block mb-1">✔ Aciertos:</strong>
+                        <ul class="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-0.5">
+                            ${(evaluacion.aciertos || []).map(a => `<li>${a}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div>
+                        <strong class="text-rose-500 block mb-1">✘ Omisiones o Errores:</strong>
+                        <ul class="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-0.5">
+                            ${(evaluacion.omisiones || []).map(o => `<li>${o}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="p-3.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300">
+                        <strong>Comentario Docente:</strong> ${evaluacion.comentario}
+                    </div>
                 </div>
-                <div>
-                    <strong class="text-rose-500 block mb-1">✘ Omisiones o Errores:</strong>
-                    <ul class="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-0.5">
-                        ${(evaluacion.omisiones || []).map(o => `<li>${o}</li>`).join('')}
-                    </ul>
-                </div>
-                <div class="p-3.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300">
-                    <strong>Comentario Docente:</strong> ${evaluacion.comentario}
-                </div>
-            </div>
-        `;
-        renderMath(feedbackBody);
-    } catch (err) {
-        feedbackBody.innerHTML = `<div class="p-3 text-rose-500 text-xs">Error en la llamada: ${err.message}</div>`;
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> <span>Enviar a Corrección</span>`;
+            `;
+            renderMath(feedbackBody);
+        } catch (err) {
+            feedbackBody.innerHTML = `<div class="p-3 text-rose-500 text-xs">Error en la llamada: ${err.message}</div>`;
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> <span>Enviar a Corrección</span>`;
+        }
     }
-}
-    </script>
+</script>
 </body>
 </html>
