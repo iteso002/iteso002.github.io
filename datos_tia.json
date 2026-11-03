@@ -127,6 +127,185 @@
     }
   ],
   "questions": [
+    {
+      "id": 1,
+      "block": 1,
+      "difficulty": "facil",
+      "question": "En el algoritmo PSO, ¿qué representa el componente $g_{best}$?",
+      "options": [
+        "La mejor posición histórica de una partícula individual.",
+        "La mejor posición encontrada por el enjambre completo en cualquier iteración.",
+        "La velocidad máxima permitida del enjambre.",
+        "El factor de ponderación estocástico."
+      ],
+      "answer": 1,
+      "hint": "Fíjate en la letra 'g' de global.",
+      "explanation": "$g_{best}$ es la mejor posición global histórica hallada por cualquier miembro de toda la población de partículas."
+    },
+    {
+      "id": 2,
+      "block": 1,
+      "difficulty": "medio",
+      "question": "¿Qué valor aproximado del parámetro de inercia ($w$) en PSO favorece la explotación local y el refinamiento fino en torno al óptimo?",
+      "options": [
+        "w alto (0.8 - 1.2)",
+        "w bajo (0.2 - 0.4)",
+        "w negativo (-1.0)",
+        "w superior a 2.0"
+      ],
+      "answer": 1,
+      "hint": "Un valor bajo disminuye la velocidad previa acumulada.",
+      "explanation": "Un factor bajo de inercia ($w \\approx 0.2 - 0.4$) reduce la inercia del movimiento anterior, favoreciendo la explotación local minuciosa."
+    },
+    {
+      "id": 3,
+      "block": 1,
+      "difficulty": "facil",
+      "question": "¿Qué distribución siguen los factores estocásticos $r_1$ y $r_2$ en las ecuaciones cinemáticas de PSO?",
+      "options": [
+        "Distribución uniforme en el intervalo [0, 1].",
+        "Distribución normal estándar de media 0 y varianza 1.",
+        "Son constantes fijas iguales a 2.",
+        "Distribución exponencial creciente."
+      ],
+      "answer": 0,
+      "hint": "$r_1, r_2 \\sim \\mathcal{U}(0,1)$.",
+      "explanation": "Son variables aleatorias extraídas independientemente de una distribución continua uniforme $\\mathcal{U}(0,1)$."
+    },
+    {
+      "id": 4,
+      "block": 1,
+      "difficulty": "medio",
+      "question": "Según los apuntes de TIA, ¿cómo penaliza PSO una restricción de igualdad $g_k(x) = 0$ sobre la función de coste?",
+      "options": [
+        "Descartando el enjambre completo y reiniciando la iteración.",
+        "Sumando un término exponencial: $C_{Nuevo}(x) = C_{Original}(x) + \\lambda_1 \\cdot e^{|g_k(x)|^2}$.",
+        "Multiplicando el coste original por cero.",
+        "Asignando directamente coste menos infinito."
+      ],
+      "answer": 1,
+      "hint": "Ecuación (4) del PDF.",
+      "explanation": "Al ser prácticamente imposible acertar exactamente cero en continua, se aplica una penalización exponencial sobre el residuo al cuadrado."
+    },
+    {
+      "id": 5,
+      "block": 1,
+      "difficulty": "facil",
+      "question": "¿En qué tipo de espacios de búsqueda es nativo y especialmente superior PSO frente a los Algoritmos Genéticos (GA)?",
+      "options": [
+        "En espacios de variables continuas ($\\mathbb{R}^D$), como sintonización de parámetros PID.",
+        "En problemas puramente binarios o de grafos discretos.",
+        "En ordenación alfabética de cadenas de texto.",
+        "Únicamente en funciones lineales y convexas."
+      ],
+      "answer": 0,
+      "hint": "Variables reales continuas como Kp, Ki, Kd.",
+      "explanation": "PSO opera de forma nativa sobre espacios euclídeos continuos, mientras que GA destaca en dominios combinatorios o binarios."
+    },
+    {
+      "id": 6,
+      "block": 1,
+      "difficulty": "dificil",
+      "question": "¿Qué significa que el algoritmo PSO posee la 'propiedad de mejora monótona'?",
+      "options": [
+        "Que todas las partículas reducen su velocidad a cero en la primera iteración.",
+        "Que la mejor solución histórica global ($g_{best}$) se preserva en memoria, impidiendo que la estimación óptima del enjambre empeore.",
+        "Que garantiza matemáticamente encontrar el óptimo global en tiempo finito.",
+        "Que el coste computacional disminuye exponencialmente con la dimensión."
+      ],
+      "answer": 1,
+      "hint": "La mejor memoria global nunca se sobreescribe con un valor de coste peor.",
+      "explanation": "Al actualizar $g_{best}$ solo si el nuevo coste es estrictamente inferior, la solución registrada es monótonamente no decreciente en calidad."
+    },
+    {
+      "id": 7,
+      "block": 1,
+      "difficulty": "medio",
+      "question": "¿Cuál es el rol del parámetro cognitivo $c_1$ frente al social $c_2$ en la ecuación cinemática de PSO?",
+      "options": [
+        "$c_1$ pondera la atracción hacia la mejor experiencia individual ($p_{best,i}$), mientras $c_2$ pondera la atracción hacia el líder colectivo ($g_{best}$).",
+        "$c_1$ controla la fricción del entorno y $c_2$ la masa de la partícula.",
+        "$c_1$ y $c_2$ deben sumar siempre exactamente 0.",
+        "$c_1$ se aplica solo a iteraciones pares y $c_2$ a iteraciones impares."
+      ],
+      "answer": 0,
+      "hint": "Cognitivo = memoria propia; Social = comunicación con el grupo.",
+      "explanation": "$c_1$ modula el sesgo propioceptivo de la partícula hacia su $p_{best,i}$, mientras $c_2$ canaliza la influencia comunitaria hacia $g_{best}$."
+    },
+    {
+      "id": 8,
+      "block": 1,
+      "difficulty": "dificil",
+      "question": "En optimización con restricciones mediante PSO, ¿cómo se implementa el método de barrera estricta para inecuaciones $g_k(x) \\le 0$?",
+      "options": [
+        "Si $g_k(x) \\M_p \\le 10\\%$. En la iteración $t$, una partícula obtiene $IAE = 1.85$ pero produce $M_p = 14.2\\%$. Según el manejo de restricciones de inecuación de los apuntes (Ec. 5 y 6), ¿cómo se evalúa esta partícula?",
+      "options": [
+        "Infringe $g(x) = M_p - 10 \\le 0$, por lo que se le asigna $C_{nuevo}(x) = \\infty$ y no puede actualizar $p_{best,i}$ ni $g_{best}$.",
+        "Se acepta como nuevo $g_{best}$ porque su $IAE = 1.85$ es muy bajo.",
+        "Se divide el coste original entre 14.2.",
+        "Se reinicia la velocidad de todas las partículas del enjambre a cero."
+      ],
+      "answer": 0,
+      "explanation": "Al violar la inecuación g_k(x) <= 0, se aplica barrera infinita C_nuevo = infinito."
+    },
+    {
+      "id": "EX2",
+      "topic": "Control & PSO/DE",
+      "title": "Planificación de Trayectorias B-Spline en Manipulador Robótico con DE",
+      "question": "Optimizando los puntos de control de una trayectoria B-Spline con Evolución Diferencial ($D = 6$, $CR = 0.2$), en una iteración todos los números aleatorios uniformes $rand_j(0,1)$ salen mayores que $0.5$ para las 6 coordenadas. ¿Qué ocurre con el vector de prueba $u_{i,G}$?",
+      "options": [
+        "Gracias al índice aleatorio obligatorio $j_{rand} \\in \\{1,\\dots,6\\}$, exactamente una coordenada se copia del vector mutante $v_{i,G}$ y las otras 5 del vector objetivo $x_{i,G}$.",
+        "El vector $u_{i,G}$ queda vacío y da error numérico.",
+        "Las 6 coordenadas se copian íntegramente de $x_{i,G}$ sin ningún cambio.",
+        "Se invierte el signo del factor de escala $F$."
+      ],
+      "answer": 0,
+      "explanation": "La condición 'o j = j_rand' garantiza que al menos un componente procede del mutante."
+    },
+    {
+      "id": "EX3",
+      "topic": "Arquitecturas CNN",
+      "title": "Cálculo Dimensional de Mapa de Características en Visión Artificial",
+      "question": "Una cámara industrial captura una imagen en escala de grises de $32 \\times 32$ píxeles. Pasa por una capa convolucional con Kernel $K = 3\\times 3$, Padding $P = 1$ y Stride $S = 1$, seguida de un Max Pooling de ventana $2\\times 2$ con Stride $S = 2$. ¿Qué dimensiones espaciales tendrá el mapa resultante?",
+      "options": [
+        "Sale de la convolución con $32 \\times 32$ (gracias al Padding $P=1$) y tras el Max Pooling $2\\times 2$ se reduce a $16 \\times 16$.",
+        "Sale con $64 \\times 64$ píxeles.",
+        "Se reduce directamente a un escalar $1 \\times 1$.",
+        "Pierde los bordes en la convolución quedando en $30 \\times 30$."
+      ],
+      "answer": 0,
+      "explanation": "Padding 1 preserva 32x32 y el Max Pooling 2x2 divide el mapa exactamente a 16x16."
+    },
+    {
+      "id": "EX4",
+      "topic": "Deep Learning & Gradientes",
+      "title": "Diagnóstico de Curvas de Entrenamiento vs. Validación",
+      "question": "Entrenando una red profunda para detección de defectos, en la época 40 el error de Train baja a $0.002$, pero el error de Validation lleva subiendo desde la época 18 (pasando de $0.08$ a $0.31$). ¿Qué fenómeno ocurre y qué medidas debes aplicar?",
+      "options": [
+        "Hay Sobreajuste (Overfitting): la red memoriza Train. Debes detener el entrenamiento en el mínimo de validación (Early Stopping) y añadir capas Dropout.",
+        "Hay Subajuste (Underfitting): debes eliminar los datos de validación y entrenar 500 épocas más.",
+        "La función SoftMax ha dejado de sumar 1.",
+        "Debes cambiar todas las funciones ReLU por escalones no derivables."
+      ],
+      "answer": 0,
+      "explanation": "Subida del error de validación con caída en train delata memorización (Overfitting)."
+    },
+    {
+      "id": "EX5",
+      "topic": "Transformers & Atención",
+      "title": "Desambiguación Contextual y Penalización Logarítmica en Clasificación",
+      "question": "Un modelo clasifica entre 3 clases nominales. Para una muestra cuya clase real es la 1 ($y = [1, 0, 0]$), la capa SoftMax predice $\\hat{y} = [0.01, 0.90, 0.09]$ (alta confianza en la clase 2). ¿Cuánto vale la pérdida de Entropía Cruzada?",
+      "options": [
+        "$L_{CE} = -\\ln(0.01) \\approx 4.605$, aplicando un castigo severo por equivocarse con alta seguridad.",
+        "$L_{CE} = -\\ln(0.90) \\approx 0.105$.",
+        "$L_{CE} = 0$ porque las probabilidades suman 1.",
+        "$L_{CE} = (1 - 0.01)^2 / 3 = 0.326$."
+      ],
+      "answer": 0,
+      "explanation": "L_CE = -ln(0.01) = 4.605. Castiga exponencialmente predecir una clase errónea con certeza."
+    }
+  ],
+  "questions": [
 {
 "id": 1,
 "block": 1,
