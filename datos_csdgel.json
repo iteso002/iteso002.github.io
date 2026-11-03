@@ -1,0 +1,37 @@
+{
+  "blocks": [
+    {
+      "id": 1,
+      "code": "B1",
+      "title": "Bloque 1: Introducción a las Energías Limpias",
+      "flashcards": []
+    },
+    {
+      "id": 2,
+      "code": "B2",
+      "title": "Bloque 2: Generación Eólica",
+      "flashcards": []
+    },
+    {
+      "id": 3,
+      "code": "B3",
+      "title": "Bloque 3: Generación Solar Fotovoltaica",
+      "flashcards": []
+    },
+    {
+      "id": 4,
+      "code": "B4",
+      "title": "Bloque 4: Generación Hidroeléctrica",
+      "flashcards": []
+    },
+    {
+      "id": 5,
+      "code": "B5",
+      "title": "Bloque 5: Integración y Microredes",
+      "flashcards": []
+    }
+  ],
+  "extra_challenges": [],
+  "questions": [],
+  "open_questions": []
+}
