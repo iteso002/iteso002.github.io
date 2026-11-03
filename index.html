@@ -1078,7 +1078,6 @@
         document.getElementById('app-wrapper').classList.remove('hidden');
         document.getElementById('current-user-badge').textContent = `${currentUser.username} (${currentUser.role === 'admin' ? 'Admin' : 'Estudiante'})`;
         renderSubjectsHub();
-        openSubject(appConfig?.default_subject || 'TIA');
     }
 
     function handleLogout() {
