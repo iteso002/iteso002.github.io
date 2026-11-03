@@ -1210,8 +1210,17 @@
     }
 
     function enterAuthenticatedApp() {
-        document.getElementById('login-view').classList.add('hidden');
-        document.getElementById('app-wrapper').classList.remove('hidden');
+        // 1. Ocultar la pantalla de Login a la fuerza
+        const loginView = document.getElementById('login-view');
+        loginView.classList.add('hidden');
+        loginView.style.display = 'none'; 
+
+        // 2. Mostrar la plataforma a la fuerza
+        const appWrapper = document.getElementById('app-wrapper');
+        appWrapper.classList.remove('hidden');
+        appWrapper.style.display = 'flex';
+
+        // 3. Cargar el usuario y las tarjetas
         document.getElementById('current-user-badge').textContent = `${currentUser.username} (${currentUser.role === 'admin' ? 'Admin' : 'Estudiante'})`;
         renderSubjectsHub();
     }
@@ -1219,8 +1228,16 @@
     function handleLogout() {
         sessionStorage.removeItem('incar_active_user');
         currentUser = null;
-        document.getElementById('app-wrapper').classList.add('hidden');
-        document.getElementById('login-view').classList.remove('hidden');
+        
+        const loginView = document.getElementById('login-view');
+        const appWrapper = document.getElementById('app-wrapper');
+        
+        appWrapper.classList.add('hidden');
+        appWrapper.style.display = 'none'; // Forzar ocultar la app
+        
+        loginView.classList.remove('hidden');
+        loginView.style.display = 'flex';  // Forzar mostrar el login
+        
         document.getElementById('login-password').value = '';
     }
 
