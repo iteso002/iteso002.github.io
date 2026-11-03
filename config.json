@@ -42,19 +42,17 @@
       "id": "TIA",
       "code": "TIA",
       "name": "Técnicas Inteligentes de Aprendizaje",
-      "description": "Máster en Ingeniería de Control, Automatización y Robótica",
+      "description": "Máster en Ingeniería de Control, Automatización y Robótica (PSO, DE, Redes Neuronales, CNN, Deep Learning y Transformers)",
       "icon": "fa-brain",
       "color": "blue",
       "archivo_datos": "datos_tia.json"
-    }
-  ],
-  "subjects": [
+    },
     {
       "id": "CSdGEL",
       "code": "CSdGEL",
       "name": "Control de Sistemas de Generación de Energías Limpias",
       "description": "Máster en Ingeniería de Control, Automatización y Robótica",
-      "icon": "fa-leaf", 
+      "icon": "fa-leaf",
       "color": "emerald",
       "archivo_datos": "datos_csdgel.json"
     }
